@@ -1,0 +1,51 @@
+project:
+  type: book
+  output-dir: docs
+  
+book:
+  title: "Statistical Programming"
+  subtitle: "with R and Python"
+  author: "Oliver Schabenberger"
+  date: "6/18/2024"
+  reader-mode: true
+
+  page-footer:
+    left: |
+      Statistical Programming (Packages) by Oliver Schabenberger
+    right: |
+      This book was built with <a href="https://quarto.org/">Quarto</a>.
+  cover-image: SPCover.png
+
+  chapters:
+    - index.qmd
+    - intro.qmd
+    - getting_started.qmd
+    - reading_data.qmd
+    - wrangling_data.qmd
+    - summarization.qmd
+    - matrices.qmd
+ #       - visualization.qmd
+    - random.qmd
+    - debugging.qmd 
+    - reproducibility.qmd
+    - irls_literate.qmd
+ #       - sourcecontrol.qmd
+
+    - references.qmd
+
+bibliography: sp_references.bib
+
+format:
+  html:
+    theme:
+        light: [cosmo,customstyle.scss]
+        dark: [slate,customstyle.scss]
+    smooth-scroll: true
+    number-sections: true
+    number-depth: 2
+    toc-depth: 4
+    toc-expand: 2
+    pdf:
+    documentclass: scrreprt
+
+# editor: visual

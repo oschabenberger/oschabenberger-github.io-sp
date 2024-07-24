@@ -1,0 +1,62 @@
+
+
+# Reproducible Research and Data Analysis {#sec-reproduce}
+
+## What, me Worry?
+
+<!---
+
+https://ecorepsci.github.io/reproducible-science/index.html
+
+https://open-science-training-handbook.github.io/Open-Science-Training-Handbook_EN/02OpenScienceBasics/04ReproducibleResearchAndDataAnalysis.html
+
+--->
+
+**Reproducibility** in research means to give others the ability to use the same materials as were used by an original investigator in an attempt to arrive at the same results. This is not the same as **replicability**, the ability to repeat a study, collect new data, and duplicate the results of an original investigator. To reproduce results, we need to have access to the same data, analytics, and code. To replicate results, we need to know exactly how a study or experiment was conducted, which methods and instruments of measurements were used, and so forth, in order to set up a new study or experiment.
+
+As a first-year graduate student in statistics or data Science, why would you worry about reproducibility in research? You are unlikely to have your own research project that involves data collection. You are working on data analytics problems by yourself, why share your code with the world? You are planning to work as a data scientist in industry, why worry about concepts of reproducible research?
+
+First, reproducibility in research and data analysis is not about research; it is about the need to perform complex tasks in an organized workflow that builds trust, transparency, and accountability. Here are some reasons why you need to worry about reproducibility:
+
+1. You hardly ever work alone. Team members and supervisors need to be able to understand and judge your work.
+
+2. You need to plan for someone else working on your stuff. Taking over someone else's code can be a miserable experience. If that task falls on you, what information would you have liked to have to pick up the pieces?
+
+3. Software changes. Even if you are the only one working on the code---for now---do you ever made a mistake and wished you could revert back to a previous working version? Have you ever lost code or had to deal with incompatible versions on different machines? How do you prove (to yourself) that a change fixed or broke the code? How do you maintain the analyses for different versions of the same data?
+
+4. Data and analytics are key to reproducibility. If you do not have the data or the program, you cannot validate much in today's data-driven world. As a statistical programmer, you are at the center of someone else's reproducibility story. 
+
+5. Unless you work in purely methodological, theoretical work, as a statistician or data scientist you will be working on data problems of others. That might be an employer or a consulting client. Your work feeds into processes and systems **they** are accountable for. You need to ensure that there is accountability for **your** part of the work.
+
+6. Many analytic methods are inherently non-reproducible because they depend on stochastic elements. Making a statistical program reproducible means to understand all instances in which random numbers play a role (see @sec-random). You might not be able to control all of them and need to decide when a sufficient level of reproducibility has been reached. It might be necessary to fix random number seeds, but sacrificing performance by turning off multi-threading is a bridge too far.
+
+7. Reproducibility is not guaranteed by just reading the research paper. A common misconception is that methods sections in papers are sufficiently detailed to reproduce a result. Data analyses are almost never described in sufficient detail to be reproducible. Put yourself in the shoes of the reader and imagine to provide them with a data set and the pdf of the published paper. Would they be able to analyze the data and derive the effect sizes and $p$-values in Table 3 of the paper? Even a nod at the software used is not enough. "Analyses were performed with PROC MIXED in SAS." So what?! There are a million ways to analyze an experiment incorrectly with PROC MIXED by fitting the wrong model, messing up comparisons, misinterpreting parameter estimates, etc.
+
+
+## Improving Reproducibility of Statistical Programs
+
+Here are some points to increase the reproducibility of your programs and data analysis
+
+### Have a Plan
+
+### Document
+
+### Literate Programming
+
+#### What it is
+
+The concept of **literate programming** was introduced by @Knuth1984 and refers to programs that are not written with a focus on the compiler but are organized in the order demanded by the logic of the programmer's thoughts. In literate programming the program logic is written out in natural language, supplemented by code snippets or chunks. While literate programming was a concept at the time when Knuth proposed it, it is commonplace today, in particular in data science. Programming environments that combine markdown with code are a manifestation of literate programming: Jupyter Notebook, R Markdown, Quarto, and many more.
+
+Literate programs are different from well-documented code or code that includes documentation as part of the file. The flow of these programs still follow the logic of the computer, not the logic of human thought. In literate programming the code follows the structure of the documentation. @sec-irls-literate is a literate program that implements from scratch an important iterative statistical algorithm: iteratively reweighted least squares (IRLS).
+
+
+#### Comments in code
+
+If you do not write a literate program you should add comments to your code. The purpose of comments is to express the intent of the code, not to explain what the code does. Explanatory comments are OK if the code is not obvious in some way. If you have a chance to refactor or rewrite nonobvious code, do not hesitate.
+
+Comments should clarify **why** code is written a certain way and what the code is supposed to accomplish. If you feel that many lines of comments are needed to clarify some code, it can be an indication that the code should be simplified. If you are struggling to explain the intent of a function at the time you write it, imagine how difficult it is to divine that intent from the comment or code in six months or for a programmer not familiar with the code. 
+
+
+### Version Control
+
+

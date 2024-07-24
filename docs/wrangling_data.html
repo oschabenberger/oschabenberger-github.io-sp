@@ -1,0 +1,1640 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.552">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Statistical Programming - 4&nbsp; Wrangling Data</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./summarization.html" rel="next">
+<link href="./reading_data.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./wrangling_data.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Wrangling Data</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Statistical Programming</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./getting_started.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Getting Started</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reading_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Reading Data</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wrangling_data.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Wrangling Data</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./summarization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Summarization</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./matrices.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Vectors and Matrices</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./random.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Random Number Generation</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./debugging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Debugging in <code>R</code></span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reproducibility.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Reproducible Research and Data Analysis</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./irls_literate.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Iteratively Reweighted Least Squares</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">4.1</span> Introduction</a></li>
+  <li><a href="#tidyverse" id="toc-tidyverse" class="nav-link" data-scroll-target="#tidyverse"><span class="header-section-number">4.2</span> <code>tidyverse</code></a>
+  <ul>
+  <li><a href="#piping" id="toc-piping" class="nav-link" data-scroll-target="#piping">Piping</a></li>
+  </ul></li>
+  <li><a href="#shaping-data-into-tabular-form" id="toc-shaping-data-into-tabular-form" class="nav-link" data-scroll-target="#shaping-data-into-tabular-form"><span class="header-section-number">4.3</span> Shaping Data into Tabular Form</a>
+  <ul>
+  <li><a href="#gapminder-data" id="toc-gapminder-data" class="nav-link" data-scroll-target="#gapminder-data">Gapminder Data</a>
+  <ul class="collapse">
+  <li><a href="#gather-columns" id="toc-gather-columns" class="nav-link" data-scroll-target="#gather-columns">Gather columns</a></li>
+  <li><a href="#separating-character-variables" id="toc-separating-character-variables" class="nav-link" data-scroll-target="#separating-character-variables">Separating character variables</a></li>
+  <li><a href="#spreading-rows-into-columns" id="toc-spreading-rows-into-columns" class="nav-link" data-scroll-target="#spreading-rows-into-columns">Spreading rows into columns</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#subsetting" id="toc-subsetting" class="nav-link" data-scroll-target="#subsetting"><span class="header-section-number">4.4</span> Subsetting</a>
+  <ul>
+  <li><a href="#subsetting-rows" id="toc-subsetting-rows" class="nav-link" data-scroll-target="#subsetting-rows">Subsetting Rows</a>
+  <ul class="collapse">
+  <li><a href="#filter" id="toc-filter" class="nav-link" data-scroll-target="#filter"><code>filter</code></a></li>
+  <li><a href="#distinct" id="toc-distinct" class="nav-link" data-scroll-target="#distinct"><code>distinct</code></a></li>
+  <li><a href="#other-subsetting-functions" id="toc-other-subsetting-functions" class="nav-link" data-scroll-target="#other-subsetting-functions">Other subsetting functions</a></li>
+  </ul></li>
+  <li><a href="#subsetting-selecting-columns" id="toc-subsetting-selecting-columns" class="nav-link" data-scroll-target="#subsetting-selecting-columns">Subsetting (selecting) Columns</a>
+  <ul class="collapse">
+  <li><a href="#select" id="toc-select" class="nav-link" data-scroll-target="#select"><code>select</code></a></li>
+  <li><a href="#helper-functions" id="toc-helper-functions" class="nav-link" data-scroll-target="#helper-functions">Helper functions</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#creating-new-variables" id="toc-creating-new-variables" class="nav-link" data-scroll-target="#creating-new-variables"><span class="header-section-number">4.5</span> Creating New Variables</a></li>
+  <li><a href="#combining-data-sets" id="toc-combining-data-sets" class="nav-link" data-scroll-target="#combining-data-sets"><span class="header-section-number">4.6</span> Combining Data Sets</a>
+  <ul>
+  <li><a href="#set-operations" id="toc-set-operations" class="nav-link" data-scroll-target="#set-operations">Set Operations</a></li>
+  <li><a href="#joins" id="toc-joins" class="nav-link" data-scroll-target="#joins">Joins</a></li>
+  <li><a href="#bindings" id="toc-bindings" class="nav-link" data-scroll-target="#bindings">Bindings</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span id="sec-wrangling" class="quarto-section-identifier"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Wrangling Data</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">4.1</span> Introduction</h2>
+<p><strong>Wrangling</strong> data refers to the steps to organize the data in a structured format that is suitable for analytic processing. Typically, the result of data wrangling is data in a row-column layout where each analysis variable is in its own column and each observation is in its own row. Data often do not start out that way.</p>
+<p>We saw a bit of data wrangling in the previous chapter (@#sec-json-files) when a nested JSON structure was flattened into a row-column format.</p>
+<p>In addition to structuring the data, wrangling includes the following steps:</p>
+<ol type="1">
+<li><p><strong>Cleaning</strong> involves removing or correcting inaccurate data, handling duplicates, and addressing anomalies that could impact the reliability of analyses. The focus is on enhancing data accuracy and reliability for analytic processing.</p></li>
+<li><p><strong>Enriching</strong> involves creating additional variables, incorporating external data, and combining the data with other data sources. Any new data sources you bring needs to be structured and cleaned as well.</p></li>
+<li><p><strong>Validation</strong> checks for inconsistencies and verifies data integrity. Your organization will have standards, for example how regions, customer information, names, ages, etc. are represented in data sets, and this step ensures that the standards are met.</p></li>
+</ol>
+</section>
+<section id="tidyverse" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="tidyverse"><span class="header-section-number">4.2</span> <code>tidyverse</code></h2>
+<p>In this chapter we concentrate on structuring, enriching, and combining data with the libraries in the <a href="https://www.tidyverse.org/"><code>tidyverse</code></a>. This is an “opinionated” collection of <code>R</code> packages for data science, including <code>dplyr</code>, <code>ggplot2</code>, <code>tibble</code>, <code>tidyr</code>, <code>purr</code>, <code>stringr</code>, and <code>readr</code>. <code>dplyr</code>, <code>tidyr</code>, and <code>ggplot2</code> are arguably the most important packages in the collection (that is my “opinionated” view). For data wrangling we rely on <code>dplyr</code> and <code>tidyr</code>.</p>
+<p>You can install the packages individually or grab all the <code>tidyverse</code> packages with</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"tidyverse"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>A great cheat sheet for wrangling data in <code>R</code> with <code>dplyr</code> and <code>tidyr</code> can be found <a href="https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf">here</a>. This chapter draws on the contents of this cheat sheet.</p>
+<section id="piping" class="level3">
+<h3 class="anchored" data-anchor-id="piping">Piping</h3>
+<p>The <code>tidyverse</code> packages share a common philosophy; that makes it easy to use code across multiple packages and to combine them. An example of this common philosophy is <strong>piping</strong>. The following pipeline starts with the <code>iris</code> data frame. The data is piped to the <code>filter</code> function with the pipe operator <code>%&gt;%</code>. The result of the <code>filter</code> operation is piped to the <code>summarize</code> function to compute the average petal width of the plants with sepal length greater than 6:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>iris <span class="sc">%&gt;%</span> </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(Sepal.Length <span class="sc">&gt;</span> <span class="dv">6</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarize</span>(<span class="at">average=</span><span class="fu">mean</span>(Petal.Width))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   average
+1 1.847541</code></pre>
+</div>
+</div>
+<p>By default the argument on the left side of the pipe operator is passed as the first argument to the function on the right side. The <code>filter</code> function call is really <code>dplyr::filter(iris,Species=="virginica)</code>. You can also pass the argument on the left of the pipe to a different argument on the right side of the pipe by using a dot:</p>
+<p><code>x %&gt;% f(y)</code> is the same as <code>f(x,y)</code></p>
+<p><code>x %&gt;% f(y, ., z)</code> is the same as <code>f(y,x,z)</code></p>
+<p>Piping not only shows analytic operations as a sequence of steps, but also reduces the amount of code and makes it generally more readable. Learning to write good pipelines.</p>
+<p>Data wrangling with <code>dplyr</code> and <code>tidyr</code> can be organized into the following steps:</p>
+<ol type="1">
+<li>Shaping the data</li>
+<li>Subsetting observations and/or variables</li>
+<li>Creating new variables</li>
+<li>Combining data sets</li>
+<li>Summarization</li>
+</ol>
+<p>Summarizing data is discussed as a separate step in <a href="summarization.html" class="quarto-xref"><span>Chapter 5</span></a>.</p>
+</section>
+</section>
+<section id="shaping-data-into-tabular-form" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="shaping-data-into-tabular-form"><span class="header-section-number">4.3</span> Shaping Data into Tabular Form</h2>
+<p>The goal of shaping the data is to change its structure into a tabular row-column form where each variable is in a separate column and each observation is in its own row.</p>
+<p>Consider the classic airline passenger time series data from <span class="citation" data-cites="BoxJenkins">Box, jenkins, and Reinsel (<a href="references.html#ref-BoxJenkins" role="doc-biblioref">1976</a>)</span>, showing monthly totals of international airline passengers between 1994 and 1960 (in thousands).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>AirPassengers</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
+1949 112 118 132 129 121 135 148 148 136 119 104 118
+1950 115 126 141 135 125 149 170 170 158 133 114 140
+1951 145 150 178 163 172 178 199 199 184 162 146 166
+1952 171 180 193 181 183 218 230 242 209 191 172 194
+1953 196 196 236 235 229 243 264 272 237 211 180 201
+1954 204 188 235 227 234 264 302 293 259 229 203 229
+1955 242 233 267 269 270 315 364 347 312 274 237 278
+1956 284 277 317 313 318 374 413 405 355 306 271 306
+1957 315 301 356 348 355 422 465 467 404 347 305 336
+1958 340 318 362 348 363 435 491 505 404 359 310 337
+1959 360 342 406 396 420 472 548 559 463 407 362 405
+1960 417 391 419 461 472 535 622 606 508 461 390 432</code></pre>
+</div>
+</div>
+<p>The data are arranged very neatly, each year in a separate row, each month in a separate column. This is a great layout for time series analysis but maybe not the best layout for general analytic processing. The analysis variables are year, month, and the passenger count. Restructuring the <code>AirPassengers</code> data into a data frame with variables for <code>year</code> and <code>count</code> is easy because this data set is stored as an <code>R</code> time series.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(AirPassengers)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Time-Series [1:144] from 1949 to 1961: 112 118 132 129 121 135 148 148 136 119 ...</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">count=</span><span class="fu">as.matrix</span>(AirPassengers), </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">time=</span><span class="fu">time</span>(AirPassengers),</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">year=</span><span class="fu">round</span>(<span class="fu">time</span>(AirPassengers),<span class="dv">0</span>))</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  count     time year
+1   112 1949.000 1949
+2   118 1949.083 1949
+3   132 1949.167 1949
+4   129 1949.250 1949
+5   121 1949.333 1949
+6   135 1949.417 1949</code></pre>
+</div>
+</div>
+<section id="gapminder-data" class="level3">
+<h3 class="anchored" data-anchor-id="gapminder-data">Gapminder Data</h3>
+<p>In general, the structure of a non-tabular format is not known to <code>R</code> and must be wrangled by the user. Consider the famous Gapminder dataset. The <a href="https://en.wikipedia.org/wiki/Gapminder_Foundation">Gapminder Foundation</a> is a Swedish non-profit that promotes the United Nations sustainability goals through use of statistics. The Gapminder data set tracks economic and social indicators like life expectancy and the GDP per capita of countries over time.</p>
+<p>A wide format of the Gapminder data is available on GitHub <a href="https://github.com/OHI-Science/data-science-training/blob/master/data/gapminder_wide.csv">here</a>. We are following the material in <a href="https://ohi-science.org/data-science-training/dplyr.html">this</a> excellent online resource in wrangling the data in the wide format.</p>
+<!----
+https://ohi-science.org/data-science-training/
+---->
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>gap_wide <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="at">file=</span><span class="st">"data/gapminder_wide.csv"</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(gap_wide)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   142 obs. of  38 variables:
+ $ continent     : chr  "Africa" "Africa" "Africa" "Africa" ...
+ $ country       : chr  "Algeria" "Angola" "Benin" "Botswana" ...
+ $ gdpPercap_1952: num  2449 3521 1063 851 543 ...
+ $ gdpPercap_1957: num  3014 3828 960 918 617 ...
+ $ gdpPercap_1962: num  2551 4269 949 984 723 ...
+ $ gdpPercap_1967: num  3247 5523 1036 1215 795 ...
+ $ gdpPercap_1972: num  4183 5473 1086 2264 855 ...
+ $ gdpPercap_1977: num  4910 3009 1029 3215 743 ...
+ $ gdpPercap_1982: num  5745 2757 1278 4551 807 ...
+ $ gdpPercap_1987: num  5681 2430 1226 6206 912 ...
+ $ gdpPercap_1992: num  5023 2628 1191 7954 932 ...
+ $ gdpPercap_1997: num  4797 2277 1233 8647 946 ...
+ $ gdpPercap_2002: num  5288 2773 1373 11004 1038 ...
+ $ gdpPercap_2007: num  6223 4797 1441 12570 1217 ...
+ $ lifeExp_1952  : num  43.1 30 38.2 47.6 32 ...
+ $ lifeExp_1957  : num  45.7 32 40.4 49.6 34.9 ...
+ $ lifeExp_1962  : num  48.3 34 42.6 51.5 37.8 ...
+ $ lifeExp_1967  : num  51.4 36 44.9 53.3 40.7 ...
+ $ lifeExp_1972  : num  54.5 37.9 47 56 43.6 ...
+ $ lifeExp_1977  : num  58 39.5 49.2 59.3 46.1 ...
+ $ lifeExp_1982  : num  61.4 39.9 50.9 61.5 48.1 ...
+ $ lifeExp_1987  : num  65.8 39.9 52.3 63.6 49.6 ...
+ $ lifeExp_1992  : num  67.7 40.6 53.9 62.7 50.3 ...
+ $ lifeExp_1997  : num  69.2 41 54.8 52.6 50.3 ...
+ $ lifeExp_2002  : num  71 41 54.4 46.6 50.6 ...
+ $ lifeExp_2007  : num  72.3 42.7 56.7 50.7 52.3 ...
+ $ pop_1952      : num  9279525 4232095 1738315 442308 4469979 ...
+ $ pop_1957      : num  10270856 4561361 1925173 474639 4713416 ...
+ $ pop_1962      : num  11000948 4826015 2151895 512764 4919632 ...
+ $ pop_1967      : num  12760499 5247469 2427334 553541 5127935 ...
+ $ pop_1972      : num  14760787 5894858 2761407 619351 5433886 ...
+ $ pop_1977      : num  17152804 6162675 3168267 781472 5889574 ...
+ $ pop_1982      : num  20033753 7016384 3641603 970347 6634596 ...
+ $ pop_1987      : num  23254956 7874230 4243788 1151184 7586551 ...
+ $ pop_1992      : num  26298373 8735988 4981671 1342614 8878303 ...
+ $ pop_1997      : num  29072015 9875024 6066080 1536536 10352843 ...
+ $ pop_2002      : int  31287142 10866106 7026113 1630347 12251209 7021078 15929988 4048013 8835739 614382 ...
+ $ pop_2007      : int  33333216 12420476 8078314 1639131 14326203 8390505 17696293 4369038 10238807 710960 ...</code></pre>
+</div>
+</div>
+<p>The data are stored in <strong>wide</strong> format, annual values for the variables GDP, life expectancy, and population appear in separate columns. This is not unlike how the <code>AirPassengers</code> data is displayed, but <code>gap_wide</code> is not a time series object. The desired (“tidy”) way of structuring the data, where each variable is a column and each observation is a row is a tabular structure with variables</p>
+<ul>
+<li>Continent</li>
+<li>Country</li>
+<li>Year</li>
+<li>GDP</li>
+<li>Life Expectancy</li>
+<li>Population</li>
+</ul>
+<p>For each combination of continent and country there will be 12 observations, one for each year.</p>
+<section id="gather-columns" class="level4">
+<h4 class="anchored" data-anchor-id="gather-columns">Gather columns</h4>
+<p>To move from wide to the desired long format, we use the <code>dplyr::gather</code> function. To do the opposite, moving from long to wide format, use the <code>dplyr::spread</code> function. To restructure the Gapminder data set from wide format into the desired format takes several steps.</p>
+<p>The first step is to gather the columns that contain the values for GDP, life expectancy, and population into separate rows. Those are all columns in <code>gap_wide</code> except <code>continent</code> and <code>country</code>, so we can exclude those from the gathering operation with <code>-c(continent, country)</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>gap_step1 <span class="ot">&lt;-</span> gap_wide <span class="sc">%&gt;%</span> </span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">gather</span>(<span class="at">key=</span>vartype_year,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">value=</span>values,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>          <span class="sc">-</span><span class="fu">c</span>(continent, country))</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(gap_step1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  continent      country   vartype_year    values
+1    Africa      Algeria gdpPercap_1952 2449.0082
+2    Africa       Angola gdpPercap_1952 3520.6103
+3    Africa        Benin gdpPercap_1952 1062.7522
+4    Africa     Botswana gdpPercap_1952  851.2411
+5    Africa Burkina Faso gdpPercap_1952  543.2552
+6    Africa      Burundi gdpPercap_1952  339.2965</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span>(gap_step1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     continent        country vartype_year   values
+5107    Europe         Sweden     pop_2007  9031088
+5108    Europe    Switzerland     pop_2007  7554661
+5109    Europe         Turkey     pop_2007 71158647
+5110    Europe United Kingdom     pop_2007 60776238
+5111   Oceania      Australia     pop_2007 20434176
+5112   Oceania    New Zealand     pop_2007  4115771</code></pre>
+</div>
+</div>
+</section>
+<section id="separating-character-variables" class="level4">
+<h4 class="anchored" data-anchor-id="separating-character-variables">Separating character variables</h4>
+<p>The <code>gather</code> function turns all variables into key-value pairs; the key is the name of the variable. The column that contains the names of the variables after the gathering is called <code>vartype_year</code>. In the next step <code>dplyr::separate</code> is called to split the character column <code>vartype_year</code> into two columns, one for the variable type and one for the year. The <code>convert=TRUE</code> option attempts to convert the data type of the new columns from character to numeric data—this will fail for the <code>vartype</code> column but succeed for the <code>year</code> column.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>gap_step2 <span class="ot">&lt;-</span> gap_wide <span class="sc">%&gt;%</span> </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">gather</span>(<span class="at">key =</span>vartype_year,</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">value=</span>values,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>          <span class="sc">-</span><span class="fu">c</span>(continent, country)) <span class="sc">%&gt;%</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">separate</span>(vartype_year,</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>           <span class="at">into   =</span><span class="fu">c</span>(<span class="st">'vartype'</span>,<span class="st">'year'</span>),</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">sep    =</span><span class="st">"_"</span>,</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">convert=</span><span class="cn">TRUE</span>)</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(gap_step2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   5112 obs. of  5 variables:
+ $ continent: chr  "Africa" "Africa" "Africa" "Africa" ...
+ $ country  : chr  "Algeria" "Angola" "Benin" "Botswana" ...
+ $ vartype  : chr  "gdpPercap" "gdpPercap" "gdpPercap" "gdpPercap" ...
+ $ year     : int  1952 1952 1952 1952 1952 1952 1952 1952 1952 1952 ...
+ $ values   : num  2449 3521 1063 851 543 ...</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(gap_step2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  continent      country   vartype year    values
+1    Africa      Algeria gdpPercap 1952 2449.0082
+2    Africa       Angola gdpPercap 1952 3520.6103
+3    Africa        Benin gdpPercap 1952 1062.7522
+4    Africa     Botswana gdpPercap 1952  851.2411
+5    Africa Burkina Faso gdpPercap 1952  543.2552
+6    Africa      Burundi gdpPercap 1952  339.2965</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span>(gap_step2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     continent        country vartype year   values
+5107    Europe         Sweden     pop 2007  9031088
+5108    Europe    Switzerland     pop 2007  7554661
+5109    Europe         Turkey     pop 2007 71158647
+5110    Europe United Kingdom     pop 2007 60776238
+5111   Oceania      Australia     pop 2007 20434176
+5112   Oceania    New Zealand     pop 2007  4115771</code></pre>
+</div>
+</div>
+</section>
+<section id="spreading-rows-into-columns" class="level4">
+<h4 class="anchored" data-anchor-id="spreading-rows-into-columns">Spreading rows into columns</h4>
+<p>We are almost there, but not quite. We now have columns for continent, country, and year, but the <code>values</code> column contains values of different types: 1,704 observations for GDP, 1704 observations for life expectancy, and 1,704 observations for population. To create separate columns from the rows we can reverse the gather operation with the <code>spread</code> function—it splits key-value pairs across multiple columns. The entries in the <code>vartype</code> column are used by the spreading operation as the names of the new columns.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="ot">&lt;-</span> </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    gap_wide <span class="sc">%&gt;%</span> </span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">gather</span>(<span class="at">key =</span>vartype_year,</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">value=</span>values,</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>          <span class="sc">-</span><span class="fu">c</span>(continent, country)) <span class="sc">%&gt;%</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">separate</span>(vartype_year,</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">into   =</span><span class="fu">c</span>(<span class="st">'vartype'</span>,<span class="st">'year'</span>),</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">sep    =</span><span class="st">"_"</span>,</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>           <span class="at">convert=</span><span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">spread</span>(vartype, values)</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(gapminder)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  continent country year gdpPercap lifeExp      pop
+1    Africa Algeria 1952  2449.008  43.077  9279525
+2    Africa Algeria 1957  3013.976  45.685 10270856
+3    Africa Algeria 1962  2550.817  48.303 11000948
+4    Africa Algeria 1967  3246.992  51.407 12760499
+5    Africa Algeria 1972  4182.664  54.518 14760787
+6    Africa Algeria 1977  4910.417  58.014 17152804</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span>(gapminder)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     continent     country year gdpPercap lifeExp     pop
+1699   Oceania New Zealand 1982  17632.41  73.840 3210650
+1700   Oceania New Zealand 1987  19007.19  74.320 3317166
+1701   Oceania New Zealand 1992  18363.32  76.330 3437674
+1702   Oceania New Zealand 1997  21050.41  77.550 3676187
+1703   Oceania New Zealand 2002  23189.80  79.110 3908037
+1704   Oceania New Zealand 2007  25185.01  80.204 4115771</code></pre>
+</div>
+</div>
+<p>In summary, we used gather to create one key-value pair of the variable_year columns and values in step 1, separated out the year in step 2, and spread the remaining variable types back out into columns in step 3.</p>
+</section>
+</section>
+</section>
+<section id="subsetting" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="subsetting"><span class="header-section-number">4.4</span> Subsetting</h2>
+<p>A <em>subset</em> operation reduces the number of observations (rows) or variables (columns) of data set. While <code>filter</code> is the most important operation to subset rows, there are a number of other functions in <code>dplyr</code> that reduce the rows. On the other hand, to subset columns there is only one function, <code>dplyr::select</code>.</p>
+<section id="subsetting-rows" class="level3">
+<h3 class="anchored" data-anchor-id="subsetting-rows">Subsetting Rows</h3>
+<p>The following statements create a data frame of dimension 100 x 2, containing two columns of integers randomly selected from 1–10 with replacement:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">76</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">sample</span>(<span class="dv">10</span>, <span class="dv">100</span>, <span class="at">rep =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="fu">sample</span>(<span class="dv">10</span>, <span class="dv">100</span>, <span class="at">rep =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">glimpse</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 100
+Columns: 2
+$ x &lt;int&gt; 5, 1, 2, 10, 7, 5, 6, 10, 8, 6, 4, 6, 3, 1, 8, 5, 7, 6, 4, 1, 3, 10,…
+$ y &lt;int&gt; 3, 5, 9, 8, 7, 10, 4, 1, 10, 6, 9, 6, 2, 9, 3, 8, 9, 7, 4, 3, 2, 3, …</code></pre>
+</div>
+</div>
+<section id="filter" class="level4">
+<h4 class="anchored" data-anchor-id="filter"><code>filter</code></h4>
+<p><code>filter</code> extracts rows that meet a logical condition. The following statement selects the rows for which <span class="math inline">\(x \in (1,5)\)</span> and <span class="math inline">\(y \in (3,8)\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>dat <span class="sc">%&gt;%</span> <span class="fu">filter</span>(x <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">5</span>) <span class="sc">&amp;</span> y <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">8</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  x y
+1 5 3
+2 5 8
+3 1 3
+4 5 8
+5 5 8
+6 5 3</code></pre>
+</div>
+</div>
+<p>You can also list the conditions that are combined with logical “and”, separated with commas:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>dat <span class="sc">%&gt;%</span> <span class="fu">filter</span>(x <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">5</span>), y <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">8</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  x y
+1 5 3
+2 5 8
+3 1 3
+4 5 8
+5 5 8
+6 5 3</code></pre>
+</div>
+</div>
+<p>The following statement extracts the rows where the value of <code>y</code> exceeds 3.5 times its standard deviation:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>dat <span class="sc">%&gt;%</span> <span class="fu">filter</span>(y <span class="sc">&gt;</span> <span class="fl">3.5</span><span class="sc">*</span><span class="fu">sd</span>(y))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   x  y
+1  5 10
+2  8 10
+3  7 10
+4  1 10
+5  8 10
+6  1 10
+7  9 10
+8  9 10
+9  6 10
+10 7 10
+11 4 10
+12 5 10</code></pre>
+</div>
+</div>
+<p>Another subsetting operation is to remove duplicate observations from a data set with <code>distinct</code>. When applied to a subset of the columns, <code>distinct</code> returns the combinations of their unique values in the data.</p>
+</section>
+<section id="distinct" class="level4">
+<h4 class="anchored" data-anchor-id="distinct"><code>distinct</code></h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>dat <span class="sc">%&gt;%</span> <span class="fu">distinct</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    x
+1   5
+2   1
+3   2
+4  10
+5   7
+6   6
+7   8
+8   4
+9   3
+10  9</code></pre>
+</div>
+</div>
+<p>If you specify <code>.keep_all=TRUE</code>, all other variables in the data set are kept as well. If multiple combinations occur, the function retains the first occurence.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>dat <span class="sc">%&gt;%</span> <span class="fu">distinct</span>(x, <span class="at">.keep_all=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    x  y
+1   5  3
+2   1  5
+3   2  9
+4  10  8
+5   7  7
+6   6  4
+7   8 10
+8   4  9
+9   3  2
+10  9  3</code></pre>
+</div>
+</div>
+<p>To remove all duplicates in a data frame, simply call distinct on the data frame.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>dat <span class="sc">%&gt;%</span> <span class="fu">distinct</span>() <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="at">count=</span><span class="fu">n</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  count
+1    65</code></pre>
+</div>
+</div>
+<p>There are 62 unique rows of data in the <code>dat</code> data frame.</p>
+</section>
+<section id="other-subsetting-functions" class="level4">
+<h4 class="anchored" data-anchor-id="other-subsetting-functions">Other subsetting functions</h4>
+<p>Other functions subsetting rows in <code>dplyr</code> are</p>
+<ol type="1">
+<li><code>dplyr::sample_frac</code>: randomly select a proportion of the rows</li>
+<li><code>dplyr::sample_n</code>: randomly select a fixed number of rows</li>
+<li><code>dplyr::slice</code>: select rows by position, for example <code>slice(dat,4:10)</code> extracts rows 4–10</li>
+<li><code>dplyr::slice_head</code>: selects the first rows</li>
+<li><code>dplyr::slice_tail</code>: selects the last rows</li>
+<li><code>dplyr:slice_min</code>: select rows with the smallest values</li>
+<li><code>dplyr:slice_max</code>: select rows with the largest values</li>
+</ol>
+<p>For example, the next statement selects the observation with the five largest values for the <code>Sepal.Width</code> variable in the <code>iris</code> data set.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>iris <span class="sc">%&gt;%</span> <span class="fu">slice_max</span>(Sepal.Width, <span class="at">n=</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+1          5.7         4.4          1.5         0.4  setosa
+2          5.5         4.2          1.4         0.2  setosa
+3          5.2         4.1          1.5         0.1  setosa
+4          5.8         4.0          1.2         0.2  setosa
+5          5.4         3.9          1.7         0.4  setosa
+6          5.4         3.9          1.3         0.4  setosa</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="subsetting-selecting-columns" class="level3">
+<h3 class="anchored" data-anchor-id="subsetting-selecting-columns">Subsetting (selecting) Columns</h3>
+<section id="select" class="level4">
+<h4 class="anchored" data-anchor-id="select"><code>select</code></h4>
+<p>To subset columns there is only one statement in <code>dplyr</code>, the <code>select</code> statement. However, it is very versatile because of its many helper functions.</p>
+<p>The basic usage is to list the column names being selected:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">%&gt;%</span> <span class="fu">select</span>(gdpPercap, lifeExp) <span class="sc">%&gt;%</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarize</span>(<span class="at">mnGDP=</span><span class="fu">mean</span>(gdpPercap), <span class="at">sdLife=</span><span class="fu">sd</span>(lifeExp))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     mnGDP   sdLife
+1 7215.327 12.91711</code></pre>
+</div>
+</div>
+<p>You can also specify an exclusion with a negative selection</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>country, <span class="sc">-</span>continent, <span class="sc">-</span>pop) <span class="sc">%&gt;%</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarize</span>(<span class="at">mnGDP=</span><span class="fu">mean</span>(gdpPercap), <span class="at">sdLife=</span><span class="fu">sd</span>(lifeExp))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     mnGDP   sdLife
+1 7215.327 12.91711</code></pre>
+</div>
+</div>
+<p>or</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(country, continent, pop)) <span class="sc">%&gt;%</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarize</span>(<span class="at">mnGDP=</span><span class="fu">mean</span>(gdpPercap), <span class="at">sdLife=</span><span class="fu">sd</span>(lifeExp))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     mnGDP   sdLife
+1 7215.327 12.91711</code></pre>
+</div>
+</div>
+</section>
+<section id="helper-functions" class="level4">
+<h4 class="anchored" data-anchor-id="helper-functions">Helper functions</h4>
+<p>Here are important helper functions for <code>dplyr::select</code></p>
+<ol type="1">
+<li><code>select( contains("."))</code>: select columns whose name contains a character string</li>
+<li><code>select( ends_with("Length"))</code>: select columns whose name ends in the specified string</li>
+<li><code>select( starts_with("Sepal"))</code>: select columns whose name starts with the specified string</li>
+<li><code>select( everything())</code>: select all columns</li>
+<li><code>select( matches(".t."))</code>: select the columns whose name matches a regular expression</li>
+<li><code>select( num_range("x",1:5))</code>: select the columns named <code>x1</code>, <code>x2</code>, …, <code>x5</code></li>
+<li><code>select( one_off("Species","Genus"))</code>: select columns whose names are in the specified group of names</li>
+<li><code>select( Sepal.Length:Petal.Width)</code>: Select all columns between <code>Sepal.Length</code> and <code>Petal.Width</code>, including those columns</li>
+</ol>
+</section>
+</section>
+</section>
+<section id="creating-new-variables" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="creating-new-variables"><span class="header-section-number">4.5</span> Creating New Variables</h2>
+<p>The principal function to create new variables in a data frame is <code>dplyr::mutate</code>. Variations are <code>mutate_each</code> which applies a function to every column and <code>transmute</code> which drops the original columns.</p>
+<p>The following statements compute the GPD as the product of per-capita GDP and population size and finds the top-5 countries by GDP in Asia in 2007:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">%&gt;%</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(continent <span class="sc">==</span> <span class="st">"Asia"</span>, year <span class="sc">==</span> <span class="dv">2007</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">GDP =</span> gdpPercap <span class="sc">*</span> pop) <span class="sc">%&gt;%</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(country, year, gdpPercap, GDP) <span class="sc">%&gt;%</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">slice_max</span>(GDP,<span class="at">n=</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     country year gdpPercap          GDP
+1      China 2007  4959.115 6.539501e+12
+2      Japan 2007 31656.068 4.035135e+12
+3      India 2007  2452.210 2.722925e+12
+4 Korea Rep. 2007 23348.140 1.145105e+12
+5       Iran 2007 11605.714 8.060583e+11</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The variable <code>GDP</code> created in this operation is transient. It is instantiated for the duration of the pipeline and is not added to the <code>gapminder</code> data frame. If you want to add a new variable to an existing data frame you need to assign the result to a return object.</p>
+</div>
+</div>
+</section>
+<section id="combining-data-sets" class="level2" data-number="4.6">
+<h2 data-number="4.6" class="anchored" data-anchor-id="combining-data-sets"><span class="header-section-number">4.6</span> Combining Data Sets</h2>
+<p>The process of combining tables is based on <strong>joins</strong>, <strong>set</strong> operations, or <strong>bindings</strong>. A join uses the values in specific columns of one data set to match records with another data set. A set operation is a merging of columns without considering the values in the columns. Appending rows rows of one table to another table or columns of one table to another table are binding operations. What happens to columns that exist in one data set but not in the other during the append depends on the implementation. Similarly, what happens to columns that share the same name when tables are merged horizontally depends on the implementation.</p>
+<p>To show the various join and set operations, let’s create three small data frames of cities and weather information.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>capitals1 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">city=</span><span class="fu">c</span>(<span class="st">'Amsterdam'</span>,<span class="st">'Berlin'</span>),</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">country=</span><span class="fu">c</span>(<span class="st">'NL'</span>,<span class="st">'Germany'</span>))</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>capitals2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">city=</span><span class="fu">c</span>(<span class="st">'Amsterdam'</span>,<span class="st">'Washington, D.C.'</span>),</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>                       <span class="at">country=</span><span class="fu">c</span>(<span class="st">'NL'</span>,<span class="st">'U.S.A.'</span>))</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>weather1 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">city=</span><span class="fu">c</span>(<span class="st">'Amsterdam'</span>,<span class="st">'Seattle'</span>),</span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>                      <span class="at">degrees=</span><span class="fu">c</span>(<span class="dv">10</span>,<span class="dv">8</span>),</span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>                      <span class="at">date=</span><span class="fu">c</span>(<span class="st">"2022-10-14"</span>,<span class="st">"2022-10-12"</span>))</span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>capitals1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       city country
+1 Amsterdam      NL
+2    Berlin Germany</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>capitals2 </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              city country
+1        Amsterdam      NL
+2 Washington, D.C.  U.S.A.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>weather1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       city degrees       date
+1 Amsterdam      10 2022-10-14
+2   Seattle       8 2022-10-12</code></pre>
+</div>
+</div>
+<section id="set-operations" class="level3">
+<h3 class="anchored" data-anchor-id="set-operations">Set Operations</h3>
+<p>We distinguish three set operations: the <strong>intersection</strong> of rows that appear in two data sets, the <strong>union</strong> of the rows, and the <strong>set difference</strong> of the rows. <code>dplyr</code> supports set operations with the following functions:</p>
+<ul>
+<li><p><code>intersect(x, y)</code>: finds all rows in both <code>x</code> and <code>y</code>.</p></li>
+<li><p><code>union(x, y)</code>: finds all rows in either <code>x</code> or <code>y</code>, excluding duplicates.</p></li>
+<li><p><code>union_all(x, y)</code>: finds all rows in either <code>x</code> or <code>y</code>, including duplicates.</p></li>
+<li><p><code>setdiff(x, y)</code>: finds all rows in <code>x</code> that are not in <code>y</code>.</p></li>
+<li><p><code>symdiff(x, y)</code>: computes the symmetric difference, i.e.&nbsp;all rows in <code>x</code> that are not in <code>y</code> and all rows in <code>y</code> that are not in x.</p></li>
+<li><p><code>setequal(x, y)</code>: returns TRUE if <code>x</code> and <code>y</code> contain the same rows (ignoring order).</p></li>
+</ul>
+<p>Note that except for <code>union_all</code> the functions that return rows remove duplicates in <code>x</code> and <code>y</code>.</p>
+<p>For the two data frames of capitals, here are the results of the various set operations.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">intersect</span>(capitals1, capitals2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       city country
+1 Amsterdam      NL</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">setdiff</span>(capitals1, capitals2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    city country
+1 Berlin Germany</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">union</span>(capitals1, capitals2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              city country
+1        Amsterdam      NL
+2           Berlin Germany
+3 Washington, D.C.  U.S.A.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">union_all</span>(capitals1, capitals2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              city country
+1        Amsterdam      NL
+2           Berlin Germany
+3        Amsterdam      NL
+4 Washington, D.C.  U.S.A.</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">symdiff</span>(capitals1, capitals2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              city country
+1           Berlin Germany
+2 Washington, D.C.  U.S.A.</code></pre>
+</div>
+</div>
+</section>
+<section id="joins" class="level3">
+<h3 class="anchored" data-anchor-id="joins">Joins</h3>
+<p>Set operations combine or reduce rows of data (vertically). Join operations combine data sets <strong>horizontally</strong>. Joins typically are based on the values in columns of the data sets to find matches.</p>
+<p>Joins are categorized as <strong>outer</strong> or <strong>inner</strong> joins depending on whether rows with matches are returned. An outer join returns rows that do not have any matches whereas the inner join returns only rows that get paired. The two data frames in a join are called the left and right sides of the relation and outer joins are further classified as</p>
+<ul>
+<li><p><strong>Left outer</strong> join: all rows from the left side of the relation appear at least once.</p></li>
+<li><p><strong>Right outer</strong> join: all rows from the right side of the relation appear at least once.</p></li>
+<li><p><strong>Full outer</strong> join: all rows from both sides of the relation appear at least once.</p></li>
+</ul>
+<p>To demonstrate the joins in <code>dplyr</code> let’s set up some simple tables:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>weather <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">name=</span><span class="fu">c</span>(<span class="st">'San Francisco'</span>,<span class="st">'San Francisco'</span>,<span class="st">'Hayward'</span>),</span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>                      <span class="at">temp_lo=</span><span class="fu">c</span>(<span class="dv">46</span>,<span class="dv">43</span>,<span class="dv">37</span>),</span>
+<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">temp_hi=</span><span class="fu">c</span>(<span class="dv">50</span>,<span class="dv">57</span>,<span class="dv">54</span>),</span>
+<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a>                      <span class="at">prcp=</span><span class="fu">c</span>(<span class="fl">0.25</span>,<span class="fl">0.0</span>,<span class="cn">NA</span>),</span>
+<span id="cb66-5"><a href="#cb66-5" aria-hidden="true" tabindex="-1"></a>                      <span class="at">date=</span><span class="fu">c</span>(<span class="st">'1994-11-27'</span>,<span class="st">'1994-11-29'</span>,<span class="st">'1994-11-29'</span>))</span>
+<span id="cb66-6"><a href="#cb66-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb66-7"><a href="#cb66-7" aria-hidden="true" tabindex="-1"></a>cities <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">name=</span><span class="fu">c</span>(<span class="st">'San Francisco'</span>),</span>
+<span id="cb66-8"><a href="#cb66-8" aria-hidden="true" tabindex="-1"></a>                     <span class="at">lat=</span><span class="fu">c</span>(<span class="sc">-</span><span class="fl">194.0</span>),</span>
+<span id="cb66-9"><a href="#cb66-9" aria-hidden="true" tabindex="-1"></a>                     <span class="at">lon=</span><span class="fu">c</span>(<span class="fl">53.0</span>))</span>
+<span id="cb66-10"><a href="#cb66-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb66-11"><a href="#cb66-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb66-12"><a href="#cb66-12" aria-hidden="true" tabindex="-1"></a>weather</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           name temp_lo temp_hi prcp       date
+1 San Francisco      46      50 0.25 1994-11-27
+2 San Francisco      43      57 0.00 1994-11-29
+3       Hayward      37      54   NA 1994-11-29</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>cities</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           name  lat lon
+1 San Francisco -194  53</code></pre>
+</div>
+</div>
+<p>An <strong>inner join</strong> between the data frames on the columns that contain the city names will match the records for San Francisco:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">inner_join</span>(weather,cities,<span class="at">by=</span><span class="st">"name"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           name temp_lo temp_hi prcp       date  lat lon
+1 San Francisco      46      50 0.25 1994-11-27 -194  53
+2 San Francisco      43      57 0.00 1994-11-29 -194  53</code></pre>
+</div>
+</div>
+<p>Note that the values for <code>lat</code> and <code>lon</code> are repeated for every row in the weather table that matches the join in the relation. Because this is an inner join and the weather table had no matching row for city Hayward, this city does not appear in the join result. We can change that by modifying the type of join to a <strong>left outer</strong> join:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">left_join</span>(weather,cities,<span class="at">by=</span><span class="st">"name"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           name temp_lo temp_hi prcp       date  lat lon
+1 San Francisco      46      50 0.25 1994-11-27 -194  53
+2 San Francisco      43      57 0.00 1994-11-29 -194  53
+3       Hayward      37      54   NA 1994-11-29   NA  NA</code></pre>
+</div>
+</div>
+<p>Because the join is an outer join, rows that do not have matches in the relation are returned. Because the outer join is a left join, every row on the left side of the relation is returned (at least once). If you change the left- and right-hand side of the relation you can achieve the same result by using a <strong>right outer</strong> join:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">right_join</span>(cities,weather,<span class="at">by=</span><span class="st">"name"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           name  lat lon temp_lo temp_hi prcp       date
+1 San Francisco -194  53      46      50 0.25 1994-11-27
+2 San Francisco -194  53      43      57 0.00 1994-11-29
+3       Hayward   NA  NA      37      54   NA 1994-11-29</code></pre>
+</div>
+</div>
+<p>The left join retains all observations in the left data frame (first argument). The right join retains all observations in the right data frame (second argument).</p>
+<p>Now let’s add another record to the <code>cities</code> data frame without a matching record in the <code>weather</code> data frame:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>cities <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(cities,<span class="fu">data.frame</span>(<span class="at">name=</span><span class="st">"New York"</span>,</span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>                                             <span class="at">lat=</span><span class="fl">40.7</span>,</span>
+<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a>                                             <span class="at">lon=</span><span class="sc">-</span><span class="fl">73.9</span>))</span>
+<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a>cities </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           name    lat   lon
+1 San Francisco -194.0  53.0
+2      New York   40.7 -73.9</code></pre>
+</div>
+</div>
+<p>A <strong>full outer</strong> join between the <code>cities</code> and <code>weather</code> data frames ensures that rows from both sides of the relation appear at least once:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">full_join</span>(cities,weather,<span class="at">by=</span><span class="st">"name"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           name    lat   lon temp_lo temp_hi prcp       date
+1 San Francisco -194.0  53.0      46      50 0.25 1994-11-27
+2 San Francisco -194.0  53.0      43      57 0.00 1994-11-29
+3      New York   40.7 -73.9      NA      NA   NA       &lt;NA&gt;
+4       Hayward     NA    NA      37      54   NA 1994-11-29</code></pre>
+</div>
+</div>
+</section>
+<section id="bindings" class="level3">
+<h3 class="anchored" data-anchor-id="bindings">Bindings</h3>
+<p>For data scientists working with rectangular data frames in which observations have a natural order, merging data horizontally is a standard operation. Observations are matched by position and not according to the values in key columns. In the world of relational databases, such a merge is called a <strong>positional</strong> join and a somewhat unnatural operation because relational tables do not work from a natural ordering of the data, they are based on keys and indices.</p>
+<p>When working with statistical data sets merging by position is not uncommon as data sets do not have keys. The positional join—or column binding—matches data frames row-by-row such that rows from both tables appear at least once:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">bind_cols</span>(capitals1,weather1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>New names:
+• `city` -&gt; `city...1`
+• `city` -&gt; `city...3`</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   city...1 country  city...3 degrees       date
+1 Amsterdam      NL Amsterdam      10 2022-10-14
+2    Berlin Germany   Seattle       8 2022-10-12</code></pre>
+</div>
+</div>
+<p>Note that both data frames contribute a <code>city</code> variable and these are renamed to resolve name collision.</p>
+<p>A similar operation binding rows stacks one data frame on top of another. The result from <code>dplyr::bind_rows</code> contains all columns that appear in any of the inputs, unobserved combinations are set to <code>NA</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(capitals1,capitals2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              city country
+1        Amsterdam      NL
+2           Berlin Germany
+3        Amsterdam      NL
+4 Washington, D.C.  U.S.A.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(capitals1,weather1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       city country degrees       date
+1 Amsterdam      NL      NA       &lt;NA&gt;
+2    Berlin Germany      NA       &lt;NA&gt;
+3 Amsterdam    &lt;NA&gt;      10 2022-10-14
+4   Seattle    &lt;NA&gt;       8 2022-10-12</code></pre>
+</div>
+</div>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-BoxJenkins" class="csl-entry" role="listitem">
+Box, G. E. P., G. M. jenkins, and G. C. Reinsel. 1976. <em>Time Series Analysis, Forecasting and Control. 3rd. Ed.</em> Holden-Day.
+</div>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./reading_data.html" class="pagination-link" aria-label="Reading Data">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Reading Data</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./summarization.html" class="pagination-link" aria-label="Summarization">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Summarization</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Statistical Programming (Packages) by Oliver Schabenberger</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

@@ -1,0 +1,447 @@
+
+
+# Wrangling Data {#sec-wrangling}
+
+## Introduction
+
+**Wrangling** data refers to the steps to organize the data in a structured format that is suitable for analytic processing. Typically, the result of data wrangling is data in a row-column layout where each analysis variable is in its own column and each observation is in its own row. Data often do not start out that way.
+
+We saw a bit of data wrangling in the previous chapter (@#sec-json-files) when a nested JSON structure was flattened into a row-column format. 
+
+In addition to structuring the data, wrangling includes the following steps:
+
+1. **Cleaning** involves removing or correcting inaccurate data, handling duplicates, and addressing anomalies that could impact the reliability of analyses. The focus is on enhancing data accuracy and reliability for analytic processing.
+
+2. **Enriching** involves creating additional variables, incorporating external data, and combining the data with other data sources. Any new data sources you bring needs to be structured and cleaned as well.
+
+3. **Validation** checks for inconsistencies and verifies data integrity. Your organization will have standards, for example how regions, customer information, names, ages, etc. are represented in data sets, and this step ensures that the standards are met. 
+
+## `tidyverse`
+
+In this chapter we concentrate on structuring, enriching, and combining data with the libraries in the [`tidyverse`](https://www.tidyverse.org/). This is an "opinionated" collection of `R` packages for data science, including `dplyr`, `ggplot2`, `tibble`, `tidyr`, `purr`, `stringr`, and `readr`. `dplyr`, `tidyr`, and `ggplot2` are arguably the most important packages in the collection (that is my "opinionated" view). For data wrangling we rely on `dplyr` and `tidyr`.
+
+You can install the packages individually or grab all the `tidyverse` packages with
+
+```{r, eval=FALSE}
+install.packages("tidyverse")
+```
+
+A great cheat sheet for wrangling data in `R` with `dplyr` and `tidyr` can be found  [here](https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf). 
+This chapter draws on the contents of this cheat sheet.
+
+### Piping
+
+The `tidyverse` packages share a common philosophy; that makes it easy to use code across multiple packages and to combine them. An example of this common philosophy is **piping**. The following pipeline starts with the `iris` data frame. The data is piped to the `filter` function with the pipe operator `%>%`. The result of the `filter` operation is piped to the `summarize` function to compute the average petal width of the plants with sepal length greater than 6:
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+iris %>% 
+    filter(Sepal.Length > 6) %>%
+    summarize(average=mean(Petal.Width))
+```
+
+By default the argument on the left side of the pipe operator is passed as the first argument to the function on the right side. The `filter` function call is really `dplyr::filter(iris,Species=="virginica)`. You can also pass the argument on the left of the pipe to a different argument on the right side of the pipe by using a dot:
+
+`x %>% f(y)` is the same as `f(x,y)`
+
+`x %>% f(y, ., z)` is the same as `f(y,x,z)`
+
+Piping not only shows analytic operations as a sequence of steps, but also reduces the amount of code and makes it generally more readable. Learning to write good pipelines.
+
+Data wrangling with `dplyr` and `tidyr` can be organized into the following steps:
+
+1. Shaping the data
+2. Subsetting observations and/or variables
+3. Creating new variables
+4. Combining data sets
+5. Summarization
+
+Summarizing data is discussed as a separate step in @sec-summarization.
+
+## Shaping Data into Tabular Form
+
+The goal of shaping the data is to change its structure into a tabular row-column form where each variable is in a separate column and each observation is in its own row. 
+
+Consider the classic airline passenger time series data from @BoxJenkins, showing monthly totals of international airline passengers between 1994 and 1960 (in thousands).
+
+```{r}
+AirPassengers
+```
+
+The data are arranged very neatly, each year in a separate row, each month in a separate column.
+This is a great layout for time series analysis but maybe not the best layout for general analytic processing. The analysis variables are year, month, and the passenger count. Restructuring the `AirPassengers` data into a data frame with variables for `year` and `count` is easy because this data set is stored as an `R` time series.
+
+```{r}
+str(AirPassengers)
+```
+
+
+```{r}
+dat <- data.frame(count=as.matrix(AirPassengers), 
+                  time=time(AirPassengers),
+                  year=round(time(AirPassengers),0))
+head(dat)
+```
+
+### Gapminder Data
+
+In general, the structure of a non-tabular format is not known to `R` and must be wrangled by the user.
+Consider the famous Gapminder dataset. The [Gapminder Foundation](https://en.wikipedia.org/wiki/Gapminder_Foundation) is a Swedish non-profit that promotes the United Nations sustainability goals through use of statistics. The Gapminder data set tracks economic and social indicators like life expectancy and the GDP per capita of countries over time. 
+
+A wide format of the Gapminder data is available on GitHub [here](https://github.com/OHI-Science/data-science-training/blob/master/data/gapminder_wide.csv). We are following the material in [this](https://ohi-science.org/data-science-training/dplyr.html) excellent online resource in wrangling the data in the wide format.
+
+<!----
+https://ohi-science.org/data-science-training/
+---->
+
+```{r}
+gap_wide <- read.csv(file="data/gapminder_wide.csv")
+str(gap_wide)
+```
+
+The data are stored in **wide** format, annual values for the variables GDP, life expectancy, and population appear in separate columns. This is not unlike how the `AirPassengers` data is displayed, but `gap_wide` is not a time series object. The desired ("tidy") way of structuring the data, where each variable is a column and each observation is a row is a tabular structure with variables
+
+* Continent
+* Country
+* Year
+* GDP
+* Life Expectancy
+* Population
+
+For each combination of continent and country there will be 12 observations, one for each year. 
+
+#### Gather columns
+
+To move from wide to the desired long format, we use the `dplyr::gather` function. To do the opposite, moving from long to wide format, use the `dplyr::spread` function. To restructure the Gapminder data set from wide format into the desired format takes several steps.
+
+The first step is to gather the columns that contain the values for GDP, life expectancy, and population into separate rows. Those are all columns in `gap_wide` except `continent` and `country`, so we can exclude those from the gathering operation with `-c(continent, country)`.
+
+```{r}
+gap_step1 <- gap_wide %>% 
+    gather(key=vartype_year,
+          value=values,
+          -c(continent, country))
+head(gap_step1)
+tail(gap_step1)
+```
+
+#### Separating character variables
+
+The `gather` function turns all variables into key-value pairs; the key is the name of the variable. The column that contains the names of the variables after the gathering is called `vartype_year`. In the next step `dplyr::separate` is called to split the character column `vartype_year` into two columns, one for the variable type and one for the year. The `convert=TRUE` option attempts to convert the data type of the new columns from character to numeric data---this will fail for the `vartype` column but succeed for the `year` column.
+
+```{r}
+gap_step2 <- gap_wide %>% 
+    gather(key =vartype_year,
+          value=values,
+          -c(continent, country)) %>%
+    separate(vartype_year,
+           into   =c('vartype','year'),
+           sep    ="_",
+           convert=TRUE)
+str(gap_step2)
+head(gap_step2)
+tail(gap_step2)
+```
+
+#### Spreading rows into columns
+
+We are almost there, but not quite. We now have columns for continent, country, and year, but the `values` column contains values of different types: 1,704 observations for GDP, 1704 observations for life expectancy, and 1,704 observations for population. To create separate columns from the rows we can reverse the gather operation with the `spread` function---it splits key-value pairs across multiple columns. The entries in the `vartype` column are used by the spreading operation as the names of the new columns.
+
+```{r}
+gapminder <- 
+    gap_wide %>% 
+    gather(key =vartype_year,
+          value=values,
+          -c(continent, country)) %>%
+    separate(vartype_year,
+           into   =c('vartype','year'),
+           sep    ="_",
+           convert=TRUE) %>%
+    spread(vartype, values)
+
+head(gapminder)
+tail(gapminder)
+```
+
+In summary, we used gather to create one key-value pair of the variable_year columns and values in step 1, separated out the year in step 2, and spread the remaining variable types back out into columns in step 3.
+
+## Subsetting
+
+A *subset* operation reduces the number of observations (rows) or variables (columns) of data set. While `filter` is the most important operation to subset rows, there are a number of other functions in `dplyr` that reduce the rows. On the other hand, to subset columns there is only one function, `dplyr::select`.
+
+### Subsetting Rows
+
+The following statements create a data frame of dimension 100 x 2, containing two columns of integers randomly selected from 1--10 with replacement:
+
+```{r}
+set.seed(76)
+dat <- data.frame(
+  x = sample(10, 100, rep = TRUE),
+  y = sample(10, 100, rep = TRUE)) %>% 
+    glimpse()
+```
+#### `filter`
+
+`filter` extracts rows that meet a logical condition. The following statement selects the rows for which $x \in (1,5)$ and $y \in (3,8)$. 
+
+```{r}
+dat %>% filter(x %in% c(1,5) & y %in% c(3,8))
+```
+
+You can also list the conditions that are combined with logical "and", separated with commas:
+
+```{r}
+dat %>% filter(x %in% c(1,5), y %in% c(3,8))
+```
+
+The following statement extracts the rows where the value of `y` exceeds 3.5 times its standard deviation:
+
+```{r}
+dat %>% filter(y > 3.5*sd(y))
+```
+
+Another subsetting operation is to remove duplicate observations from a data set with `distinct`. When applied to a subset of the columns, `distinct` returns the combinations of their unique values in the data.
+
+#### `distinct`
+
+```{r}
+dat %>% distinct(x)
+```
+
+If you specify `.keep_all=TRUE`, all other variables in the data set are kept as well. If multiple combinations occur, the function retains the first occurence. 
+
+```{r}
+dat %>% distinct(x, .keep_all=TRUE)
+```
+
+To remove all duplicates in a data frame, simply call distinct on the data frame. 
+
+```{r}
+dat %>% distinct() %>% summarize(count=n())
+```
+There are 62 unique rows of data in the `dat` data frame.
+
+#### Other subsetting functions
+
+Other functions subsetting rows in `dplyr` are
+
+1. `dplyr::sample_frac`: randomly select a proportion of the rows
+2. `dplyr::sample_n`: randomly select a fixed number of rows
+3. `dplyr::slice`: select rows by position, for example `slice(dat,4:10)` extracts rows 4--10
+4. `dplyr::slice_head`: selects the first rows
+5. `dplyr::slice_tail`: selects the last rows
+6. `dplyr:slice_min`: select rows with the smallest values
+7. `dplyr:slice_max`: select rows with the largest values
+
+For example, the next statement selects the observation with the five largest values for the `Sepal.Width` variable in the `iris` data set.
+
+```{r}
+iris %>% slice_max(Sepal.Width, n=5)
+```
+
+
+### Subsetting (selecting) Columns
+
+#### `select`
+
+To subset columns there is only one statement in `dplyr`, the `select` statement. However, it is very versatile because of its many helper functions.
+
+The basic usage is to list the column names being selected:
+
+```{r}
+gapminder %>% select(gdpPercap, lifeExp) %>%
+    summarize(mnGDP=mean(gdpPercap), sdLife=sd(lifeExp))
+```
+
+You can also specify an exclusion with a negative selection
+
+```{r}
+gapminder %>% select(-country, -continent, -pop) %>%
+    summarize(mnGDP=mean(gdpPercap), sdLife=sd(lifeExp))
+```
+
+or 
+
+```{r}
+gapminder %>% select(-c(country, continent, pop)) %>%
+    summarize(mnGDP=mean(gdpPercap), sdLife=sd(lifeExp))
+```
+
+#### Helper functions
+
+Here are important helper functions for `dplyr::select`
+
+1. `select( contains("."))`: select columns whose name contains a character string
+2. `select( ends_with("Length"))`: select columns whose name ends in the specified string
+3. `select( starts_with("Sepal"))`: select columns whose name starts with the specified string
+4. `select( everything())`: select all columns
+5. `select( matches(".t."))`: select the columns whose name matches a regular expression
+6. `select( num_range("x",1:5))`: select the columns named `x1`, `x2`, ..., `x5`
+7. `select( one_off("Species","Genus"))`: select columns whose names are in the specified group of names
+8. `select( Sepal.Length:Petal.Width)`: Select all columns between `Sepal.Length` and `Petal.Width`, including those columns
+
+## Creating New Variables
+
+The principal function to create new variables in a data frame is `dplyr::mutate`. Variations are `mutate_each` which applies a function to every column and `transmute` which drops the original columns.
+
+The following statements compute the GPD as the product of per-capita GDP and population size and finds the top-5 countries by GDP in Asia in 2007:
+
+```{r}
+gapminder %>%
+    filter(continent == "Asia", year == 2007) %>%
+    mutate(GDP = gdpPercap * pop) %>%
+    select(country, year, gdpPercap, GDP) %>%
+    slice_max(GDP,n=5)
+
+```
+
+:::{.callout-note}
+The variable `GDP` created in this operation is transient. It is instantiated for the duration of the pipeline and is not added to the `gapminder` data frame. If you want to add a new variable to an existing data frame you need to assign the result to a return object.
+:::
+
+## Combining Data Sets
+
+The process of combining tables is based on **joins**, **set** operations, or **bindings**. A join uses the values in specific columns of one data set to match records with another data set. A set operation is a merging of columns without considering the values in the columns. Appending rows rows of one table to another table or columns of one table to another table are binding operations. What happens to columns that exist in one data set but not in the other during the append depends on the implementation. Similarly, what happens to columns that share the same name when tables are merged horizontally depends on the implementation.
+
+To show the various join and set operations, let's create three small data frames of cities and weather information.
+
+```{r}
+capitals1 <- data.frame(city=c('Amsterdam','Berlin'),
+                       country=c('NL','Germany'))
+
+capitals2 <- data.frame(city=c('Amsterdam','Washington, D.C.'),
+                       country=c('NL','U.S.A.'))
+
+weather1 <- data.frame(city=c('Amsterdam','Seattle'),
+                      degrees=c(10,8),
+                      date=c("2022-10-14","2022-10-12"))
+
+capitals1
+
+capitals2 
+
+weather1
+
+```
+
+
+### Set Operations
+
+We distinguish three set operations: the **intersection** of rows that appear in two data sets, the **union** of the rows, and the **set difference** of the rows. `dplyr` supports set operations with the following functions:
+
+
+- `intersect(x, y)`: finds all rows in both `x` and `y`.
+
+- `union(x, y)`: finds all rows in either `x` or `y`, excluding duplicates.
+
+- `union_all(x, y)`: finds all rows in either `x` or `y`, including duplicates.
+
+- `setdiff(x, y)`: finds all rows in `x` that are not in `y`.
+
+- `symdiff(x, y)`: computes the symmetric difference, i.e. all rows in `x` that are not in `y` and all rows in `y` that are not in x.
+
+- `setequal(x, y)`: returns TRUE if `x` and `y` contain the same rows (ignoring order).
+
+Note that except for `union_all` the functions that return rows remove duplicates in `x` and `y`.
+
+For the two data frames of capitals, here are the results of the various set operations.
+
+```{r}
+dplyr::intersect(capitals1, capitals2)
+dplyr::setdiff(capitals1, capitals2)
+```
+ 
+ 
+```{r}
+dplyr::union(capitals1, capitals2)
+dplyr::union_all(capitals1, capitals2)
+```
+ 
+```{r}
+dplyr::symdiff(capitals1, capitals2)
+```
+
+### Joins
+
+Set operations combine or reduce rows of data (vertically). Join operations combine data sets **horizontally**. Joins typically are based on the values in columns of the data sets to find matches. 
+
+Joins are categorized as **outer** or **inner** joins depending on whether rows with matches are returned. An outer join returns rows that do not have any matches whereas the inner join returns only rows that get paired. The two data frames in a join are called the left and right sides of the relation and outer joins are further classified as
+
+-   **Left outer** join: all rows from the left side of the relation appear at least once.
+
+-   **Right outer** join: all rows from the right side of the relation appear at least once.
+
+-   **Full outer** join: all rows from both sides of the relation appear at least once.
+
+To demonstrate the joins in `dplyr` let’s set up some simple tables:
+
+```{r}
+weather <- data.frame(name=c('San Francisco','San Francisco','Hayward'),
+                      temp_lo=c(46,43,37),
+                      temp_hi=c(50,57,54),
+                      prcp=c(0.25,0.0,NA),
+                      date=c('1994-11-27','1994-11-29','1994-11-29'))
+
+cities <- data.frame(name=c('San Francisco'),
+                     lat=c(-194.0),
+                     lon=c(53.0))
+
+
+weather
+
+cities
+```
+
+An **inner join** between the data frames on the columns that contain the city names will match the records for San Francisco:
+
+```{r}
+dplyr::inner_join(weather,cities,by="name")
+```
+
+Note that the values for `lat` and `lon` are repeated for every row in the weather table that matches the join in the relation. Because this is an inner join and the weather table had no matching row for city Hayward, this city does not appear in the join result. We can change that by modifying the type of join to a **left outer** join:
+
+```{r}
+dplyr::left_join(weather,cities,by="name")
+```
+
+Because the join is an outer join, rows that do not have matches in the relation are returned. Because the outer join is a left join, every row on the left side of the relation is returned (at least once). If you change the left- and right-hand side of the relation you can achieve the same result by using a **right outer** join:
+
+```{r}
+dplyr::right_join(cities,weather,by="name")
+```
+
+The left join retains all observations in the left data frame (first argument). The right join retains all observations in the right data frame (second argument).
+
+Now let’s add another record to the `cities` data frame without a matching record in the `weather` data frame:
+
+```{r}
+cities <- dplyr::bind_rows(cities,data.frame(name="New York",
+                                             lat=40.7,
+                                             lon=-73.9))
+cities 
+```
+
+A **full outer** join between the `cities` and `weather` data frames ensures that rows from both sides of the relation appear at least once:
+
+```{r}
+dplyr::full_join(cities,weather,by="name")
+```
+
+### Bindings
+
+For data scientists working with rectangular data frames in which observations have a natural order, merging data horizontally is a standard operation. Observations are matched by position and not according to the values in key columns. In the world of relational databases, such a merge is called a **positional** join and a somewhat unnatural operation because relational tables do not work from a natural ordering of the data, they are based on keys and indices. 
+
+When working with statistical data sets merging by position is not uncommon as data sets do not have keys. The positional join---or column binding---matches data frames row-by-row such that rows from both tables appear at least once:
+
+```{r}
+dplyr::bind_cols(capitals1,weather1)
+```
+Note that both data frames contribute a `city` variable and these are renamed to resolve name collision.
+
+A similar operation binding rows stacks one data frame on top of another. The result from `dplyr::bind_rows` contains all columns that appear in any of the inputs, unobserved combinations are set to `NA`.
+
+```{r}
+dplyr::bind_rows(capitals1,capitals2)
+dplyr::bind_rows(capitals1,weather1)
+```
+

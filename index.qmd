@@ -1,0 +1,42 @@
+# Preface {.unnumbered}
+
+Welcome to this short treatise about statistical programming and statistical program packages.
+This is online material in a series of collections used in teaching data science and statistics at the graduate level. 
+This material on statistical programming accompanies
+
+- [Foundations of Data Science--Beyond the Numbers](https://schabenb.vt.domains/bn/index.html) (*Foundations*) and
+
+- [Statistical Learning](https://schabenb.vt.domains/sl/index.html) (*StatLearning*).
+
+*Foundations* covers fundamental concepts in data science and the data science project life cycle. 
+*StatLearning* is a comprehensive collection of modules on supervised and unsupervised learning from a statistical perspective.
+
+All three "books" were written in Quarto because it combines prose with math and supports multiple programming languages and kernels within the same framework. To learn more about Quarto books visit <https://quarto.org/docs/books>.
+
+--- 
+
+In statistical programming it is not possible to completely separate concept---validating an algorithm with matrix/vector algebra, for example---from implementation---in `R` or Python or SAS or SPSS or ... . Tools used in statistical programming have changed dramatically over the last decades. When I was in graduate school and when I first taught statistics, SAS was the undisputed king of the hill---with the exception of one, every graduate course that touched on computing with data was using SAS.
+
+I joined SAS in 2001 and contributed to the development of statistical algorithms for many years, maintaining and authoring statistical tools such as the MIXED, NLMIXED, GLIMMIX, NLIN, FMM, PLM procedures and working on subsystems used across many procedures.
+
+Sine then, the world of statistical programming has changed---a lot! Open source statistical languages like `R` and open source programming languages such as Python are leading the way. There is still some room for proprietary languages such as SAS, STATA, SPSS, and tools like JMP (a SAS business unit), Minitab, and others. But that room is continuing to shrink. Data scientists today predominantly work in `R` or Python and this is what the modules that follow is focused on.
+
+Is `R` better than Python or is Python better than `R`? As always, it depends. `R` was developed as a statistical programming language, not unlike SAS. This is evident in the way it manipulates data, invokes algorithms, formulates statistical models, handles factors, etc. As someone once joked 
+
+>*R is what happens when statisticians design a programming language.*
+
+It should be added that the author of this quote is a committed Pythonista. 
+
+The same could be said about SAS. And that is not all bad. `R` is designed for statistical programming and is excellent for that purpose.
+
+Python is a general purpose scripting language that has been fortified to perform domain-specific tasks through libraries. My experience has been that those who come to data science from a statistical background are versed in `R`, those that come from a non-statistical background are more familiar with Python. You can stick with what you are comfortable with. The concepts in statistical programming are the same, their implementations might differ depending on the tool. 
+
+One of the more vexing issues I have with Python for statistical programming is that the origin of many popular libraries lies in machine learning. Not that there is anything wrong with it, but the approach to data analytics in statistical modeling and in machine learning is different. Statistical modeling is based on the notion of a data-generating mechanism, the data at hand is a realization of a stochastic process. Statistical properties of the estimated quantities derive from the underlying random process and the particulars of the estimation principle. Machine learning does not appeal to a data-generating mechanism, although it has the concept of "errors", deviations between prediction and ground truth, which are treated as random variables. The standard output from Python libraries such as `scikit-learn` often does not produce the quantities statisticians are looking for, sometimes they are not produced by any combination of methods or options. Not having access to standard errors for estimated quantities is a head-scratcher for statisticians.
+
+On the other hand, statistics relies heavily on asymptotic properties of estimators, what happens when sample sizes grow to infinity. Machine learning is more concerned with inferences for the data set at hand, not for some imaginary size. That is a healthy approach in my opinion.
+
+---
+
+One of the most instructive and insightful things to do in statistics is recomputing the quantities you see on software output from scratch. This often uses matrix-vector operations, random number generation, simulation. Your implementation is probably not as efficient as the code in the software library and that is OK. Well-written software rarely takes formulas straight from the paper. The best way of communicating mathematics for human interpretation is not the best way of communicating the finite precision operations to a machine. For example, the eigenvalue decomposition of a symmetric matrix is a straightforward mathematical concept. The matrices of eigenvectors and eigenvalues are extremely important to distill properties of the data, for example in a Principal Component Analysis (PCA). Performing the eigendecomposition in a computer is fraught with precision issues and a more stable approach numerically is to go through a singular value decomposition instead. 
+
+Nevertheless, working through the eigendecomposition for a well-behaved data set and comparing the results to say, the `princomp` function in `R` is a great exercise and deepens your understanding of PCA.

@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.552">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Statistical Programming - 3&nbsp; Reading Data</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./wrangling_data.html" rel="next">
+<link href="./getting_started.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./reading_data.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Reading Data</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Statistical Programming</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./getting_started.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Getting Started</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reading_data.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Reading Data</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wrangling_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Wrangling Data</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./summarization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Summarization</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./matrices.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Vectors and Matrices</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./random.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Random Number Generation</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./debugging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Debugging in <code>R</code></span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reproducibility.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Reproducible Research and Data Analysis</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./irls_literate.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Iteratively Reweighted Least Squares</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#tabular-data" id="toc-tabular-data" class="nav-link active" data-scroll-target="#tabular-data"><span class="header-section-number">3.1</span> Tabular Data</a></li>
+  <li><a href="#excel-files" id="toc-excel-files" class="nav-link" data-scroll-target="#excel-files"><span class="header-section-number">3.2</span> Excel Files</a></li>
+  <li><a href="#sec-json-files" id="toc-sec-json-files" class="nav-link" data-scroll-target="#sec-json-files"><span class="header-section-number">3.3</span> JSON Files</a></li>
+  <li><a href="#parquet-files" id="toc-parquet-files" class="nav-link" data-scroll-target="#parquet-files"><span class="header-section-number">3.4</span> Parquet Files</a></li>
+  <li><a href="#working-with-a-database" id="toc-working-with-a-database" class="nav-link" data-scroll-target="#working-with-a-database"><span class="header-section-number">3.5</span> Working with a Database</a></li>
+  <li><a href="#saving-and-loading-rdata" id="toc-saving-and-loading-rdata" class="nav-link" data-scroll-target="#saving-and-loading-rdata"><span class="header-section-number">3.6</span> Saving and Loading <code>RData</code></a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span id="sec-reading-data" class="quarto-section-identifier"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Reading Data</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Before you can work with a set of data, you have to bring it into the programming environment.</p>
+<p>If you are working with proprietary data analytics tools such as SAS, SPSS, Stata, etc., you probably do not worry much about the ways in which data are stored, read, and written by the software, except that you want the tool to support import from and export to your favorite non-proprietary format.</p>
+<p>Most statistics and data science today is performed on (a) data in databases and (b) data stored in open-source or open standard file formats. Proprietary formats are not easily exchanged between tools and applications and are increasingly frowned upon. Data science spans many technologies and storing data in a form accessible by only a subset of the tools is counterproductive. You end up reformatting the data into an exchangeable format at some point anyway.</p>
+<p>The most important file formats in data science are CSV, JSON, and Parquet, but also Avro and ORC. CSV and JSON are text-based, human-readable formats, whereas Parquet, Avro, and ORC are binary formats. The last three were designed specifically to handle Big Data use cases and are Apache open-source projects.</p>
+<p>The second important source for data are databases. They store the data in a form specific to the database engine and you interact with the data through a database management system (DBMS). The syntax of the DBMS is typically a SQL (Structured Querying Language; pronounced “sequel”, like the follow-up movie) if the database architecture is relational. Even No-SQL non-relational databases such as MongoDB have a specific syntax to interface with the information in the database. In other words, when your data is stored in a database you need to use database-specific tools to read and write the data. In the case of analytic databases you should also use the computational power of the database engine to perform analytic calculations in the database.</p>
+<section id="tabular-data" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="tabular-data"><span class="header-section-number">3.1</span> Tabular Data</h2>
+<p>The basic function to read tabular data into <code>R</code> is <code>read.table</code>. <code>read.csv</code> is a special case of <code>read.table</code> for CSV files with defaults such as <code>sep=","</code> that make sense for CSV (comma-separated values) files.</p>
+<div class="callout callout-style-default callout-important callout-titled" title="On CSV Files">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+On CSV Files
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>OK, time for a rant. CSV files are ubiquitous and going through college one could get the impression that most data is stored in CSV format. First, that does not hold for the real world. Second, CSV is a horrible format for data. It does have some advantages</p>
+<ul>
+<li><p><strong>Ubiquitous</strong>: every data tool can read and write CSV files. It is thus a common format to exchange (export/import) data between tools and applications.</p></li>
+<li><p><strong>Human readable</strong>: since the column names and values are stored in plain text, it is easy to look at the contents of a CSV file. When data are stored in binary form, you need to know exactly how the data are laid out in the file to access it.</p></li>
+<li><p><strong>Compression</strong>: it is easy to compress CSV files.</p></li>
+<li><p><strong>Excel</strong>: CSV files are easily exported from and imported to Microsoft Excel.</p></li>
+<li><p><strong>Simple</strong>: the structure of the files is straightforward to understand and can represent tabular data well if the data types can be converted to text characters.</p></li>
+</ul>
+<p>There are some considerable disadvantages of CSV files, however:</p>
+<ul>
+<li><p><strong>Human readable</strong>: To prevent exposing the contents of the file you need to use access controls and/or encryption. It is not a recommended file format for sensitive data.</p></li>
+<li><p><strong>Simple structure</strong>: Complex data types such as documents with multiple fields and sub-fields cannot be stored in CSV files.</p></li>
+<li><p><strong>Plain text</strong>: Some data types cannot be represented as plain text, for example, images, audio, and video. If you kluge binary data into a text representation the systems writing and reading the data need to know how to kluge and un-kluge the information—it is not a recommended practice.</p></li>
+<li><p><strong>Efficiency</strong>: much more efficient formats for storing data exist, especially for large data sets.</p></li>
+<li><p><strong>Broken</strong>: CSV files can be easily broken by applications. Examples include inserting line breaks, limiting line width, not handling embedded quotes correctly, blank lines.</p></li>
+<li><p><strong>Missing values</strong> (NaNs): The writer and reader of CSV files need to agree how to represent missing values and values representing not-a-number. Inconsistency between writing and reading these values can have disastrous consequences For example, it is a bad but common practice to code missing values with special numbers such as 99999 (called “sentinel values”). How does the application reading the file know this is the code for a missing value?</p></li>
+<li><p><strong>Encodings</strong>: When CSV files contain more than plain ASCII text, for example, emojis or Unicode characters, the file cannot be read without knowing the correct encoding (UTF-8, UTF-16, EBCDIC, US-ASCII, etc.). Storing encoding information in the header section of the CSV file throws off CSV reader software that does not anticipate the extra information.</p></li>
+<li><p><strong>Metadata</strong>: The only metadata supported by the CSV format are the column names in the first row of the file. This information is optional and you will find CSV files without column names. Additional metadata common about columns in a table such as data types, format masks, number-to-string maps, cannot be stored in a CSV file.</p></li>
+<li><p><strong>Data Types</strong>: Data types need to be inferred by the CSV reader software when scanning the file. There is no metadata in the CSV header to identify data types, only column names.</p></li>
+<li><p><strong>Loss of Precision</strong>: Floating point numbers are usually stored in CSV files with fewer decimal places than their internal representation in the computer. A double-precision floating point number occupies 64-bits (8 bytes) and has 15 digits of precision. Although it is not necessary, floating-point numbers are often rounded or truncated when they are converted to plain text.</p></li>
+</ul>
+<p>Despite these drawbacks, CSV is one of the most common file formats. It is the lowest common denominator format to exchange data between disparate systems.</p>
+</div>
+</div>
+<p>Here is an example of reading a CSV file into <code>R</code>. The <code>stringsAsFactors=TRUE</code> argument requests that all character variables are converted into factors.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pisa <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="at">file=</span><span class="st">"data/pisa.csv"</span>,<span class="at">stringsAsFactors=</span><span class="cn">TRUE</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>pisa[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                Country MathMean MathShareLow MathShareTop ReadingMean
+1        Shanghai-China      613          3.8         55.4         570
+2             Singapore      573          8.3         40.0         542
+3  Hong Kong SAR, China      561          8.5         33.7         545
+4        Chinese Taipei      560         12.8         37.2         523
+5                 Korea      554          9.1         30.9         536
+6      Macao SAR, China      538         10.8         24.3         509
+7                 Japan      536         11.1         23.7         538
+8         Liechtenstein      535         14.1         24.8         516
+9           Switzerland      531         12.4         21.4         509
+10          Netherlands      523         14.8         19.3         511
+   ScienceMean      GDPp  logGDPp HighIncome
+1          580   6264.60  8.74267      FALSE
+2          551  54451.21 10.90506       TRUE
+3          555  36707.77 10.51074       TRUE
+4          523        NA       NA         NA
+5          538  24453.97 10.10455       TRUE
+6          521  77145.04 11.25344       TRUE
+7          547  46701.01 10.75152       TRUE
+8          525 149160.76 11.91278       TRUE
+9          515  83208.69 11.32911       TRUE
+10         522  49474.71 10.80922       TRUE</code></pre>
+</div>
+</div>
+<p>Note that there are missing values for <code>Chinese Taipei</code> in row 4. This is the result of correctly specifying the contents of the comma-separated file. For this row the entries of the CSV files read</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>"Chinese Taipei",560,12.8,37.2,523,523,,,</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The sequence of commas indicates that the values for the corresponding variables are unobserved and will be set to missing.</p>
+<p>By default, <code>read.csv</code> looks for information about the column names in the first row of the CSV file. If names are not available in the first row, add the <code>header=FALSE</code> option to the function call. Other important options for <code>read.csv</code> and <code>read.table</code> are</p>
+<ul>
+<li><code>sep</code>: specifies the character that separates the values of the columns, for <code>read.csv</code> this defaults to <code>sep=","</code>. For <code>read.table</code> the separator defaults to <code>sep=""</code>.</li>
+<li><code>skip</code>: how many lines to skip at the top of the file before reading data. This is useful if the CSV file has a comment section at the top.</li>
+<li><code>nrow</code>: how many rows of data to read. Useful if you want to import only a portion of the file.</li>
+<li><code>dec</code>: specifies the character that indicates a decimal point.</li>
+<li><code>na.strings</code>: a vector of character values that are interpreted as missing (NA) values. I hope you do not need to specify those—using sentinel values to indicate missing values is very dangerous.</li>
+</ul>
+</section>
+<section id="excel-files" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="excel-files"><span class="header-section-number">3.2</span> Excel Files</h2>
+<p>The <code>readxl</code> library is part of the <code>tidyverse</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_tesla <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"data/TeslaDeaths.xlsx"</span>, <span class="at">sheet=</span><span class="dv">1</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>df_tesla[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 26
+   `Case #`  Year Date  Country State Description          Deaths `Tesla driver`
+      &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;                 &lt;dbl&gt; &lt;chr&gt;         
+ 1     426   2024 45457 USA     CA    Scooter hit               1 -             
+ 2     425   2024 45454 USA     CA    Tesla flips               3 -             
+ 3     424   2024 45452 USA     CA    Pedestrian hit            1 -             
+ 4     423.  2024 45451 USA     FL    Motorcycle hits Tes…      1 -             
+ 5     423   2024 45446 USA     TX    Tesla hits parked t…      1 1             
+ 6     422   2024 45444 USA     MD    Tesla hit motorcycle      1 -             
+ 7     421   2024 45441 USA     WA    Tesla runs red ligh…      1 -             
+ 8     420   2024 45438 USA     FL    Tesla crashes into …      1 1             
+ 9     419   2024 45436 Germany -     Tesla crashes under…      1 1             
+10     418   2024 45435 UK      -     Three-way crash           1 1             
+# ℹ 18 more variables: `Tesla occupant` &lt;chr&gt;, `Other vehicle` &lt;chr&gt;,
+#   `Cyclists/ Peds` &lt;chr&gt;, `TSLA+cycl / peds` &lt;chr&gt;, Model &lt;chr&gt;,
+#   `Autopilot claimed` &lt;chr&gt;, `Reported in NHTSA SGO` &lt;chr&gt;,
+#   `Verified Tesla Autopilot Deaths` &lt;chr&gt;,
+#   `Excerpt Verifying Tesla Autopilot Deaths` &lt;chr&gt;,
+#   `Verified FSD Beta Death` &lt;lgl&gt;, ...19 &lt;chr&gt;, ...20 &lt;chr&gt;, Source &lt;chr&gt;,
+#   Note &lt;chr&gt;, `Deceased 1` &lt;chr&gt;, `Deceased 2` &lt;chr&gt;, `Deceased 3` &lt;chr&gt;, …</code></pre>
+</div>
+</div>
+</section>
+<section id="sec-json-files" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="sec-json-files"><span class="header-section-number">3.3</span> JSON Files</h2>
+<p><a href="https://www.json.org/json-en.html">JSON</a> stands for JavaScript Object Notation, and although it was borne out of interoperability concerns for JavaScript applications, it is a language-agnostic data format. Initially used to pass information in human readable form between applications over APIs (Application Programmer Interfaces), JSON has grown into a general-purpose format for text-based, structured information. It is the standard for communicating data on the web. The correct pronunciation of JSON is like the name “Jason”, but “JAY-sawn” has become common.</p>
+<p>In contrast to CSV, JSON is not based on rows of data but three basic data elements:</p>
+<ul>
+<li><p><strong>Value</strong>: a string, number, reserved word, or one of the following:</p></li>
+<li><p><strong>Object</strong>: a collection of name—value pairs similar to a key-value store.</p></li>
+<li><p><strong>Array</strong>: An ordered list of values</p></li>
+</ul>
+<p>All modern programming languages support key—values and arrays, they might be calling it by different names (object, record, dictionary, struct, list, sequence, map, hash table, …). This makes JSON documents highly interchangeable between programming languages—JSON documents are easy to parse (read) and write by computers. Any modern data processing system can read and write JSON data, making it a frequent choice to share data between systems and applications.</p>
+<p>A value in JSON can be a string in double quotes, a number, true, false, or null, an object or an array (<a href="#fig-data-json-structure" class="quarto-xref">Figure&nbsp;<span>3.1</span></a>). An array is an ordered collection of values. Objects are unordered collection of name—value pairs. Since values can contain objects and arrays, JSON allows highly nested data structures that do not fit the tabular row–column structure of CSV files.</p>
+<div id="fig-data-json-structure" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-data-json-structure-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/JSON_Structure.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="images/JSON_Structure.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-data-json-structure-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.1: Elements of a JSON document. Because values can contain objects and arrays, JSON documents can be highly structured and deeply nested.
+</figcaption>
+</figure>
+</div>
+<p>JSON documents are self-describing, the schema to make the data intelligible is built into the structures. It is also a highly flexible format that does not impose any structure on the data, except that it must comply with the JSON rules and data types.</p>
+<div id="fig-data-json-example" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-data-json-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/JSON_Example.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2"><img src="images/JSON_Example.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-data-json-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.2: A simple JSON document. The entire document is a name—value pair with name “menu”. The value is an object with names “id”, “value”, and “popup”. The value of “popup” is an object with name “menuitem” whose value is an array. The elements of the array are objects with names “value” and “onclick”.
+</figcaption>
+</figure>
+</div>
+<p>As a human-readable, non-binary format, JSON shares some of the advantages and disadvantages with CSV files. You do not want to pass sensitive information in JSON format without encryption. The level of human readability is lower for JSON files. The format is intended to make algorithms interoperable, not to make human interpretation simple.</p>
+<p>Since so much data is stored in JSON format, you need to get familiar and comfortable with working with JSON files. Data science projects are more likely consumers of JSON files rather than producer of files.</p>
+<!---
+download.file("https://raw.githubusercontent.com/datacarpentry/r-socialsci/main/episodes/data/SAFI.json","data/SAFI.json", mode = "wb")
+--->
+<p>There are multiple packages for working with JSON files in <code>R</code>, for example, <code>jsonlite</code> and <code>rjson</code>. Here we use the <code>jsonlite</code> package. The <code>toJSON</code> and <code>fromJSON</code> functions are used to convert <code>R</code> objects to/from JSON. <code>read_json</code> and <code>write_json</code> read and write JSON files. They are similar to <code>fromJSON</code> and <code>toJSON</code> but recognize a file path as input.</p>
+<p>The following example is taken from <a href="https://datacarpentry.org/r-socialsci/07-json.html">Datacarpentry.org</a>. SAFI (Studying African Farmer-Led Irrigation) is a study of farming and irrigation methods in Tanzania and Mozambique. The survey data was collected through interviews conducted between November 2016 and June 2017.</p>
+<p>If you use <code>read_json</code> with the default settings, the JSON document is converted into a list (<code>simplifyVector=FALSE</code>). To convert JSON format into vectors and data frames, use <code>simplifyVector=TRUE</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(jsonlite)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>json_data <span class="ot">&lt;-</span> <span class="fu">read_json</span>(<span class="st">"data/SAFI.json"</span>, <span class="at">simplifyVector=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To take a look at the data frame created with <code>read_json</code> we use the <code>glimpse</code> function from <code>tidyverse</code>. It works a bit like the <code>str</code> function in base <code>R</code> but has a more compact display for this case and shows more data points.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(json_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 131
+Columns: 74
+$ C06_rooms                      &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 3, 1, 5, 1, 3, 1, …
+$ B19_grand_liv                  &lt;chr&gt; "no", "yes", "no", "no", "yes", "no", "…
+$ A08_ward                       &lt;chr&gt; "ward2", "ward2", "ward2", "ward2", "wa…
+$ E01_water_use                  &lt;chr&gt; "no", "yes", "no", "no", "no", "no", "y…
+$ B18_sp_parents_liv             &lt;chr&gt; "yes", "yes", "no", "no", "no", "no", "…
+$ B16_years_liv                  &lt;int&gt; 4, 9, 15, 6, 40, 3, 38, 70, 6, 23, 20, …
+$ E_yes_group_count              &lt;chr&gt; NA, "3", NA, NA, NA, NA, "4", "2", "3",…
+$ F_liv                          &lt;list&gt; [&lt;data.frame[1 x 2]&gt;], [&lt;data.frame[3 …
+$ `_note2`                       &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ instanceID                     &lt;chr&gt; "uuid:ec241f2c-0609-46ed-b5e8-fe575f6ce…
+$ B20_sp_grand_liv               &lt;chr&gt; "yes", "yes", "no", "no", "no", "no", "…
+$ F10_liv_owned_other            &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ `_note1`                       &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ F12_poultry                    &lt;chr&gt; "yes", "yes", "yes", "yes", "yes", "no"…
+$ D_plots_count                  &lt;chr&gt; "2", "3", "1", "3", "2", "1", "4", "2",…
+$ C02_respondent_wall_type_other &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ C02_respondent_wall_type       &lt;chr&gt; "muddaub", "muddaub", "burntbricks", "b…
+$ C05_buildings_in_compound      &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 2, 2, 1, …
+$ `_remitters`                   &lt;list&gt; [&lt;data.frame[0 x 0]&gt;], [&lt;data.frame[0 …
+$ E18_months_no_water            &lt;list&gt; &lt;NULL&gt;, &lt;"Aug", "Sept"&gt;, &lt;NULL&gt;, &lt;NULL…
+$ F07_use_income                 &lt;chr&gt; NA, "AlimentaÃ§Ã£o e pagamento de educa…
+$ G01_no_meals                   &lt;int&gt; 2, 2, 2, 2, 2, 2, 3, 2, 3, 3, 2, 3, 2, …
+$ E17_no_enough_water            &lt;chr&gt; NA, "yes", NA, NA, NA, NA, "yes", "yes"…
+$ F04_need_money                 &lt;chr&gt; NA, "no", NA, NA, NA, NA, "no", "no", "…
+$ A05_end                        &lt;chr&gt; "2017-04-02T17:29:08.000Z", "2017-04-02…
+$ C04_window_type                &lt;chr&gt; "no", "no", "yes", "no", "no", "no", "n…
+$ E21_other_meth                 &lt;chr&gt; NA, "no", NA, NA, NA, NA, "no", "no", "…
+$ D_no_plots                     &lt;int&gt; 2, 3, 1, 3, 2, 1, 4, 2, 3, 2, 2, 2, 4, …
+$ F05_money_source               &lt;list&gt; &lt;NULL&gt;, &lt;NULL&gt;, &lt;NULL&gt;, &lt;NULL&gt;, &lt;NULL&gt;…
+$ A07_district                   &lt;chr&gt; "district1", "district1", "district1", …
+$ C03_respondent_floor_type      &lt;chr&gt; "earth", "earth", "cement", "earth", "e…
+$ E_yes_group                    &lt;list&gt; [&lt;data.frame[0 x 0]&gt;], [&lt;data.frame[3 …
+$ A01_interview_date             &lt;chr&gt; "2016-11-17", "2016-11-17", "2016-11-17…
+$ B11_remittance_money           &lt;chr&gt; "no", "no", "no", "no", "no", "no", "no…
+$ A04_start                      &lt;chr&gt; "2017-03-23T09:49:57.000Z", "2017-04-02…
+$ D_plots                        &lt;list&gt; [&lt;data.frame[2 x 8]&gt;], [&lt;data.frame[3 …
+$ F_items                        &lt;list&gt; [&lt;data.frame[3 x 3]&gt;], [&lt;data.frame[2 …
+$ F_liv_count                    &lt;chr&gt; "1", "3", "1", "2", "4", "1", "1", "2",…
+$ F10_liv_owned                  &lt;list&gt; "poultry", &lt;"oxen", "cows", "goats"&gt;, …
+$ B_no_membrs                    &lt;int&gt; 3, 7, 10, 7, 7, 3, 6, 12, 8, 12, 6, 7, …
+$ F13_du_look_aftr_cows          &lt;chr&gt; "no", "no", "no", "no", "no", "no", "no…
+$ E26_affect_conflicts           &lt;chr&gt; NA, "once", NA, NA, NA, NA, "never", "n…
+$ F14_items_owned                &lt;list&gt; &lt;"bicycle", "television", "solar_panel…
+$ F06_crops_contr                &lt;chr&gt; NA, "more_half", NA, NA, NA, NA, "more_…
+$ B17_parents_liv                &lt;chr&gt; "no", "yes", "no", "no", "yes", "no", "…
+$ G02_months_lack_food           &lt;list&gt; "Jan", &lt;"Jan", "Sept", "Oct", "Nov", "…
+$ A11_years_farm                 &lt;dbl&gt; 11, 2, 40, 6, 18, 3, 20, 16, 16, 22, 6,…
+$ F09_du_labour                  &lt;chr&gt; "no", "no", "yes", "yes", "no", "yes", …
+$ E_no_group_count               &lt;chr&gt; "2", NA, "1", "3", "2", "1", NA, NA, NA…
+$ E22_res_change                 &lt;list&gt; &lt;NULL&gt;, &lt;NULL&gt;, &lt;NULL&gt;, &lt;NULL&gt;, &lt;NULL&gt;…
+$ E24_resp_assoc                 &lt;chr&gt; NA, "no", NA, NA, NA, NA, NA, "yes", NA…
+$ A03_quest_no                   &lt;chr&gt; "01", "01", "03", "04", "05", "6", "7",…
+$ `_members`                     &lt;list&gt; [&lt;data.frame[3 x 12]&gt;], [&lt;data.frame[7…
+$ A06_province                   &lt;chr&gt; "province1", "province1", "province1", …
+$ `gps:Accuracy`                 &lt;dbl&gt; 14, 19, 13, 5, 10, 12, 11, 9, 11, 14, 1…
+$ E20_exper_other                &lt;chr&gt; NA, "yes", NA, NA, NA, NA, "yes", "yes"…
+$ A09_village                    &lt;chr&gt; "village2", "village2", "village2", "vi…
+$ C01_respondent_roof_type       &lt;chr&gt; "grass", "grass", "mabatisloping", "mab…
+$ `gps:Altitude`                 &lt;dbl&gt; 698, 690, 674, 679, 689, 692, 709, 700,…
+$ `gps:Longitude`                &lt;dbl&gt; 33.48346, 33.48342, 33.48345, 33.48342,…
+$ E23_memb_assoc                 &lt;chr&gt; NA, "yes", NA, NA, NA, NA, "no", "yes",…
+$ E19_period_use                 &lt;dbl&gt; NA, 2, NA, NA, NA, NA, 10, 10, 6, 22, N…
+$ E25_fees_water                 &lt;chr&gt; NA, "no", NA, NA, NA, NA, "no", "no", "…
+$ C07_other_buildings            &lt;chr&gt; "no", "no", "no", "no", "no", "no", "ye…
+$ observation                    &lt;chr&gt; "None", "Estes primeiros inquÃ©ritos na…
+$ `_note`                        &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ A12_agr_assoc                  &lt;chr&gt; "no", "yes", "no", "no", "no", "no", "n…
+$ G03_no_food_mitigation         &lt;list&gt; &lt;"na", "rely_less_food", "reduce_meals…
+$ F05_money_source_other         &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ `gps:Latitude`                 &lt;dbl&gt; -19.11226, -19.11248, -19.11211, -19.11…
+$ E_no_group                     &lt;list&gt; [&lt;data.frame[2 x 6]&gt;], [&lt;data.frame[0 …
+$ F14_items_owned_other          &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ F08_emply_lab                  &lt;chr&gt; "no", "yes", "no", "no", "no", "no", "n…
+$ `_members_count`               &lt;chr&gt; "3", "7", "10", "7", "7", "3", "6", "12…</code></pre>
+</div>
+</div>
+<p>Because of the deeply nested structure of JSON documents, flattening the data into a two-dimensional data frame can go only so far. Several of the columns are lists and some are lists of data frames.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>json_data <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(<span class="fu">where</span>(is.list)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">glimpse</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 131
+Columns: 14
+$ F_liv                  &lt;list&gt; [&lt;data.frame[1 x 2]&gt;], [&lt;data.frame[3 x 2]&gt;], …
+$ `_remitters`           &lt;list&gt; [&lt;data.frame[0 x 0]&gt;], [&lt;data.frame[0 x 0]&gt;], …
+$ E18_months_no_water    &lt;list&gt; &lt;NULL&gt;, &lt;"Aug", "Sept"&gt;, &lt;NULL&gt;, &lt;NULL&gt;, &lt;NULL…
+$ F05_money_source       &lt;list&gt; &lt;NULL&gt;, &lt;NULL&gt;, &lt;NULL&gt;, &lt;NULL&gt;, &lt;NULL&gt;, &lt;NULL&gt;…
+$ E_yes_group            &lt;list&gt; [&lt;data.frame[0 x 0]&gt;], [&lt;data.frame[3 x 14]&gt;],…
+$ D_plots                &lt;list&gt; [&lt;data.frame[2 x 8]&gt;], [&lt;data.frame[3 x 8]&gt;], …
+$ F_items                &lt;list&gt; [&lt;data.frame[3 x 3]&gt;], [&lt;data.frame[2 x 3]&gt;], …
+$ F10_liv_owned          &lt;list&gt; "poultry", &lt;"oxen", "cows", "goats"&gt;, "none", …
+$ F14_items_owned        &lt;list&gt; &lt;"bicycle", "television", "solar_panel", "tabl…
+$ G02_months_lack_food   &lt;list&gt; "Jan", &lt;"Jan", "Sept", "Oct", "Nov", "Dec"&gt;, &lt;…
+$ E22_res_change         &lt;list&gt; &lt;NULL&gt;, &lt;NULL&gt;, &lt;NULL&gt;, &lt;NULL&gt;, &lt;NULL&gt;, &lt;NULL&gt;…
+$ `_members`             &lt;list&gt; [&lt;data.frame[3 x 12]&gt;], [&lt;data.frame[7 x 12]&gt;]…
+$ G03_no_food_mitigation &lt;list&gt; &lt;"na", "rely_less_food", "reduce_meals", "day_…
+$ E_no_group             &lt;list&gt; [&lt;data.frame[2 x 6]&gt;], [&lt;data.frame[0 x 0]&gt;], …</code></pre>
+</div>
+</div>
+<p>You access the data frames stored within the lists simply as any other list element in <code>R</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(json_data<span class="sc">$</span>F_liv[[<span class="dv">2</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   3 obs. of  2 variables:
+ $ F11_no_owned: int  4 3 4
+ $ F_curr_liv  : chr  "oxen" "cows" "goats"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>json_data<span class="sc">$</span>F_liv[[<span class="dv">2</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  F11_no_owned F_curr_liv
+1            4       oxen
+2            3       cows
+3            4      goats</code></pre>
+</div>
+</div>
+</section>
+<section id="parquet-files" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="parquet-files"><span class="header-section-number">3.4</span> Parquet Files</h2>
+<p>The <a href="https://parquet.apache.org/">Apache Parquet</a> open-source file format is a binary format—data are not stored in plain text but in binary form. Originally conceived as a column-based file format in the Hadoop ecosystem, it has become popular as a general file format for analytical data inside and outside of Hadoop and its file system HDFS: for example, as an efficient analytic file format for data exported to data lakes or in data processing with Spark. Many organizations have switched to storing their data in Parquet files; loading Parquet files from AWS S3 buckets or from Google Cloud Storage or Microsoft Azure Blob storage has become a common access pattern.</p>
+<p>Working with Parquet files for large data is an order of magnitude faster than working with CSV files. The drawbacks of CSV files discussed previously all melt away with Parquet files.</p>
+<p>Parquet was designed from the ground up with complex data structures and read-heavy analytics in mind. It uses principally columnar storage but does it cleverly by storing chunks of columns in row groups rather than entire columns.</p>
+<div id="fig-data-parquet" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-data-parquet-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/ParquetStorage.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" data-glightbox="description: .lightbox-desc-3"><img src="images/ParquetStorage.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-data-parquet-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.3: The Parquet file architecture. Chunks of columns are stored in row groups. The footer contains important metadata. <a href="https://towardsdatascience.com/parquet-file-format-everything-you-need-to-know-4eed5c0019e7">Source</a>: Parquet File Format: Everything You Need to Know, by Nikola Ilic.
+</figcaption>
+</figure>
+</div>
+<p>This hybrid storage model is very efficient when queries select specific columns and filter rows at the same time; a common pattern in data science: compute the correlation between <code>homeValue</code> and <code>NumberOfRooms</code> for homes where <code>ZipCode = 24060</code>.</p>
+<p>Parquet stores metadata about the row chunks to speed access to rows, the metadata tells the reader which row chunks to skip. Also, a single write to the Parquet format can generate multiple <code>.parquet</code> files. The total data is divided into multiple files collected within a folder. Like NoSQL and NewSQL databases, data are partitioned, but since Parquet is a file format and not a database engine, the partitioning results in multiple files. This is advantageous for parallel processing frameworks like Spark that can work on multiple partitions (files) concurrently.</p>
+<p>Parquet uses several compression techniques to reduce the size of the files such as run-length encoding, dictionary encoding, Snappy, GZip, LZO, LZ4, ZSTD. Because of columnar storage, compression methods can be specified on a per-column basis; Parquet files compress much more than text-oriented CSV files.</p>
+<p>Because of its complex file structure, Parquet files are relatively slow to write. The file format is optimized for the WORM paradigm: write-once, read many times.</p>
+<table class="table">
+<caption>Comparison of popular file formats in data science.</caption>
+<colgroup>
+<col style="width: 37%">
+<col style="width: 24%">
+<col style="width: 19%">
+<col style="width: 19%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th style="text-align: center;">CSV</th>
+<th style="text-align: center;">JSON</th>
+<th style="text-align: center;">Parquet</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Columnar</strong></td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">Yes</td>
+</tr>
+<tr class="even">
+<td><strong>Compression</strong></td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+</tr>
+<tr class="odd">
+<td><strong>Human Readable</strong></td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">No</td>
+</tr>
+<tr class="even">
+<td><strong>Nestable</strong></td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+</tr>
+<tr class="odd">
+<td><strong>Complex Data Structures</strong></td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+</tr>
+<tr class="even">
+<td><strong>Named Columns</strong></td>
+<td style="text-align: center;">Yes, if in header</td>
+<td style="text-align: center;">Based on scan</td>
+<td style="text-align: center;">Yes, metadata</td>
+</tr>
+<tr class="odd">
+<td><strong>Data Types</strong></td>
+<td style="text-align: center;">Based on scan</td>
+<td style="text-align: center;">Based on scan</td>
+<td style="text-align: center;">Yes, metadata</td>
+</tr>
+</tbody>
+</table>
+<p>To read a file in Parquet format into an <code>R</code> session, install and load the <a href="https://arrow.apache.org/docs/r/"><code>arrow</code></a> package. <a href="https://arrow.apache.org/docs/index.html">Apache Arrow</a> is an open-source development platform for in-memory analytics that supports many programming environments, including R and Python. The arrow libraries support reading and writing of the important file formats in this ecosystem.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages("arrow")</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">read_parquet</span>(<span class="st">"somefile.parquet"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="working-with-a-database" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="working-with-a-database"><span class="header-section-number">3.5</span> Working with a Database</h2>
+<p>You interface with a database from <code>R</code> with the <code>DBI</code> package. It provides a common syntax and functions to connect to supported databases, and to send queries to the database. In addition to the <code>DBI</code> package you need the driver packages specific to the database you are working with (<code>RMySQL</code> for MySQL, <code>RSQLite</code> for SQLite, and so on).</p>
+<p>My favorite database for analytic work is duckDB, a highly efficient, embedded database designed for processing data analytically. The file <code>ads.ddb</code>, contains the database tables used in this and other courses in duckDB format. To add the duckDB driver package to your system, use</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"duckdb"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To read a table from that database into an <code>R</code> data frame, follow the steps in the next code snippet:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="annotated-cell-11"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><a class="code-annotation-anchor" data-target-cell="annotated-cell-11" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-11-1" class="code-annotation-target"><a href="#annotated-cell-11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"duckdb"</span>)</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-11" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-11-2" class="code-annotation-target"><a href="#annotated-cell-11-2" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(),<span class="at">dbdir =</span> <span class="st">"ads.ddb"</span>,<span class="at">read_only=</span><span class="cn">TRUE</span>)</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-11" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-11-3" class="code-annotation-target"><a href="#annotated-cell-11-3" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, <span class="st">"SELECT * FROM fitness"</span>)</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-11" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-11-4" class="code-annotation-target"><a href="#annotated-cell-11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-annotation">
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-11" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-cell="annotated-cell-11" data-code-lines="1" data-code-annotation="1">Load the <code>duckdb</code> library</span>
+</dd>
+<dt data-target-cell="annotated-cell-11" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-cell="annotated-cell-11" data-code-lines="2" data-code-annotation="2">Make a connection to duckDB through the DBI interface, specifying the database you want to work with, here <code>ads.ddb</code></span>
+</dd>
+<dt data-target-cell="annotated-cell-11" data-target-annotation="3">3</dt>
+<dd>
+<span data-code-cell="annotated-cell-11" data-code-lines="3" data-code-annotation="3">Send a <code>SELECT * FROM</code> query to read the contents of the target table and assign the result to a dataframe in <code>R</code></span>
+</dd>
+<dt data-target-cell="annotated-cell-11" data-target-annotation="4">4</dt>
+<dd>
+<span data-code-cell="annotated-cell-11" data-code-lines="4" data-code-annotation="4">Close the connection to the database when you are done querying it.</span>
+</dd>
+</dl>
+</div>
+</div>
+<p>We can now work with the <code>fitness</code> data set as a dataframe in <code>R</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Age Weight Oxygen RunTime RestPulse RunPulse MaxPulse
+1  44  89.47 44.609   11.37        62      178      182
+2  40  75.07 45.313   10.07        62      185      185
+3  44  85.84 54.297    8.65        45      156      168
+4  42  68.15 59.571    8.17        40      166      172
+5  38  89.02 49.874    9.22        55      178      180
+6  47  77.45 44.811   11.63        58      176      176</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      Age            Weight          Oxygen         RunTime     
+ Min.   :38.00   Min.   :59.08   Min.   :37.39   Min.   : 8.17  
+ 1st Qu.:44.00   1st Qu.:73.20   1st Qu.:44.96   1st Qu.: 9.78  
+ Median :48.00   Median :77.45   Median :46.77   Median :10.47  
+ Mean   :47.68   Mean   :77.44   Mean   :47.38   Mean   :10.59  
+ 3rd Qu.:51.00   3rd Qu.:82.33   3rd Qu.:50.13   3rd Qu.:11.27  
+ Max.   :57.00   Max.   :91.63   Max.   :60.05   Max.   :14.03  
+   RestPulse        RunPulse        MaxPulse    
+ Min.   :40.00   Min.   :146.0   Min.   :155.0  
+ 1st Qu.:48.00   1st Qu.:163.0   1st Qu.:168.0  
+ Median :52.00   Median :170.0   Median :172.0  
+ Mean   :53.45   Mean   :169.6   Mean   :173.8  
+ 3rd Qu.:58.50   3rd Qu.:176.0   3rd Qu.:180.0  
+ Max.   :70.00   Max.   :186.0   Max.   :192.0  </code></pre>
+</div>
+</div>
+<p>The connection to the database can be left open until you are done working with the database. If you use the database to import tables at the beginning of a statistical program, it is recommended to close the connection as soon as that step is complete.</p>
+<p>Because we are reading many tables from the <code>ads.ddb</code> database, you can write a function to wrap the database operations. The following function loads the <code>duckdb</code> library unless it is already loaded, and reads a table, possibly selecting rows with a WHERE filter, and returns the <code>R</code> dataframe.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>duckload <span class="ot">&lt;-</span> <span class="cf">function</span>(tableName, <span class="at">whereClause=</span><span class="cn">NULL</span>, <span class="at">dbName=</span><span class="st">"ads.ddb"</span>) {</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(tableName)) {</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (<span class="sc">!</span>(<span class="st">"duckdb"</span> <span class="sc">%in%</span> (<span class="fu">.packages</span>()))) {</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>            <span class="fu">suppressWarnings</span>(<span class="fu">libary</span>(<span class="st">"duckdb"</span>))</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>        con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(), <span class="at">dbdir=</span>dbName, <span class="at">read_only=</span><span class="cn">TRUE</span>)</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>        query_string <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">"SELECT * from "</span>, tableName)</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(whereClause)) {</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>            query_string <span class="ot">&lt;-</span> <span class="fu">paste</span>(query_string, <span class="st">" WHERE "</span>, whereClause)</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>        df_ <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, query_string)</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>        <span class="fu">dbDisconnect</span>(con)</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span> (df_)</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span> (<span class="cn">NULL</span>)</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the entire table</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">duckload</span>(<span class="st">"fitness"</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Load only the records where Age &gt; 50</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">&lt;-</span> <span class="fu">duckload</span>(<span class="st">"fitness"</span>,<span class="at">whereClause=</span><span class="st">"Age &gt; 50"</span>)</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Load only the records where Age = 40</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>fit3 <span class="ot">&lt;-</span> <span class="fu">duckload</span>(<span class="st">"fitness"</span>,<span class="st">"Age = 40"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>You can modify the function to load a <strong>projection</strong> of columns from the database table by replacing the <code>*</code> in the SELECT query with the selected columns.</p>
+</section>
+<section id="saving-and-loading-rdata" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="saving-and-loading-rdata"><span class="header-section-number">3.6</span> Saving and Loading <code>RData</code></h2>
+<p><code>R</code> has its own format (binary or ASCII) to read and write <code>R</code> objects. This is convenient to save a data frame to disk and later load it back into an <code>R</code> session.</p>
+<p>To save any <code>R</code> object, use the <code>save</code> or <code>saveRDS</code> function, to load it into an <code>R</code> session use the <code>load</code> function. <code>save</code> can save one or more objects to a <code>.RData</code> file, while <code>saveRDS</code> creates an <code>.RDS</code> file from a single object.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(<span class="dv">200</span>),<span class="at">nrow=</span><span class="dv">50</span>,<span class="at">ncol=</span><span class="dv">4</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">crossprod</span>(a)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>cor_mat <span class="ot">&lt;-</span> <span class="fu">cor</span>(a)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(a,b,cor_mat,<span class="at">file=</span><span class="st">"data/matrixStuff.RData"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"data/matrixStuff.RData"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>When you load <code>R</code> objects from a <code>.RData</code> file, you do not assign the result of the function. The objects are created in the work environment with their original names.</p>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Caution
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <code>load</code> operation will overwrite any <code>R</code> objects in your environment by the same name as those in the <code>RData</code> file.</p>
+</div>
+</div>
+<p><code>.RData</code> files can contain many objects, for example, all the objects in your environment when it is saved upon closing an <code>R</code> session. If you load from an <code>.RDS</code> file, you can assign the result to an <code>R</code> object which helps avoid name collisions.</p>
+<p>In general, it is better coding practice to use <code>saveRDS</code> and <code>readRDS</code> with single objects. The code is cleaner and easier to follow if single objects are saved/loaded and these are explicitly named in the code.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>a = rnorm(100)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>saveRDS(a, file = "stuff.RDS") </span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>normal_rvs &lt;- readRDS("stuff.RDS")</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+
+<div class="hidden" aria-hidden="true">
+<span class="glightbox-desc lightbox-desc-1">Figure&nbsp;3.1: Elements of a JSON document. Because values can contain objects and arrays, JSON documents can be highly structured and deeply nested.</span>
+<span class="glightbox-desc lightbox-desc-2">Figure&nbsp;3.2: A simple JSON document. The entire document is a name—value pair with name “menu”. The value is an object with names “id”, “value”, and “popup”. The value of “popup” is an object with name “menuitem” whose value is an array. The elements of the array are objects with names “value” and “onclick”.</span>
+<span class="glightbox-desc lightbox-desc-3">Figure&nbsp;3.3: The Parquet file architecture. Chunks of columns are stored in row groups. The footer contains important metadata. <a href="https://towardsdatascience.com/parquet-file-format-everything-you-need-to-know-4eed5c0019e7">Source</a>: Parquet File Format: Everything You Need to Know, by Nikola Ilic.</span>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./getting_started.html" class="pagination-link" aria-label="Getting Started">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Getting Started</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./wrangling_data.html" class="pagination-link" aria-label="Wrangling Data">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Wrangling Data</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Statistical Programming (Packages) by Oliver Schabenberger</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
+  </div>
+</footer>
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","loop":false,"closeEffect":"zoom","descPosition":"bottom","openEffect":"zoom"});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

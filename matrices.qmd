@@ -1,0 +1,452 @@
+::: content-hidden
+$$
+{{< include latexmacros.tex >}}
+$$
+:::
+
+# Vectors and Matrices {#sec-matrices}
+
+## Introduction
+
+Working with vectors and matrices is essential for statisticians. We express the mathematics of statistics in terms of scalars, vectors, and matrices. As you move into machine learning, in particular deep learning, the horizon expands from matrices to tensors (multi-dimensional arrays). For now we stick with one-dimensional (=vectors) and two-dimensional (=matrices) arrays of real numbers.
+
+### Creating Vectors and Matrices
+
+Vectors and matrices in `R` are special cases of the array data type. An array can have one, two, or more dimensions as indicated by its `dim()` attribute. Arrays with one dimensions are vectors, two-dimensional arrays are matrices.
+
+If you create a one-dimensional array, you are automatically creating a vector
+
+```{r, collapse=TRUE}
+a <- c(1:5)
+a
+is.vector(a)
+```
+
+Frequently we create vectors of constant values, the `rep` function helps with that:
+
+```{r}
+rep(1:4)
+rep(1:4,times=2)
+```
+
+To create a regular sequence of values, use `seq`
+
+```{r, collapse=TRUE}
+seq(1:5)
+seq(from=1,to=10,by=0.5)
+seq(length.out=10)
+```
+
+
+To create a matrix you can use different approaches:
+
+- Use the `matrix` function
+- Convert a vector by changing its dimensions
+- Coerce a numeric object into a matrix with `as.matrix` 
+
+#### `matrix` function
+
+```{r}
+B <- matrix(1:10,ncol=2) # default is ncol=1, byrow=FALSE
+B
+E <- matrix(1:10,ncol=2,byrow=TRUE)
+E
+```
+
+#### Converting a vector into a matrix
+
+Since a matrix is a two-dimensional array, and a vector is one-dimensional, a simple technique for creating a matrix from a vector is to make an assignment to the dimension attribute. In the following code, a one-dimensional vector of length 20 is shaped into a $(10 \times 2)$ matrix. Note that the elements of the matrix are filled in column order: the first 10 elements of the vector are assigned to the rows of column 1, the next 10 elements are assigned to the rows of column 2.
+
+```{r, collapse=TRUE}
+set.seed(876)
+x <- round(rnorm(20),3)
+x
+dim(x) <- c(10,2)
+x
+is.matrix(x)
+```
+What if you want to create a $(10 \times 2)$ matrix but fill the matrix in row-order: the first two elements in row 1, the next two elements in row 2, and so forth? The solution is to assign the dimensions in reverse order and transpose the result.
+
+```{r, collapse=TRUE}
+x <- round(rnorm(20),3)
+x
+dim(x) <- c(2,10)
+t(x)
+```
+
+Converting a vector into a matrix by changing its dimensions has the advantage that the object is not copied, saving memory.
+
+#### Coercion
+
+`R` is good at coercion, the implicit conversion from one data type to another. Coercion can happens implicitly when you pass an object of a different type to a function. Coercion can also be done explicitly using `as.*`-style functions. 
+
+:::{.callout-note collapse=true}
+I really meant "`as.*`-style functions" as in `as.matrix`, `as.data.frame`, `as.Date`, `as.dendrogram`, etc. Not `as*`-style functions. 
+:::
+
+For example, to coerce an `R` object into a matrix, use the `as.matrix` function. A common usage is to convert a dataframe of numerical data:
+
+```{r}
+df <- data.frame(int=rep(1,4), x1=c(1,2,3,4), x2=rnorm(4))
+is.matrix(df)
+is.matrix(as.matrix(df))
+```
+
+
+### Basic Operations
+
+When operating on matrices and vectors, we need to distinguish **elementwise** operations from true matrix operations. For example, 
+take the $(5 \times 2)$ matrices `B` and `E` created earlier. Their elementwise product is the matrix with typical element $[b_{ij}*e_{ij}]$. In other words, elements of the matrices are matched up and the multiplication is performed separately in each cell.
+
+The matrix product $\bB * \textbf{E}$ is not possible because the matrices do not conform to matrix multiplication. However, the product $\bB * \textbf{E}^\prime$ is possible, the result is a (5 \times 5)$ matrix.
+
+#### Elementwise operations
+
+```{r, collapse=TRUE}
+B
+
+E
+
+# Elementwise addition
+5 + B
+a + B
+B + E
+
+# Elementwise multiplication
+5 * B
+a * B
+B * E
+```
+
+Note that when the dimensions of the two arrays do not match up, values are repeated as necessary. For example, in `5+B`, the scalar `5` is applied to each cell of `B`. The operation is essentially the same as
+
+```{r}
+matrix(rep(5,10),5,2) + B
+```
+
+Similarly, in `a+B`, where `a` is a vector of length 5, the vector is added elementwise to the first column of `B`, then to the second column of `B`.
+
+You can also perform elementwise logical operations, creating vectors and matrices of TRUE/FALSE values.
+
+```{r}
+(B==3) | (B==2)
+```
+
+
+#### Matrix operations
+
+##### Transposition
+
+A matrix is **transposed**, its rows and columns exchanged, with the `t()` operator. Transposition exchanges the dimensions of the underlying array.
+
+```{r, collapse=TRUE}
+B
+dim(B)
+t(B)
+dim(t(B))
+```
+
+##### Multiplication
+
+**Matrix multiplication** is performed with the `%*%` operator. For this operation to succeed, the matrices have to conform to multiplication, that is, the number of columns of the matrix on the left side of the multiplication must equal the number of rows on the right side.
+
+This will fail:
+```{r, error=TRUE}
+B %*% E
+```
+
+And this product succeeds, since $\bB$ and $\textbf{E}^\prime$ conform to multiplication.
+
+```{r}
+B %*% t(E)
+```
+##### Diagonal matrices
+
+In statistics we frequently encounter **diagonal** matrices, square matrices with zeros in off-diagonal cells. Programmatically, two important situations arise:
+
+- Extracting the diagonal elements of a matrix
+- Forming a diagonal matrix from a vector
+
+The `diag` function handles both cases 
+
+```{r}
+# The (3 x 3) identity matrix
+diag(1,3)
+
+# A (3 x 3) diagonal matrix with 1, 2, 3 on the diagonal
+diag(1:3)
+```
+
+```{r, collapse=TRUE}
+ diag(B %*% t(E))
+
+C_ <- matrix(1:9 + rnorm(9,0,1e-3),ncol=3)
+C_
+diag(C_)
+```
+
+The **trace** of a matrix is the sum of its diagonal elements. You can compute the trace by combining `sum` and `diag` functions:
+
+```{r}
+# The trace of matrix C_
+sum(diag(C_))
+```
+
+##### Crossproduct matrix
+
+The **crossproduct** of matrices $\bA$ and $\bB$ is $\bA^\prime \bB$ provided that $\bA^\prime$ and $\bB$ are conformable for multiplication. The most important crossproduct matrices in statistics are crossproducts of a matrix with itself: $\bA^\prime\bA$. These crossproducts are square, symmetric matrices.
+
+You can calculate a crossproduct matrix directly using matrix multiplication, or a dedicated function (`base::crossprod` or `Matrix::crossprod`). The dedicated functions are slightly smaller than computing the product directly, but I have found the difference to be pretty negligible, even for large matrices.
+
+```{r}
+X <- matrix(rnorm(300),nrow=100,ncol=3)
+
+# Computing X`X by direct multiplication
+XpX <- t(X) %*% X
+XpX
+
+# Computing X`X using the crossprod() function
+crossprod(X)
+```
+
+
+##### Inverse matrix
+
+The **inverse** of square matrix $\bA$, denoted $\bA^{-1}$, if it exists, is the multiplicative identity:
+$$
+\bA^{-1}\bA = \bA \bA^{-1} = \bI
+$$
+The inverse exists if $\bA$ is of full rank--we say that than the matrix is non-singular. 
+
+```{r, warning=FALSE, message=FALSE}
+library(Matrix)
+rankMatrix(XpX)[1]
+```
+
+The matrix $\bXpX$ in our example has rank 3, which equals its number of rows (columns). The matrix is thus of full rank and can be inverted. Computing the inverse matrix is a special case of using the `solve` function. `solve(a,b,...)` solves a linear system of equation of the form
+$$
+\bA\bX = \bB
+$$
+When the function is called without the `b` argument, it returns the inverse of `a`:
+
+```{r, collapse=TRUE}
+XpX_inverse <- solve(XpX)
+
+XpX_inverse
+
+round(XpX %*% XpX_inverse,4)
+```
+
+## Least Squares from Scratch
+
+Coding algorithms in statistical programming often starts with reproducing the formulas on paper in a programming language. 
+
+Suppose we wish to fit a multiple linear regression model with target variable (output) $Y$ and predictor variables (inputs) $X_1, \cdots, X_p$. The $n$ data points for this analysis are arranged in an $(n \times 1)$ vector
+$$
+\textbf{Y} = [Y_1, \cdots, Y_n]^\prime
+$$
+an $(n \times (p+1))$ matrix
+$$
+\textbf{X} = \left [ \begin{array}{ccc} 
+1 & x_{11} & \cdots & x_{p1} \\
+1 & x_{12} & \cdots & x_{p2} \\
+\vdots & \vdots & \vdots & \vdots \\
+1 & x_{1n} & \cdots & x_{pn}
+\end{array}\right]
+$$
+and an $(n \times 1)$ vector of error terms
+$$
+\boldsymbol{\epsilon} = [\epsilon_1, \cdots, \epsilon_n]^\prime
+$$
+
+The complete regression model can be written as 
+$$
+\textbf{Y} = \textbf{X}\boldsymbol{\beta} + \boldsymbol{\epsilon} \qquad \boldsymbol{\epsilon} \sim (\textbf{0},\sigma^2 \textbf{I})
+$$
+The statement on the right says that the model errors have mean zero, equal variance $\sigma^2$ and are uncorrelated---this is also sometimes called the *iid* assumption (identically and independently distributed), although lack of correlation does not strictly imply independence.
+
+The parameter vector $\bbeta$ in this model is typically estimated by **ordinary least squares** (OLS), the solution is 
+$$
+\widehat{\bbeta} = \left (\bXpX \right)^{-1}\bX^\prime\bY
+$$
+provided that $\bX$ is of full column rank (which implies $\bXpX$ is non-singular and ($\bXpX)^{-1}$ exists) and the predicted values are
+$$
+\widehat{\bY} = \bX\widehat{\bbeta}
+$$
+
+
+Let's use a data set and compute the OLS estimates and the predicted values using matrix--vector operations, then compare the results to the standard output of the linear modeling function `lm()` in `R`.
+
+The data set for this exercise is the `fitness` data set. The data comprise measurements of aerobic capacity and other attributes on 31 men involved in a physical fitness course at N.C. State University.
+
+Aerobic capacity is the ability of the heart and lungs to provide the body with oxygen. It is a measure of fitness and expressed as the oxygen intake in ml per kg body weight per minute. Measuring aerobic capacity is expensive and time consuming compared to attributes such as age, weight, and pulse. The question is whether aerobic capacity can be predicted from the easily measurable attributes. If so, a predictive equation can reduce time and effort to assess aerobic capacity.
+
+The variables are
+
+-   **Age**: age in years
+
+-   **Weight**: weight in kg
+
+-   **Oxygen**: oxygen intake rate (ml per kg body weight per minute)
+
+-   **RunTime**: time to run 1.5 miles (minutes)
+
+-   **RestPulse**: heart rate while resting
+
+-   **RunPulse**: heart rate while running (same time Oxygen rate measured)
+
+-   **MaxPulse**: maximum heart rate recorded while running
+
+The linear model we have in mind is 
+$$
+\text{Oxygen}_i = \beta_0 + \beta_1\text{Age}_i + \beta_2\text{Weight}_i + \beta_3\text{RunTime}_i + \beta_4\text{RestPulse}_i + \beta_5\text{RunPulse}_i + \beta_6\text{MaxPulse}_i + \epsilon_i
+$$ 
+$i=1,\cdots,31$.
+
+The following code makes a connection to the `ads` DuckDB database, loads the `fitness` table into an `R` dataframe, displays the first 6 observations, and closes the connection to the database again.
+
+```{r, warning=FALSE, message=FALSE}
+library("duckdb")
+con <- dbConnect(duckdb(),dbdir = "ads.ddb",read_only=TRUE)
+fit <- dbGetQuery(con, "SELECT * FROM fitness")
+
+head(fit)
+dbDisconnect(con)
+```
+
+The target variable for the linear model is `Oxygen`, the remaining variables are inputs to the regression. The next statements create the $\by$ vector and the $\bX$ matrix for the model. Note that the first column of $\bX$ is a vector of ones, representing the intercept $\beta_0$.
+
+```{r}
+y <- as.matrix(fit[,which(names(fit)=="Oxygen")])
+X <- as.matrix(cbind(Intcpt=rep(1,nrow(fit)), 
+                     fit[,which(names(fit)!="Oxygen")]))
+head(X)
+```
+
+Next we are building the $\bXpX$ matrix and compute its inverse, $(\bXpX)^{-1}$, with the `solve()` function. `t()` transposes a matrix and `%*%` indicates that we are performing matrix multiplication rather than elementwise multiplication.
+
+```{r}
+XpX <- t(X) %*% X
+XpXInv <- solve(XpX)
+```
+
+We can verify that `XpxInv` is indeed the inverse of `XpX` by multiplying the two. This should yield the identity matrix
+
+```{r}
+round(XpX %*% XpXInv,3)
+```
+
+Next we compute the OLS estimate of $\bbeta$ and the predicted values $\widehat{\by} = \bX\widehat{\bbeta}$.
+
+```{r}
+beta_hat <- XpXInv %*% t(X) %*% y
+beta_hat
+
+y_hat <- X %*% beta_hat
+```
+
+The estimate of the intercept is $\widehat{\beta}_0$ = `{r} round(beta_hat[1],4)`, the estimate of the coefficient for `Age` is $\widehat{\beta}_1$ = `{r} round(beta_hat[2],4)` and so on.
+
+We could have also used the `solve` function in its intended application, to solve a system of linear equations--we abused the behavior of `solve` a bit by using it with only one argument; it will then return the inverse matrix of the argument.
+
+The linear system to solve in the ordinary least squares problem is
+$$
+\bXpX \bbeta = \bX^\prime\bY
+$$
+This system of equations is called the **normal equations**. The solution can be computed with the `solve` function:
+
+```{r}
+solve(XpX,crossprod(X,y))
+```
+The results match `beta_hat` computed earlier.
+
+The residuals $\widehat{\bepsilon} = \by - \widehat{\by}$ and the error sum of squares
+
+$$
+\text{SSE} = (\by - \widehat{\by} )^\prime (\by - \widehat{\by}) = \sum_{i=1}^n \left(y_i - \widehat{y}_i\right)^2$$ and the estimate of the residual variance $$\widehat{\sigma}^2 = \frac{1}{n-r(\bX)} \, \text{SSE}
+$$
+
+are computed as
+
+```{r, warning=FALSE, message=FALSE}
+residuals <- y - y_hat
+SSE <- sum(residuals^2)
+n <- nrow(fit)
+rankX <- rankMatrix(XpX)[1]
+sigma2_hat <- SSE/(n - rankX)
+
+SSE
+sigma2_hat
+```
+
+We used the `rankMatrix` function in the `Matrix` package to compute the rank of $\bX$, which is identical to the rank of $\bXpX$. With these quantities available, the variance-covariance matrix of $\widehat{\bbeta}$, 
+$$\
+\Var[\widehat{\bbeta}] = \sigma^2 (\bXpX)^{-1}
+$$ 
+can be estimated by substituting $\widehat{\sigma}^2$ for $\sigma^2$. The standard errors of the regression coefficient estimates are the square roots of the diagonal values of this matrix.
+
+```{r}
+Var_beta_hat <- sigma2_hat * XpXInv
+se_beta_hat <- sqrt(diag(Var_beta_hat))
+se_beta_hat
+```
+
+Now let's compare our results to the output from the `lm()` function in `R`.
+
+```{r}
+linmod <- lm(Oxygen ~ ., data=fit)
+summary(linmod)
+```
+
+Based on the quantities calculated earlier, the following code reproduces the `lm` summary.
+
+```{r}
+tvals <- beta_hat/se_beta_hat
+pvals <- 2*(1-pt(abs(tvals),n-rankX))
+result <- cbind(beta_hat, se_beta_hat, tvals, pvals)
+colnames(result) <- c("Estimate", "Std. Error", "t value", "Pr(>|t|)")
+round(result,5)
+
+cat("\nResidual standard error: ", sqrt(sigma2_hat)," on ", n-rankX, "degrees of freedom\n")
+SST <- sum( (y -mean(y))^2 )
+cat("Multiple R-squared: ", 1-SSE/SST, 
+    "Adjusted R-squared: ", 1 - (SSE/SST)*(n-1)/(n-rankX), "\n")
+Fstat <- ((SST-SSE)/(rankX-1)) / (SSE/(n-rankX))
+cat("F-statistic: ", Fstat, "on ", 
+    rankX-1, "and", n-rankX, "DF, p-value:", 1-pf(Fstat,rankX-1,n-rankX))
+
+```
+
+## Building a Model Matrix
+
+In the previous example, the model matrix $\bX$ was formed in code by appending a $(31 \times 6)$ matrix of input variables to a $31 \times 1$ vector of ones:
+
+```{r, eval=FALSE}
+X <- as.matrix(cbind(Intcpt=rep(1,nrow(fit)), 
+                     fit[,which(names(fit)!="Oxygen")]))
+```
+
+The `lm` function used a special syntax to specify the model, called a **model formula**: `Oxygen ~ .`. The formula specifies the target variable (the dependent variable) on the left side of the tilde and the input (predictor, independent) variables on the right hand side of the tilde. The special dot syntax implies to include all variables in the data frame (except for `Oxygen`) as input variables for the right hand side of the model. Also, the intercept is automatically included in model formulas, because *not* having an intercept is a special case in statistical modeling.
+
+You can generate a model matrix easily by using the `model.matrix` function with a model formula. In the `fitness` example, 
+
+```{r}
+X_ <- model.matrix(Oxygen ~ ., data=fit)
+```
+The two matrices are identical, as you can see with 
+
+```{r}
+sum(X - X_)
+```
+
+If we wanted to repeat the regression calculations for a model that contains only `Age` and `MaxPulse` as predictor variables, it would be easy to construct the model matrix with
+
+```{r}
+X_small_model <- model.matrix(Oxygen ~ Age + MaxPulse, data=fit)
+```
+
+Using `model.matrix` is very convenient when you work with **factors**, classification input variables that are not represented in the model by their actual values (which could be strings) but by converting a variable with $k$ unique values into $k$ columns in $\bX$. These columns use 0/1 values to encode which level of the classification input variable matches the value for an observation.
+
+
+
+

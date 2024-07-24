@@ -1,0 +1,246 @@
+
+::: content-hidden
+$$
+{{< include latexmacros.tex >}}
+$$
+:::
+
+# Iteratively Reweighted Least Squares {#sec-irls-literate}
+
+In statistical training of generalized linear models (GLMs), the iteratively reweighted least squares (IRLS) 
+algorithm plays an important role. This algorithm uses repeated estimation of a linear model to find the
+maximum likelihood estimates of a GLM.
+
+In this chapter we explain the necessary basics of GLMs and IRLS, then write a literate `R` program to perform regression with a Poisson-distributed target variable from scratch.
+
+## Generalized Linear Models
+
+The **generalization** of GLMs is found in a comparison to the classical linear model with Gaussian errors:
+$$
+Y = \bx^\prime\bbeta + \epsilon, \quad \epsilon \sim \textit{ iid } G(0, \sigma^2)
+$$ {#eq-linearmodel-gaussian}
+
+Here $Y$ is the target variable of interest (dependent variable), $\bx = [1, x_1,\cdots,x_p]^\prime$ is a $(p \times 1)$ vector of input variables, $\bbeta$ is the vector of parameters of the mean function, and $\epsilon$ is an error term. These error terms are independently and identically distributed as Gaussian random variables with mean zero and common variance $\sigma^2$.
+
+GLMs relax several elements of this model:
+
+1. The distribution of $Y$ does not have to be Gaussian.
+2. The relationship between the inputs and the mean of $Y$ does not have to be linear in the coefficients.
+3. The model does not have an additive error structure.
+4. The target variables do not have to have the same variance.
+
+However, the relaxation of the model conditions is not without limits. Rather than allowing $Y$ to have *any* distribution, its distribution has to be a member of a special family of probability distributions known as the **exponential family** of distributions. Rather than allowing any arbitrary nonlinear relationship between inputs and target, only certain (invertible) transformations are permitted; the effect of the inputs remains linear on *some* scale, although it is usually not the scale of the mean. Rather than allowing any arbitrary variance, the variance of the targets can be unequal but it is determined through the distribution itself.
+
+The specification of a GLM includes the following components:
+
+* $Y \sim P_{expo}$: $Y$ follows a distribution in the exponential family, this family includes important distributions such as the Bernoulli, Binomial, Negative Binomial, Poisson, Geometric, Exponential, Gamma, Beta, Gaussian.
+* $\Exp[Y] = \mu$
+* $\eta = \bx^\prime\bbeta$: a predictor $\eta$ that is linear in the parameters
+* $g(\mu) = \eta$: A transformation of the mean is linearly related to the parameters. The function $g()$ is called the **link function** of the GLM and is invertible, that is, $\mu = g^{-1}(\eta)$.
+
+The parameters $\bbeta$ in @eq-linearmodel-gaussian can be estimated by least squares in closed form. That means we can compute the parameter estimates directly. If $\bX$ is of full column rank, the ordinary least squares estimates is
+$$
+\widehat{\bbeta} = \left(\bXpX\right)^{-1}\bX^\prime\bY
+$$
+and this is also the maximum likelihood estimator of $\bbeta$. 
+
+## Iteratively Reweighted Least Squares
+
+For other GLMs, the maximum likelihood estimates have to be found numerically. @McCullaghNelder show that the following procedure, known as iteratively reweighted least squares, converges to the maximum likelihood estimates. To motivate the algorithm we start by a linear approximation (a first-order Taylor series) of the linked [observations]{.underline} about an estimate of the mean:
+$$
+\begin{align*}
+g(y) &= g(\widehat{\mu}) + (y-\widehat{\mu})\left[ \frac{\partial g(y)}{\partial y}\right]_{\vert_{\widehat{\mu}}} \\
+&= g(\widehat{\mu}) + (y-\widehat{\mu})\left[\frac{\partial \eta}{\partial \mu} \right]_{\vert_{\widehat{\mu}}} \\
+&= \widehat{\eta} + (y-\widehat{\mu})\left[\frac{\partial \eta}{\partial \mu} \right]_{\vert_{\widehat{\mu}}}  \\
+&= z
+\end{align*}
+$${#eq-irls-linearization}
+
+$z$ is called an adjusted dependent variable or a working response variable or a pseudo-response. The final expression in @eq-irls-linearization can be viewed as a linear model with response variable $z$, systematic part $\widehat{\eta} = \bx^\prime\widehat{\bbeta}$ and error term $(y-\mu)[\partial \eta/\partial \mu]$. The variance of this error term is 
+$$
+\Var[z] = \left[\frac{\partial \eta}{\partial \mu}\right]^2 \Var[Y]
+$$
+
+The iterative procedure is as follows: given an initial value of $z$, which requires an initial estimate of $\mu$, fit a weighted linear model with inputs $\bx = [x_1,\cdots,x_p]^\prime$ and weights given by the inverse of $\Var[z]$. The solution to the weighted linear model is an updated parameter vector $\bbeta$. Re-calculate $z$ and the weights and repeat the weighted linear regression fit. Continue until the relative change in the parameter estimates, the log likelihood function, the deviance, or some other criterion is negligible. 
+
+
+## Literate Programming
+
+Iteratively reweighted least squares (IRLS) can be implemented without explicit specification of the probability distribution of the target variable $Y$. All we need for the algorithm is the following:
+
+* The input variables $\bx = [1, x_1, \cdots, x_p]^\prime$ that form the linear predictor $\eta = \bx^\prime\bbeta$
+
+* The link function $g(\mu) = \eta$ and its inverse $\mu = g^{-1}(\eta)$
+
+* The variance of an observation, $\Var[Y]$. Note that in the exponential family the variance is related to the mean and the variance function is found as the derivative of the inverse canonical link function $b^\prime(\theta) = \mu$. The details are not important here, we can always find the variance as a function of the mean $\mu$ if we know which member of the exponential family we are dealing with.
+
+* The derivative of the linear predictor $\eta$ with respect to the mean $\mu$.
+
+To compute the log likelihood of the data for a particular value of the parameter estimates, we also need to know the distribution and need to evaluate the log likelihood function.
+
+### The Data
+
+The data for this application is the `Bikeshare` data that comes with the ISLR2 library and contains 8,645 records of the number of bike rentals per hour in Washington, DC along with time/date and weather information.
+
+``` {r}
+library(ISLR2)
+str(Bikeshare)
+```
+
+The target variable is `bikers`, the total number of daily bikers. Because this is a count variable on a per unit (daily) basis, we implement a Poisson GLM with a log link. The input variables of interest are the factors month (`mnth`), weather situation (`weathersit`) and the temperature (`temp`).
+
+### Starting Values
+
+Since the algorithm is iterative, we need to get it off the ground with starting values. From @eq-irls-linearization we can spy two different approaches for starting the iterations: with an initial value $\bbeta^{(0)}$ from which we calculate 
+$\mu^{(0)} =  g^{-1})(\bx^\prime\bbeta^{(0)})$ or with an initial value $\mu^{(0)}$ determined independently from $\bbeta$. 
+
+The second approach works if the data can be evaluated at the link function, possibly after a small adjustment. With a log link we need to worry about whether any of the counts are zero. 
+
+```{r}
+initial <- function(values, link="log", c=0.5) {
+    if (!is.null(values) && !anyNA(values)) {
+        if (toupper(link)=="LOG") {
+            if (sum(values == 0)) {
+                eta0 <- log(ifelse(values==0,c,values))
+            } else {
+                eta0 <- log(values)
+            }
+        }
+        return(eta0)
+    } else {
+        return (NULL)
+    }
+}
+```
+
+### Functions 
+
+Some additional functions will help evaluate the necessary pieces of the working variable $z$ and the weights in the linear model step. The function `dmu_deta` returns the derivative of the mean with respect to the linear predictor, evaluated at the current estimates:
+$$
+\frac{\partial \mu}{\partial \eta} \biggr\vert_{\widehat{\mu}}
+$$
+It is easy to extend that function to handle other link functions.
+The function `get_mu` returns the mean of the response based on the link function and the linear predictor. The function `get_var` computes the variance of the target variable based on the distribution in the exponential family, the function `get_z` constructs the working response variable, and `get_w` computes the weight for the reweighted least squares step.
+
+```{r}
+get_var <- function(mu, dist="Poisson") {
+    if (toupper(dist)=="POISSON") {
+        return (mu)
+    }
+    return (NULL)
+}
+
+get_mu <- function(eta, link="log") {
+    if (toupper(link)=="LOG") {
+        return (exp(eta))
+    }
+    return (NULL)
+}
+
+deta_dmu <- function(eta, link="log") {
+    if (toupper(link)=="LOG") {
+        return(detadmu = 1/exp(eta))
+    }
+    return (NULL)
+}
+
+get_z <- function(y, eta, link) {
+    if (is.null(y) || is.null(eta)) {
+        stop("null values not allowed")
+    }
+    if (anyNA(y) || anyNA(eta)) {
+        stop("cannot handle missing values")
+    }
+    z <- eta + (y - get_mu(eta,link)) * deta_dmu(eta,link)
+    return(z)
+}
+
+# The weight for the linear model is the inverse of the variance of
+# the working variable z.
+get_w <- function(eta, link="log", dist="poisson") {
+    var_z <- deta_dmu(eta,link)^2 * get_var(get_mu(eta,link),dist)
+    return (1/var_z)    
+}
+```
+
+### Iterations
+
+The iterations can be carried out in a loop. The algorithm stops when the max number of iterations is exceeded or when the largest relative absolute change in a parameter estimates between iterations $t+1$ and $t$ is smaller than a tolerance:
+$$
+\frac{\max\left\{|\widehat{\beta}_j^{(t)} - \widehat{\beta}_j^{(t-1)}|\right\}}
+{\max\left\{|\widehat{\beta}_j^{(t)}|,|\widehat{\beta}_j^{(t-1)}|\right\}} \le \text{tol}
+$$
+The function `converged` checks whether the relative parameter convergence citerion is met:
+
+```{r}
+converged <- function(newbeta,oldbeta,tol=1e-6) {
+    diff <- abs(newbeta - oldbeta)
+    denom <- pmax(abs(newbeta),abs(oldbeta))
+    return (max(diff/denom) < tol)
+}
+```
+
+
+In that case we say that the iterations have converged to a solution and report the parameter estimates.
+
+The iterations call `lm.wfit` to fit a weighted linear model with model matrix $\bX$, target vector $\bz = [z_1,\cdots,z_n]^\prime$ and weight vector $\bw = [w_1,\cdots,w_n]^\prime$.
+
+
+```{r}
+maxiter <- 50
+tol <- 1e-6
+Y <- Bikeshare$bikers
+X <- model.matrix( ~ mnth + weathersit + temp, data = Bikeshare)
+eta <- initial(Y,"log")
+
+for (iter in 1:maxiter) {
+    z <- get_z(Y,eta,"log")
+    w <- get_w(eta,"log","Poisson")
+    # Fit a weighted linear model with response z, model X, and weight w
+    linreg <- lm.wfit(X,z,w)
+    # Check whether the model has converged
+    if ((iter > 1) && converged(linreg$coefficients,beta,tol)) {
+        beta <- linreg$coefficients
+        cat("Converged after ", iter, "iterations")
+        print(beta)
+        break
+    } else {
+        beta <- linreg$coefficients
+    }
+    # update eta for the next go-around
+    eta <- linreg$fitted.values
+}
+```
+The algorithm converges after six iterations, not counting the initial setup. The parameter estiamtes can be validated with the `glm` function.
+
+``` {r}
+mod.pois <- glm(bikers ~ mnth + weathersit + temp,
+                data = Bikeshare, 
+                family = "poisson")
+mod.pois$coefficients
+```
+
+
+## To Do
+
+You can improve on the above implementation in a number of ways and you should give it a try:
+
+* Monitor the log likelihood or deviance instead or in addition to the parameter estimates.
+
+* Report the log likelihood, null deviance, and residual deviance at convergence.
+
+* Compute approximate standard errors and approximate significance tests for the coefficients.
+
+* Start the iterations from a vector of initial parameters $\bbeta^{(0)}$.
+
+* Extend the program to other link functions and distributions.
+
+* How would you accommodate a Binomial($n,\pi$) distribution?
+
+* Rewrite the code in terms of `family()` objects, see `?family()` for details. As an example, `poisson()$mu.eta` reports the function that computes $\partial \mu /\partial \eta$ for the default link function of the `poisson` family.
+
+* Add an offset variable to the generalized linear model.
+
+* Accommodate a scale parameter (two-parameter exponential family).
+
+
