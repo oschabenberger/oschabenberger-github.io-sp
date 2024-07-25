@@ -37,9 +37,58 @@ First, reproducibility in research and data analysis is not about research; it i
 
 Here are some points to increase the reproducibility of your programs and data analysis
 
-### Have a Plan
+### Have a Plan \& Document
 
-### Document
+Begin by writing a project plan or protocol that includes methods, materials, data sets, software, packages, etc., you intend to use. 
+
+Consider this a living document, because things will change. You might find out that the package you plan for a particular analysis turns out to be insufficient in capabilities and performance. Document why you are making the change. 
+
+The project plan should be under version control (@sec-repro-vc). 
+
+Plan how to organize the directory structure of your project. Suppose your project involves some data, code, analysis output, and manuscripts you work on. A **project-based** organization treats each project as a separate directory with sub-directories for data, code, results, and manuscripts. An **activity-based** organization uses data, code, results, and manuscripts as the highest-level folders and organizes projects within those (@fig-dir-org).
+
+![Project-based and activity-based folder organization.](images/proj_activity.png){#fig-dir-org fig-align="center" width=80%}
+
+The best organization is up to you, I generally prefer the project-based over activity-based approach. Some things to keep in mind:
+
+* If projects do not overlap in data and code, it makes sense to deal with them separately. Projects that share large amounts of data are best managed together. 
+
+* Avoid duplication, especially when it comes to data. Keeping multiple copies of the same data is bad practice and a recipe for disaster when data changes. The same goes for code. 
+
+* Modularity is your friend. Writing modular code that assembles programs from functions and components is a great way to organize the work. You can keep the modules separate from the individual projects. The code for the project differs in which modules are used and how they are being called. 
+
+* Raw data should never be modified---it should be in a read-only state. The processed data that serves as the input for analytics is kept separate from the raw data.
+
+* Project directories that are self contained can be easily compressed, backed-up, and shared. Achieving self-containedness can be at odds with avoiding duplication; you have to think through and manage the tradeoffs.
+
+* Anything generated from code (output, tables, images) goes into a separate folder. Depending on the volume of results, separate directories for tables, images, text output is a good idea.
+
+* Record receipt and distribution of assets. Keep a journal (or README file) where you track which data was received when from whom, and where you stored it.
+
+:::{.callout-caution title="No Spreadsheets!"}
+Avoid spreadsheets at all cost. If raw data comes to you in the form of spreadsheets, make them immutable (read-only) and extract the "real" data immediately. Spreadsheets are very common and a horrible format for analytic data. We prefer tabular data in rows and columns where each row is an observation and each column is a variable. The primary data source for statistical analysis should not contain graphs or other calculations.
+
+Spreadsheets give the appearance of tabular data but they are usually not cleanly organized this way. Some cells contain images, text and other forms of information that does not fit the tabular layout. Cells make references to other (sheets and) cells that make it difficult to know what data you are actually dealing with.
+
+If your primary data is in spreadsheets, the data is of constant danger of being corrupted by changes to the spreadsheet. It is too easy to modify raw data by accidentally typing in a cell.
+:::
+
+### Metadata 
+
+Metadata is data about your data. It provides information about the data but not the data itself.
+
+Suppose someone sends you a CSV file, the only metadata are names of the variables in the file. Some CSV files won't even have those. What do the variable names mean? Are those the best names to place on graphs? What are the units of measurements? What else do you need to know about the variables? Are there missing values, if so, how are they coded?
+When was the data created and by whom? What were the purpose of data collection and the means of data collection? Has the data been processed?
+
+The metadata we are most in need of in statistical programming is called **structural** metadata, it describes the structure of data sets and databases (tables, columns, indices, etc.). This information is tracked in **data dictionaries** (also called codebooks). A data dictionary might contain for each column in a data set the following:
+
+* The exact variable name in the file or table.
+* A long variable name that serves as a label on results (graphs, tables).
+* A variable-sized string column that explains what the variable means, how it was measured, its units, etc.
+* Information on how values are formatted, e.g, date, datetime formats, reference values for dates/times.
+* Statistical summaries such as min, max, mean, and checksums.
+
+Your data might not come with dictionary information, so you will have to create the dictionary and track down the needed information. 
 
 ### Literate Programming
 
@@ -52,11 +101,257 @@ Literate programs are different from well-documented code or code that includes 
 
 #### Comments in code
 
-If you do not write a literate program you should add comments to your code. The purpose of comments is to express the intent of the code, not to explain what the code does. Explanatory comments are OK if the code is not obvious in some way. If you have a chance to refactor or rewrite nonobvious code, do not hesitate.
+If you do not write a literate program you should add comments to your code. The purpose of comments is to express the intent of the code, not to explain what the code does. Explanatory comments are OK if the code is not obvious in some way. If you have a chance to refactor or rewrite non-obvious code, do not hesitate.
 
 Comments should clarify **why** code is written a certain way and what the code is supposed to accomplish. If you feel that many lines of comments are needed to clarify some code, it can be an indication that the code should be simplified. If you are struggling to explain the intent of a function at the time you write it, imagine how difficult it is to divine that intent from the comment or code in six months or for a programmer not familiar with the code. 
 
 
-### Version Control
+### Version Control {#sec-repro-vc}
+
+Version control refers to the management and tracking of changes in digital content; mostly files and mostly code. Any digital asset can be placed under version control. Even if you are working (mostly) by yourself, using a version control system is important. Employers consider it a non-negotiable skill and you do not want to stand out as the applicant who does not know how to use git. The benefits of version control systems are so big, even the solo programmer would be remiss not using it.
+
+What does a version control system like git do for you:
+
+- It keeps track of files and their changes over time.
+
+- It saves changes to files without duplicating the contents, saving space in the process.
+
+- It groups content in logical units (branches) that are managed together. For example, all files associated with a particular build of a software release are kept in a branch.
+
+- It is a time machine, allowing you to reconstruct a previous state of the project and to see the complete history of the files.
+
+- It is a backup machine, making sure you have access to older versions of files and that changes do not get lost.
+
+- It allows you to perform comparisons between versions of files and to reconcile their differences.
+
+- It allows you to safely experiment with code without affecting code others depend on.
+
+- It allows you to see which parts of a project are worked on most/least frequently.
+
+- It is a collaborative tool, that reconciles changes to files made by multiple developers. Version control systems allow you to submit changes to someone else's code.
+
+- By supporting modern continuous integration/continuous deployment (CI/CD) principles, a version control system can automate the process of testing and deploying software.
+
+The list goes on and on. The main point is that these capabilities and benefits are for everyone, whether you work on a project alone or as a team member.
+
+:::{.callout-tip}
+Oh how I wish there were easily accessible version control systems when I did my Ph.D. work. It involved a lot of programming algorithms and the analysis of real data sets. Developing the code took months to years and went through many iterations. I made frequent backups of the relevant files using really cool storage technology using special 1GB-size cartridges and a special reader. There were disks labeled "January 1993", "March 1993", "December 1993", "Final", "Final-V2", and so forth. The storage technology was discontinued by the manufacturer and the cartridges are useless today. I am not able to access the contents even if the bits have not rotted on the media by now. 
+
+To study how the algorithm I needed to write for the dissertation evolved over time, I would have to go through all the backups and compare files one by one. A version control system will show me the entire history of changes in one fell swoop.
+
+Using a cloud-based version control system would have avoided that headache. Alas, that did not exist back then.
+:::
+
+There are many version control systems, Git, Perforce, Beanstalk, Mercurial, Bitbucket, Apache Subversion, AWS CodeCommit, CVS (Concurrent Versions System, not the drugstore chain), and others. 
+
+The most important system today is Git. GitHub and GitLab are built on top of git. What is the relationship? Git is a local version control system, it runs entirely on the machine where it is installed and manages file changes there. GitHub and GitLab are a cloud-based systems that allow you to work with remote repositories. In addition to supporting Git remotely, GitHub adds many cool features to increase developer productivity. The files for the pages you are reading are managed with Git and stored in a remote repository on GitHub (the URL is [https://github.com/oschabenberger/oschabenberger-github.io-sp](https://github.com/oschabenberger/oschabenberger-github.io-sp)). GitHub also hosts the web site for the text through [GitHub Pages](https://oschabenberger.github.io/oschabenberger-github.io-sp/). GitHub Actions can be set up so that the web site (the book) automatically rebuilds if any source files changes.
 
 
+## Git Crash Course
+
+Git is installed on your machine, it is a **local** tool for versioning files. You can perform all major Git operations (clone, init, add, mv, restore, rm, diff, grep, log, branch, commit merge, rebase, etc.) without an internet connection. The collaborative aspect of version control comes into play when you use a Git service provider such as GitHub or GitLab. Besides making Git a tool for multi-user applications, using GitHub or GitLab also gives you the ability to work with **remote** repositories; you can push your local changes to a server in the cloud, making it accessible to others and making it independent of the local workstation. Just because you push a repository to GitHub does not necessarily give everyone on the internet access to it---you manage whether a repository is private or public. 
+
+### Installing Git
+
+There are several ways to get Git on your machine, see [here](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git). On MacOS, installing the XCode Command Line tools will drop git on the machine. To see if you already have Git, open a terminal and check:
+
+```{.default}
+➜  Data Science which git
+/usr/bin/git
+```
+
+The executable is installed in `/usr/bin/git` on my MacBook.
+
+### Basic Configuration
+
+There are a million of configuration options for Git and its commands. You can see the configuration with 
+
+```{.default}
+➜ git config --list
+```
+
+To connect to GitHub later, add your username and email address to the configuration:
+
+```{.default}
+➜ git config --global user.name "First Last"
+➜ git config --global user.email "first.last@example.com"
+```
+
+You can have project-specific configurations, simply remove the `--global` option and issue the `git config` command from the project (repository) directory.
+
+### Repositories
+
+A repository is a collection of folders and files. Repositories are either cloned from an existing repository or initialized from scratch. To initialize a repository, change into the root directory of the project and issue the `git init` command:
+
+```{.default}
+Data Science cd "STAT 5014"
+➜ STAT 5014 pwd
+/Users/olivers/Documents/Teaching/Data Science/STAT 5014
+➜ STAT 5014 git init
+Initialized empty Git repository in /Users/olivers/Documents/Teaching/Data Science/STAT 5014/.git/
+➜ STAT 5014 git:(main)
+```
+
+To get help on git or any of the git commands, simply add `--help`:
+
+```{.default}
+➜ git --help
+➜ git status --help
+➜ git add --help
+```
+
+#### Stages of a file
+
+A file in a Git repository goes through multiple stages (@fig-git-file). At first, the file is **unmodified** and **untracked**. A file that was changed in any way is in a **modified** state. That does not automatically update the repository. In order to commit the change, the file first needs to be **staged** with the `git add` command.
+
+When you issue a `git add` on a new file or directory, it is being **tracked**. When you clone a repository, all files in your working directory will be tracked and unmodified. 
+
+![The lifecycle of a file in Git. [Source](https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository)](images/git_file_lifecycle.png){#fig-git-file fig-align="center" width=80% .lightbox}
+
+A file that is staged will appear under the “Changes to be committed” heading in the `git status` output.
+
+Once you commit the file it goes back into an unmodified and tracked state. 
+
+#### Tracking files
+
+To track files in a repository, you need to explicitly add them to the file tree with `git add`. This does not push the file into a branch or a remote repository, it simply informs Git which files you care about.
+
+```{.default}
+➜ git add LeastSquares.R
+➜ git add *.Rmd
+➜ git add docs/
+```
+
+The previous commands added `LeastSquares.R`, all `.Rmd` files in the current directory, and all files in the `docs` subfolder to the Git tree. You can see the state of this tree any time with 
+
+```{.default}
+➜ git status
+```
+
+`git status` shows you all files that have changed as well as files that are not tracked by Git and are **not ignored**. For example, after making some changes to the `quarto.yml` and to `reproducibility.qmd` files since the last commit, the status of the repository for this material looks as follows:
+
+```{.default}
+➜  StatProgramming git:(main) ✗ git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   _quarto.yml
+	modified:   docs/reproducibility.html
+	modified:   docs/search.json
+	modified:   reproducibility.qmd
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.DS_Store
+	.gitignore
+	.nojekyll
+	.python-version
+	StatProgramming.Rproj
+	_book/
+	ads.ddb
+	customstyle.scss
+	data/
+	debug_ada.R
+	debug_ada.Rmd
+	images/
+	latexmacros.tex
+	sp_references.bib
+
+no changes added to commit (use "git add" and/or "git commit -a")
+```
+
+Two more files have been noted by Git as modified, `docs/reproducibility.html` and `docs/search.json`. These files are generated by Quarto when the content of the modified files is being rendered. They will be added to the next commit to make sure the website is up to date and not just the source (`.qmd`) files.
+
+`git add` can be a bit confusing because it appears to perform multiple functions: to track a new file and to stage a file for commit. If you think of `git add` as adding precisely the content to the next commit, then the multiple functions roll into a single one.
+
+---
+
+An ignored file is one for which you explicitly tell Git not to worry about. You list those files in a `.gitignore` file. (You can have multiple `.gitignore` files in the directory hierarchy, refer to the [Git documentation](https://git-scm.com/docs) on how they interact. The typical scenario is a `.gitignore` file in the root of the repository.)
+
+The contents of the following `.gitignore` file state that all `.html` files should be ignored, except for `foo.html`. Also, `StatLearning.Rproj` will be ignored.
+
+```{.default}
+➜ cat .gitignore
+*.html
+!foo.html
+StatLearning.Rproj
+```
+
+Files that are listed in `.gitignore` are not added to the repository and persist when a repository is cloned. However, if a file is already being tracked, then adding it to `.gitignore` does not untrack the file. To stop tracking a file that is currently tracked, use 
+```{.default}
+git rm --cached filename 
+```
+to remove the file from the tree. The file name can then be added to the .gitignore file to stop the file from being reintroduced in later commits.
+
+Files that you want to exclude from tracking are often binary files that are the result of a build or compile, and large files. Also, if you are pushing to a public remote repository, make sure that no files containing sensitive information are added. 
+
+#### Committing changes
+
+Once you track a file, Git keeps track of the changes to the file. Those changes are not reflected in the repository until you commit them with the `commit` command. A file change will not be committed to the repository unless it has been staged. `git add` will do that for you. 
+
+It is a good practice to add a descriptive message to the `commit` command that explains what changes are committed to the repository:
+
+```{.default}
+➜ git commit -m "Early stopping criterion for GLMM algorithm"
+```
+
+If you do not specify a commit message, Git will open an editor in which you must enter a message.
+
+Since only files that have been added with `git add` are committed, you can ask Git to notice the changes to the files whose contents are tracked in your working tree and do corresponding `git add`s  for you by adding the `-a` option to the commit:
+
+
+```{.default}
+➜ git commit -a -m "Early stopping criterion for GLMM algorithm"
+```
+
+What happens when you modify a file after you ran `git add` but before the net commit? The file will appear in `git status` as both staged and ready to be committed **and** as unstaged. The reason is because Git is tracking two versions of the file now: the state it was in when you first ran `git add` and the state it is in now, which includes the modifications since the last `git add`. In order to stage the most recent changes to the file, simply run `git add` on the file again.
+
+
+#### Remote repositories
+
+The full power of Git comes to light when you combine the local work in Git repositories with a cloud-based version control service such as GitHub or GitLab. To use remote repositories with Git, first set up an account, say with [GitHub](https://www.github.com).
+
+The Git commands to interact with a remote repository are 
+
+* `git pull`: Incorporates changes from a remote repository into the current branch. If the current branch is behind the remote, then by default it will fast-forward the current branch to match the remote. The result is a copy of changes into your working directory.
+
+* `git fetch`: Copies changes from a remote repository into the local Git repository. The difference between `fetch` and `pull` is that the latter also copies the changes into your working directory, not just into the local repo.
+
+* `git push`: Updates remote references using local references, while sending necessary objects.
+
+* `git remote`: Manage the set of remote repositories whose branches you track.
+
+:::{.callout-note}
+If you have used other version control systems, you might have come across the terms *pushing* and *pulling* files. In CVS, for example, to pull a file means adding it to your local checkout of a branch, to push a file means adding it back to the central repository. 
+
+With Git, push and pull command only come into play when you work with remote repositories. As long as everything remains on your machine, you do not need those commands. However, most repositories these days are remote, so the initial interaction with a repository is often a `clone`, `pull`, or `fetch`.
+:::
+
+Start by creating a new repository on GitHub by clicking on the *New* button. You have to decide on a name for the repository and whether it is public or private. Once you created a remote repository, GitHub gives you alternative ways of addressing it, using https, ssh, etc. 
+
+:::{.callout-tip}
+Depending on which type of reference you use on the command line, you also need different ways of authenticating the transaction. GitHub removed passwords as an authentication method for command-line operations some time ago. If you use SSH-style references you authenticate using the passphrase of an SSH key registered with GitHub. If you use https-style references you authenticate with an access token you set up in GitHub.
+:::
+
+Back on your local machine you manage the association between the local repository and the remote repository with the `git remote` commands. For example,
+
+```{.default}
+➜ git remote add origin git@github.com:oschabenberger/oschabenberger-github.io-bn.git
+```
+
+associates the remote repository described by the ssh syntax `git@github.com:oschabenberger/oschabenberger-github.io-bn.git` with the local repository. Using html syntax, the same command looks like this:
+
+```{.default}
+➜ git remote add origin https://github.com/oschabenberger/oschabenberger-github.io-bn
+```
+
+GitHub provides these strings to you when you create a repository.
+
+To update the remote repository with the contents of the local repository, issue the `git push` command:
+
+```{.default}
+➜ git push
+```

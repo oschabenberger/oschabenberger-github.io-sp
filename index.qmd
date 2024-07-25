@@ -4,9 +4,9 @@ Welcome to this short treatise about statistical programming and statistical pro
 This is online material in a series of collections used in teaching data science and statistics at the graduate level. 
 This material on statistical programming accompanies
 
-- [Foundations of Data Science--Beyond the Numbers](https://schabenb.vt.domains/bn/index.html) (*Foundations*) and
+- [Foundations of Data Science--Beyond the Numbers](https://oschabenberger.github.io/oschabenberger-github.io-bn/) (*Foundations*) and
 
-- [Statistical Learning](https://schabenb.vt.domains/sl/index.html) (*StatLearning*).
+- [Statistical Learning](https://oschabenberger.github.io/oschabenberger-github.io-sl/) (*StatLearning*).
 
 *Foundations* covers fundamental concepts in data science and the data science project life cycle. 
 *StatLearning* is a comprehensive collection of modules on supervised and unsupervised learning from a statistical perspective.

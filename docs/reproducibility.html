@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 /* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
@@ -63,6 +97,9 @@ div.csl-indent {
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -251,14 +288,26 @@ window.Quarto = {
   <li><a href="#what-me-worry" id="toc-what-me-worry" class="nav-link active" data-scroll-target="#what-me-worry"><span class="header-section-number">9.1</span> What, me Worry?</a></li>
   <li><a href="#improving-reproducibility-of-statistical-programs" id="toc-improving-reproducibility-of-statistical-programs" class="nav-link" data-scroll-target="#improving-reproducibility-of-statistical-programs"><span class="header-section-number">9.2</span> Improving Reproducibility of Statistical Programs</a>
   <ul>
-  <li><a href="#have-a-plan" id="toc-have-a-plan" class="nav-link" data-scroll-target="#have-a-plan">Have a Plan</a></li>
-  <li><a href="#document" id="toc-document" class="nav-link" data-scroll-target="#document">Document</a></li>
+  <li><a href="#have-a-plan-document" id="toc-have-a-plan-document" class="nav-link" data-scroll-target="#have-a-plan-document">Have a Plan &amp; Document</a></li>
+  <li><a href="#metadata" id="toc-metadata" class="nav-link" data-scroll-target="#metadata">Metadata</a></li>
   <li><a href="#literate-programming" id="toc-literate-programming" class="nav-link" data-scroll-target="#literate-programming">Literate Programming</a>
   <ul class="collapse">
   <li><a href="#what-it-is" id="toc-what-it-is" class="nav-link" data-scroll-target="#what-it-is">What it is</a></li>
   <li><a href="#comments-in-code" id="toc-comments-in-code" class="nav-link" data-scroll-target="#comments-in-code">Comments in code</a></li>
   </ul></li>
-  <li><a href="#version-control" id="toc-version-control" class="nav-link" data-scroll-target="#version-control">Version Control</a></li>
+  <li><a href="#sec-repro-vc" id="toc-sec-repro-vc" class="nav-link" data-scroll-target="#sec-repro-vc">Version Control</a></li>
+  </ul></li>
+  <li><a href="#git-crash-course" id="toc-git-crash-course" class="nav-link" data-scroll-target="#git-crash-course"><span class="header-section-number">9.3</span> Git Crash Course</a>
+  <ul>
+  <li><a href="#installing-git" id="toc-installing-git" class="nav-link" data-scroll-target="#installing-git">Installing Git</a></li>
+  <li><a href="#basic-configuration" id="toc-basic-configuration" class="nav-link" data-scroll-target="#basic-configuration">Basic Configuration</a></li>
+  <li><a href="#repositories" id="toc-repositories" class="nav-link" data-scroll-target="#repositories">Repositories</a>
+  <ul class="collapse">
+  <li><a href="#stages-of-a-file" id="toc-stages-of-a-file" class="nav-link" data-scroll-target="#stages-of-a-file">Stages of a file</a></li>
+  <li><a href="#tracking-files" id="toc-tracking-files" class="nav-link" data-scroll-target="#tracking-files">Tracking files</a></li>
+  <li><a href="#committing-changes" id="toc-committing-changes" class="nav-link" data-scroll-target="#committing-changes">Committing changes</a></li>
+  <li><a href="#remote-repositories" id="toc-remote-repositories" class="nav-link" data-scroll-target="#remote-repositories">Remote repositories</a></li>
+  </ul></li>
   </ul></li>
   </ul>
 </nav>
@@ -310,11 +359,61 @@ https://open-science-training-handbook.github.io/Open-Science-Training-Handbook_
 <section id="improving-reproducibility-of-statistical-programs" class="level2" data-number="9.2">
 <h2 data-number="9.2" class="anchored" data-anchor-id="improving-reproducibility-of-statistical-programs"><span class="header-section-number">9.2</span> Improving Reproducibility of Statistical Programs</h2>
 <p>Here are some points to increase the reproducibility of your programs and data analysis</p>
-<section id="have-a-plan" class="level3">
-<h3 class="anchored" data-anchor-id="have-a-plan">Have a Plan</h3>
+<section id="have-a-plan-document" class="level3">
+<h3 class="anchored" data-anchor-id="have-a-plan-document">Have a Plan &amp; Document</h3>
+<p>Begin by writing a project plan or protocol that includes methods, materials, data sets, software, packages, etc., you intend to use.</p>
+<p>Consider this a living document, because things will change. You might find out that the package you plan for a particular analysis turns out to be insufficient in capabilities and performance. Document why you are making the change.</p>
+<p>The project plan should be under version control (<a href="#sec-repro-vc" class="quarto-xref"><span>Section 9.2.4</span></a>).</p>
+<p>Plan how to organize the directory structure of your project. Suppose your project involves some data, code, analysis output, and manuscripts you work on. A <strong>project-based</strong> organization treats each project as a separate directory with sub-directories for data, code, results, and manuscripts. An <strong>activity-based</strong> organization uses data, code, results, and manuscripts as the highest-level folders and organizes projects within those (<a href="#fig-dir-org" class="quarto-xref">Figure&nbsp;<span>9.1</span></a>).</p>
+<div id="fig-dir-org" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-dir-org-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/proj_activity.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-dir-org-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.1: Project-based and activity-based folder organization.
+</figcaption>
+</figure>
+</div>
+<p>The best organization is up to you, I generally prefer the project-based over activity-based approach. Some things to keep in mind:</p>
+<ul>
+<li><p>If projects do not overlap in data and code, it makes sense to deal with them separately. Projects that share large amounts of data are best managed together.</p></li>
+<li><p>Avoid duplication, especially when it comes to data. Keeping multiple copies of the same data is bad practice and a recipe for disaster when data changes. The same goes for code.</p></li>
+<li><p>Modularity is your friend. Writing modular code that assembles programs from functions and components is a great way to organize the work. You can keep the modules separate from the individual projects. The code for the project differs in which modules are used and how they are being called.</p></li>
+<li><p>Raw data should never be modified—it should be in a read-only state. The processed data that serves as the input for analytics is kept separate from the raw data.</p></li>
+<li><p>Project directories that are self contained can be easily compressed, backed-up, and shared. Achieving self-containedness can be at odds with avoiding duplication; you have to think through and manage the tradeoffs.</p></li>
+<li><p>Anything generated from code (output, tables, images) goes into a separate folder. Depending on the volume of results, separate directories for tables, images, text output is a good idea.</p></li>
+<li><p>Record receipt and distribution of assets. Keep a journal (or README file) where you track which data was received when from whom, and where you stored it.</p></li>
+</ul>
+<div class="callout callout-style-default callout-caution callout-titled" title="No Spreadsheets!">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+No Spreadsheets!
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Avoid spreadsheets at all cost. If raw data comes to you in the form of spreadsheets, make them immutable (read-only) and extract the “real” data immediately. Spreadsheets are very common and a horrible format for analytic data. We prefer tabular data in rows and columns where each row is an observation and each column is a variable. The primary data source for statistical analysis should not contain graphs or other calculations.</p>
+<p>Spreadsheets give the appearance of tabular data but they are usually not cleanly organized this way. Some cells contain images, text and other forms of information that does not fit the tabular layout. Cells make references to other (sheets and) cells that make it difficult to know what data you are actually dealing with.</p>
+<p>If your primary data is in spreadsheets, the data is of constant danger of being corrupted by changes to the spreadsheet. It is too easy to modify raw data by accidentally typing in a cell.</p>
+</div>
+</div>
 </section>
-<section id="document" class="level3">
-<h3 class="anchored" data-anchor-id="document">Document</h3>
+<section id="metadata" class="level3">
+<h3 class="anchored" data-anchor-id="metadata">Metadata</h3>
+<p>Metadata is data about your data. It provides information about the data but not the data itself.</p>
+<p>Suppose someone sends you a CSV file, the only metadata are names of the variables in the file. Some CSV files won’t even have those. What do the variable names mean? Are those the best names to place on graphs? What are the units of measurements? What else do you need to know about the variables? Are there missing values, if so, how are they coded? When was the data created and by whom? What were the purpose of data collection and the means of data collection? Has the data been processed?</p>
+<p>The metadata we are most in need of in statistical programming is called <strong>structural</strong> metadata, it describes the structure of data sets and databases (tables, columns, indices, etc.). This information is tracked in <strong>data dictionaries</strong> (also called codebooks). A data dictionary might contain for each column in a data set the following:</p>
+<ul>
+<li>The exact variable name in the file or table.</li>
+<li>A long variable name that serves as a label on results (graphs, tables).</li>
+<li>A variable-sized string column that explains what the variable means, how it was measured, its units, etc.</li>
+<li>Information on how values are formatted, e.g, date, datetime formats, reference values for dates/times.</li>
+<li>Statistical summaries such as min, max, mean, and checksums.</li>
+</ul>
+<p>Your data might not come with dictionary information, so you will have to create the dictionary and track down the needed information.</p>
 </section>
 <section id="literate-programming" class="level3">
 <h3 class="anchored" data-anchor-id="literate-programming">Literate Programming</h3>
@@ -325,19 +424,214 @@ https://open-science-training-handbook.github.io/Open-Science-Training-Handbook_
 </section>
 <section id="comments-in-code" class="level4">
 <h4 class="anchored" data-anchor-id="comments-in-code">Comments in code</h4>
-<p>If you do not write a literate program you should add comments to your code. The purpose of comments is to express the intent of the code, not to explain what the code does. Explanatory comments are OK if the code is not obvious in some way. If you have a chance to refactor or rewrite nonobvious code, do not hesitate.</p>
+<p>If you do not write a literate program you should add comments to your code. The purpose of comments is to express the intent of the code, not to explain what the code does. Explanatory comments are OK if the code is not obvious in some way. If you have a chance to refactor or rewrite non-obvious code, do not hesitate.</p>
 <p>Comments should clarify <strong>why</strong> code is written a certain way and what the code is supposed to accomplish. If you feel that many lines of comments are needed to clarify some code, it can be an indication that the code should be simplified. If you are struggling to explain the intent of a function at the time you write it, imagine how difficult it is to divine that intent from the comment or code in six months or for a programmer not familiar with the code.</p>
 </section>
 </section>
-<section id="version-control" class="level3">
-<h3 class="anchored" data-anchor-id="version-control">Version Control</h3>
+<section id="sec-repro-vc" class="level3">
+<h3 class="anchored" data-anchor-id="sec-repro-vc">Version Control</h3>
+<p>Version control refers to the management and tracking of changes in digital content; mostly files and mostly code. Any digital asset can be placed under version control. Even if you are working (mostly) by yourself, using a version control system is important. Employers consider it a non-negotiable skill and you do not want to stand out as the applicant who does not know how to use git. The benefits of version control systems are so big, even the solo programmer would be remiss not using it.</p>
+<p>What does a version control system like git do for you:</p>
+<ul>
+<li><p>It keeps track of files and their changes over time.</p></li>
+<li><p>It saves changes to files without duplicating the contents, saving space in the process.</p></li>
+<li><p>It groups content in logical units (branches) that are managed together. For example, all files associated with a particular build of a software release are kept in a branch.</p></li>
+<li><p>It is a time machine, allowing you to reconstruct a previous state of the project and to see the complete history of the files.</p></li>
+<li><p>It is a backup machine, making sure you have access to older versions of files and that changes do not get lost.</p></li>
+<li><p>It allows you to perform comparisons between versions of files and to reconcile their differences.</p></li>
+<li><p>It allows you to safely experiment with code without affecting code others depend on.</p></li>
+<li><p>It allows you to see which parts of a project are worked on most/least frequently.</p></li>
+<li><p>It is a collaborative tool, that reconciles changes to files made by multiple developers. Version control systems allow you to submit changes to someone else’s code.</p></li>
+<li><p>By supporting modern continuous integration/continuous deployment (CI/CD) principles, a version control system can automate the process of testing and deploying software.</p></li>
+</ul>
+<p>The list goes on and on. The main point is that these capabilities and benefits are for everyone, whether you work on a project alone or as a team member.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Oh how I wish there were easily accessible version control systems when I did my Ph.D.&nbsp;work. It involved a lot of programming algorithms and the analysis of real data sets. Developing the code took months to years and went through many iterations. I made frequent backups of the relevant files using really cool storage technology using special 1GB-size cartridges and a special reader. There were disks labeled “January 1993”, “March 1993”, “December 1993”, “Final”, “Final-V2”, and so forth. The storage technology was discontinued by the manufacturer and the cartridges are useless today. I am not able to access the contents even if the bits have not rotted on the media by now.</p>
+<p>To study how the algorithm I needed to write for the dissertation evolved over time, I would have to go through all the backups and compare files one by one. A version control system will show me the entire history of changes in one fell swoop.</p>
+<p>Using a cloud-based version control system would have avoided that headache. Alas, that did not exist back then.</p>
+</div>
+</div>
+<p>There are many version control systems, Git, Perforce, Beanstalk, Mercurial, Bitbucket, Apache Subversion, AWS CodeCommit, CVS (Concurrent Versions System, not the drugstore chain), and others.</p>
+<p>The most important system today is Git. GitHub and GitLab are built on top of git. What is the relationship? Git is a local version control system, it runs entirely on the machine where it is installed and manages file changes there. GitHub and GitLab are a cloud-based systems that allow you to work with remote repositories. In addition to supporting Git remotely, GitHub adds many cool features to increase developer productivity. The files for the pages you are reading are managed with Git and stored in a remote repository on GitHub (the URL is <a href="https://github.com/oschabenberger/oschabenberger-github.io-sp">https://github.com/oschabenberger/oschabenberger-github.io-sp</a>). GitHub also hosts the web site for the text through <a href="https://oschabenberger.github.io/oschabenberger-github.io-sp/">GitHub Pages</a>. GitHub Actions can be set up so that the web site (the book) automatically rebuilds if any source files changes.</p>
+</section>
+</section>
+<section id="git-crash-course" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="git-crash-course"><span class="header-section-number">9.3</span> Git Crash Course</h2>
+<p>Git is installed on your machine, it is a <strong>local</strong> tool for versioning files. You can perform all major Git operations (clone, init, add, mv, restore, rm, diff, grep, log, branch, commit merge, rebase, etc.) without an internet connection. The collaborative aspect of version control comes into play when you use a Git service provider such as GitHub or GitLab. Besides making Git a tool for multi-user applications, using GitHub or GitLab also gives you the ability to work with <strong>remote</strong> repositories; you can push your local changes to a server in the cloud, making it accessible to others and making it independent of the local workstation. Just because you push a repository to GitHub does not necessarily give everyone on the internet access to it—you manage whether a repository is private or public.</p>
+<section id="installing-git" class="level3">
+<h3 class="anchored" data-anchor-id="installing-git">Installing Git</h3>
+<p>There are several ways to get Git on your machine, see <a href="https://git-scm.com/book/en/v2/Getting-Started-Installing-Git">here</a>. On MacOS, installing the XCode Command Line tools will drop git on the machine. To see if you already have Git, open a terminal and check:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>➜  Data Science which git</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>/usr/bin/git</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The executable is installed in <code>/usr/bin/git</code> on my MacBook.</p>
+</section>
+<section id="basic-configuration" class="level3">
+<h3 class="anchored" data-anchor-id="basic-configuration">Basic Configuration</h3>
+<p>There are a million of configuration options for Git and its commands. You can see the configuration with</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>➜ git config --list</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>To connect to GitHub later, add your username and email address to the configuration:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>➜ git config --global user.name "First Last"</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>➜ git config --global user.email "first.last@example.com"</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You can have project-specific configurations, simply remove the <code>--global</code> option and issue the <code>git config</code> command from the project (repository) directory.</p>
+</section>
+<section id="repositories" class="level3">
+<h3 class="anchored" data-anchor-id="repositories">Repositories</h3>
+<p>A repository is a collection of folders and files. Repositories are either cloned from an existing repository or initialized from scratch. To initialize a repository, change into the root directory of the project and issue the <code>git init</code> command:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>Data Science cd "STAT 5014"</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>➜ STAT 5014 pwd</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>/Users/olivers/Documents/Teaching/Data Science/STAT 5014</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>➜ STAT 5014 git init</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>Initialized empty Git repository in /Users/olivers/Documents/Teaching/Data Science/STAT 5014/.git/</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>➜ STAT 5014 git:(main)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>To get help on git or any of the git commands, simply add <code>--help</code>:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>➜ git --help</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>➜ git status --help</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>➜ git add --help</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="stages-of-a-file" class="level4">
+<h4 class="anchored" data-anchor-id="stages-of-a-file">Stages of a file</h4>
+<p>A file in a Git repository goes through multiple stages (<a href="#fig-git-file" class="quarto-xref">Figure&nbsp;<span>9.2</span></a>). At first, the file is <strong>unmodified</strong> and <strong>untracked</strong>. A file that was changed in any way is in a <strong>modified</strong> state. That does not automatically update the repository. In order to commit the change, the file first needs to be <strong>staged</strong> with the <code>git add</code> command.</p>
+<p>When you issue a <code>git add</code> on a new file or directory, it is being <strong>tracked</strong>. When you clone a repository, all files in your working directory will be tracked and unmodified.</p>
+<div id="fig-git-file" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-git-file-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/git_file_lifecycle.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="images/git_file_lifecycle.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-git-file-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.2: The lifecycle of a file in Git. <a href="https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository">Source</a>
+</figcaption>
+</figure>
+</div>
+<p>A file that is staged will appear under the “Changes to be committed” heading in the <code>git status</code> output.</p>
+<p>Once you commit the file it goes back into an unmodified and tracked state.</p>
+</section>
+<section id="tracking-files" class="level4">
+<h4 class="anchored" data-anchor-id="tracking-files">Tracking files</h4>
+<p>To track files in a repository, you need to explicitly add them to the file tree with <code>git add</code>. This does not push the file into a branch or a remote repository, it simply informs Git which files you care about.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>➜ git add LeastSquares.R</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>➜ git add *.Rmd</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>➜ git add docs/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The previous commands added <code>LeastSquares.R</code>, all <code>.Rmd</code> files in the current directory, and all files in the <code>docs</code> subfolder to the Git tree. You can see the state of this tree any time with</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>➜ git status</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>git status</code> shows you all files that have changed as well as files that are not tracked by Git and are <strong>not ignored</strong>. For example, after making some changes to the <code>quarto.yml</code> and to <code>reproducibility.qmd</code> files since the last commit, the status of the repository for this material looks as follows:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>➜  StatProgramming git:(main) ✗ git status</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>On branch main</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>Your branch is up to date with 'origin/main'.</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>Changes not staged for commit:</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  (use "git add &lt;file&gt;..." to update what will be committed)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  (use "git restore &lt;file&gt;..." to discard changes in working directory)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    modified:   _quarto.yml</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    modified:   docs/reproducibility.html</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    modified:   docs/search.json</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    modified:   reproducibility.qmd</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>Untracked files:</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  (use "git add &lt;file&gt;..." to include in what will be committed)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    .DS_Store</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    .gitignore</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    .nojekyll</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    .python-version</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    StatProgramming.Rproj</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    _book/</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    ads.ddb</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    customstyle.scss</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    data/</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    debug_ada.R</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    debug_ada.Rmd</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>    images/</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>    latexmacros.tex</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>    sp_references.bib</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>no changes added to commit (use "git add" and/or "git commit -a")</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Two more files have been noted by Git as modified, <code>docs/reproducibility.html</code> and <code>docs/search.json</code>. These files are generated by Quarto when the content of the modified files is being rendered. They will be added to the next commit to make sure the website is up to date and not just the source (<code>.qmd</code>) files.</p>
+<p><code>git add</code> can be a bit confusing because it appears to perform multiple functions: to track a new file and to stage a file for commit. If you think of <code>git add</code> as adding precisely the content to the next commit, then the multiple functions roll into a single one.</p>
+<hr>
+<p>An ignored file is one for which you explicitly tell Git not to worry about. You list those files in a <code>.gitignore</code> file. (You can have multiple <code>.gitignore</code> files in the directory hierarchy, refer to the <a href="https://git-scm.com/docs">Git documentation</a> on how they interact. The typical scenario is a <code>.gitignore</code> file in the root of the repository.)</p>
+<p>The contents of the following <code>.gitignore</code> file state that all <code>.html</code> files should be ignored, except for <code>foo.html</code>. Also, <code>StatLearning.Rproj</code> will be ignored.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>➜ cat .gitignore</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>*.html</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>!foo.html</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>StatLearning.Rproj</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Files that are listed in <code>.gitignore</code> are not added to the repository and persist when a repository is cloned. However, if a file is already being tracked, then adding it to <code>.gitignore</code> does not untrack the file. To stop tracking a file that is currently tracked, use</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>git rm --cached filename </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>to remove the file from the tree. The file name can then be added to the .gitignore file to stop the file from being reintroduced in later commits.</p>
+<p>Files that you want to exclude from tracking are often binary files that are the result of a build or compile, and large files. Also, if you are pushing to a public remote repository, make sure that no files containing sensitive information are added.</p>
+</section>
+<section id="committing-changes" class="level4">
+<h4 class="anchored" data-anchor-id="committing-changes">Committing changes</h4>
+<p>Once you track a file, Git keeps track of the changes to the file. Those changes are not reflected in the repository until you commit them with the <code>commit</code> command. A file change will not be committed to the repository unless it has been staged. <code>git add</code> will do that for you.</p>
+<p>It is a good practice to add a descriptive message to the <code>commit</code> command that explains what changes are committed to the repository:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>➜ git commit -m "Early stopping criterion for GLMM algorithm"</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>If you do not specify a commit message, Git will open an editor in which you must enter a message.</p>
+<p>Since only files that have been added with <code>git add</code> are committed, you can ask Git to notice the changes to the files whose contents are tracked in your working tree and do corresponding <code>git add</code>s for you by adding the <code>-a</code> option to the commit:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>➜ git commit -a -m "Early stopping criterion for GLMM algorithm"</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>What happens when you modify a file after you ran <code>git add</code> but before the net commit? The file will appear in <code>git status</code> as both staged and ready to be committed <strong>and</strong> as unstaged. The reason is because Git is tracking two versions of the file now: the state it was in when you first ran <code>git add</code> and the state it is in now, which includes the modifications since the last <code>git add</code>. In order to stage the most recent changes to the file, simply run <code>git add</code> on the file again.</p>
+</section>
+<section id="remote-repositories" class="level4">
+<h4 class="anchored" data-anchor-id="remote-repositories">Remote repositories</h4>
+<p>The full power of Git comes to light when you combine the local work in Git repositories with a cloud-based version control service such as GitHub or GitLab. To use remote repositories with Git, first set up an account, say with <a href="https://www.github.com">GitHub</a>.</p>
+<p>The Git commands to interact with a remote repository are</p>
+<ul>
+<li><p><code>git pull</code>: Incorporates changes from a remote repository into the current branch. If the current branch is behind the remote, then by default it will fast-forward the current branch to match the remote. The result is a copy of changes into your working directory.</p></li>
+<li><p><code>git fetch</code>: Copies changes from a remote repository into the local Git repository. The difference between <code>fetch</code> and <code>pull</code> is that the latter also copies the changes into your working directory, not just into the local repo.</p></li>
+<li><p><code>git push</code>: Updates remote references using local references, while sending necessary objects.</p></li>
+<li><p><code>git remote</code>: Manage the set of remote repositories whose branches you track.</p></li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If you have used other version control systems, you might have come across the terms <em>pushing</em> and <em>pulling</em> files. In CVS, for example, to pull a file means adding it to your local checkout of a branch, to push a file means adding it back to the central repository.</p>
+<p>With Git, push and pull command only come into play when you work with remote repositories. As long as everything remains on your machine, you do not need those commands. However, most repositories these days are remote, so the initial interaction with a repository is often a <code>clone</code>, <code>pull</code>, or <code>fetch</code>.</p>
+</div>
+</div>
+<p>Start by creating a new repository on GitHub by clicking on the <em>New</em> button. You have to decide on a name for the repository and whether it is public or private. Once you created a remote repository, GitHub gives you alternative ways of addressing it, using https, ssh, etc.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Depending on which type of reference you use on the command line, you also need different ways of authenticating the transaction. GitHub removed passwords as an authentication method for command-line operations some time ago. If you use SSH-style references you authenticate using the passphrase of an SSH key registered with GitHub. If you use https-style references you authenticate with an access token you set up in GitHub.</p>
+</div>
+</div>
+<p>Back on your local machine you manage the association between the local repository and the remote repository with the <code>git remote</code> commands. For example,</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>➜ git remote add origin git@github.com:oschabenberger/oschabenberger-github.io-bn.git</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>associates the remote repository described by the ssh syntax <code>git@github.com:oschabenberger/oschabenberger-github.io-bn.git</code> with the local repository. Using html syntax, the same command looks like this:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>➜ git remote add origin https://github.com/oschabenberger/oschabenberger-github.io-bn</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>GitHub provides these strings to you when you create a repository.</p>
+<p>To update the remote repository with the contents of the local repository, issue the <code>git push</code> command:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>➜ git push</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 
+<div class="hidden" aria-hidden="true">
+<span class="glightbox-desc lightbox-desc-1">Figure&nbsp;9.2: The lifecycle of a file in Git. <a href="https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository">Source</a></span>
+</div>
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
 <div id="ref-Knuth1984" class="csl-entry" role="listitem">
 Knuth, D. E. 1984. <span>“<span>Literate Programming</span>.”</span> <em>The Computer Journal</em> 27 (2): 97–111. <a href="https://doi.org/10.1093/comjnl/27.2.97">https://doi.org/10.1093/comjnl/27.2.97</a>.
 </div>
 </div>
+</section>
 </section>
 </section>
 
@@ -911,7 +1205,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <footer class="footer">
   <div class="nav-footer">
     <div class="nav-footer-left">
-<p>Statistical Programming (Packages) by Oliver Schabenberger</p>
+<p>Statistical Programming by Oliver Schabenberger</p>
 </div>   
     <div class="nav-footer-center">
       &nbsp;
@@ -921,6 +1215,31 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","selector":".lightbox","loop":false,"descPosition":"bottom","openEffect":"zoom"});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
 
 
 
