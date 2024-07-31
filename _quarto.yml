@@ -23,8 +23,8 @@ book:
     - reading_data.qmd
     - wrangling_data.qmd
     - summarization.qmd
+    - visualization.qmd
     - matrices.qmd
- #       - visualization.qmd
     - random.qmd
     - debugging.qmd 
     - reproducibility.qmd

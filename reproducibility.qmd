@@ -39,7 +39,7 @@ Here are some points to increase the reproducibility of your programs and data a
 
 ### Have a Plan \& Document
 
-Begin by writing a project plan or protocol that includes methods, materials, data sets, software, packages, etc., you intend to use. 
+Begin by writing a project plan or protocol that includes methods, materials, data sets, software, packages, etc., you intend to use. Make a note of versions, operating systems, cloud instances and other aspects of computingn architecture that can have bearing on your approach and results.
 
 Consider this a living document, because things will change. You might find out that the package you plan for a particular analysis turns out to be insufficient in capabilities and performance. Document why you are making the change. 
 
@@ -98,6 +98,13 @@ The concept of **literate programming** was introduced by @Knuth1984 and refers 
 
 Literate programs are different from well-documented code or code that includes documentation as part of the file. The flow of these programs still follow the logic of the computer, not the logic of human thought. In literate programming the code follows the structure of the documentation. @sec-irls-literate is a literate program that implements from scratch an important iterative statistical algorithm: iteratively reweighted least squares (IRLS).
 
+In general, we should **weave** code and text into a complete reference of our work.  The document should:
+
+- download or otherwise load/generate data
+- reproduce steps to munge data
+- recreate analysis steps
+- create figures and tables
+- explain any and all steps along the way
 
 #### Comments in code
 
@@ -355,3 +362,168 @@ To update the remote repository with the contents of the local repository, issue
 ```{.default}
 ➜ git push
 ```
+
+## Coding Best Practices
+
+Writing code, maintaining code, reviewing code, and fixing code are essential elements of what data professionals do. Understanding and following best practices is important. 80\% of jobs in data science are outside of academic environments. Those employers have standard operating procedures for software developers that will apply also to statistical programming and data science projects. For example, many companies use code reviews by fellow developers to evaluate new or modified code before it can be committed to a repository. The feedback from code reviews flows into performance evaluations and has impact on your career. Not following the coding guidelines and best practices of an organization is a great way of shortening tenure. 
+Software projects are collaborative projects and someone else will need to work with your code. How easy is it to understand? Is it well documented? Is it properly structured and modular? How easy is it to debug?
+
+Here are some coding practices for you to consider. 
+
+### Structure and Organization
+
+#### Naming
+
+- Choose names for variables and functions that are easy to understand. Variable and function names should be self explanatory. Most modern programming languages and tools no longer limit the length of function or variable names, there is no excuse for using `a1`, `a2`, `b3` as variable names.
+
+- Stick with a naming convention such as snake_case, PascalCase, or camelCase. In snake_case, spaces between words are replaced with an underscore. In camelCase, words are concatenated and the first letter of the word is capitalized. PascalCase is a special case where the first letter of the entire name is also capitalized; camelCase is ambivalent about capitalizing the first letter of the name. The following are examples of names in camelCase.
+
+```{.default}
+accountBalance
+thisVariableIsWrittenInCamelCase
+itemNumber
+socialSN
+MasterCard
+```
+
+An issue with camelCase is that it is not entirely clear how to write names in that style that contain other names or abbreviations, for example, is it `NASAAdminFiles` or `NasaAdminFiles`? I am not sure it really matters.
+
+snake_case is popular because it separates words with underscores---mimicking white space---while producing valid names for computer processing. The following are examples of names in snake_case:
+
+```{.default}
+account_balance
+ACCOUNT_BALANCE
+home_page
+item_Number
+```
+
+Using upper-case letters in snake_case is called "screaming snake case", situations where I have seen it used are the definition of global constants or macro names in C. kebab case is similar to snake case but uses a hyphen instead of an underscore. Here are examples of names in kebab case:
+
+```{.default}
+account-balance
+home-page
+item-Number
+```
+
+Although it might look nice, it is a good idea to avoid kebab case in programs. Imagine the mess that ensues if the hyphen were to be interpreted as a minus sign! While the compiler might read the hyphen correctly, the code reviewer in the cubicle down the hall might think it is a minus sign.
+
+Do **not** assign objects to existing names, unless you really want to override them. This goes in particular for internal symbols and built-in functions. Unfortunately, `R` does not blink and allows you to do things like this:
+
+```{.default}
+T <- runif(20)
+C <- summary(lm(y ~ x))
+```
+
+These assignments override the global variable whose value is set to `TRUE` for logical comparison and the function `C()` that defines contrasts for factors. If in doubt whether it is safe to assign to a name, check in the console whether the name exists or request help for it
+
+```{.default}
+?T
+?C()
+```
+
+
+#### Comments
+
+Unless you write a literal program use comments throughout to clarify **why** code is written a certain way and what the code is supposed to accomplish. Even with literal programs, comments associated with code are a good practice because the code-portion of the literal program can get separated from the text material at some later point. 
+
+Comments frequently are intended by programmers to leave themselves some notes, for example, about functions yet to be written or to be refactored later. Make it clear with a "TODO" at the beginning of the comment where those sections of the program are and make the TODO comment stand out visually from other comments.
+
+It is a good practice to have a standardized form for writing comments. For example, you can have a standard comment block at the beginning of functions. Some organizations will require you to write very detailed comment blocks that explain all inputs and outputs down to length of vectors and data types.
+
+```{.default}
+# -------------------------------------------------------------------
+# TODO: Add check whether it is safe to perform the division before
+#       returning from the function. Variances can be zero or near zero.
+# -------------------------------------------------------------------
+
+# ###################################################################
+# Function: getIRLSWeights
+# Purpose: retrieve the vector of weights for iteratively 
+#          reweighted least squares
+# Arguments:
+#       eta: numeric vector of linear predictors
+#       link: character string describing the link function
+#       dist: character string describing the distribution of the response 
+#
+# Returns: the vector of weights, same length as the eta vector (input)
+#
+# Notes: 
+#   For efficiency, eta is not checked for NULL or missing values. 
+#   These checks are in the deta_dmu() and get_var() functions.
+# ###################################################################
+
+getIRLSWeights <- function(eta, link="log", dist="poisson") {
+    var_z <- deta_dmu(eta,link)^2 * get_var(get_mu(eta,link),dist)
+    return (1/var_z)    
+}
+
+```
+
+If you program in Python, you would add docstrings to the function. This also serves as the help information for the user.
+
+#### Whitespace
+
+Judicious use of whitespace makes code more readable. It helps to differentiate visually and to see patterns. Examples are indentation (use spaces, not tabs), alignment within code blocks, placement of parentheses, and so forth.
+
+Which of the following two functions is easier to read? It does not matter for the `R` interpreter but it matters for the programmer.
+
+```{.default}
+get_z <- function(y, eta, link) {
+if (is.null(y) || is.null(eta)) {
+stop("null values not allowed") }
+if (anyNA(y) || anyNA(eta)) {
+stop("cannot handle missing values") }
+z <- eta + (y - get_mu(eta,link)) * deta_dmu(eta,link)
+return(z)
+}
+
+get_z <- function(y, eta, link) {
+    if (is.null(y) || is.null(eta)) {
+        stop("null values not allowed")
+    }
+    if (anyNA(y) || anyNA(eta)) {
+        stop("cannot handle missing values")
+    }
+    z <- eta + (y - get_mu(eta,link)) * deta_dmu(eta,link)
+    return(z)
+}
+```
+
+The following code uses indentation to separate options from values and to isolate the
+function definition for handling the reference strip. The closing parenthesis is 
+separated with whitespace to visually align with the opening parenthesis of `xyplot`.
+
+```{.default}
+xyplot(diameter ~ measurement | Tree, 
+       data    = apples,
+       strip   = function(...) {
+           # alter the text in the reference strip   
+           strip.default(..., 
+                         strip.names  = c(T,T), 
+                         strip.levels = c(T,T),
+                         sep          = " ")
+       },
+       xlab    = "Measurement index",
+       ylab    = "Diameter (inches)",
+       type    = c("p"),
+       as.table= TRUE,
+       layout  = c(4,3,1)
+      )
+```
+
+With languages such as Python, where whitespace is functionally relevant, you have to use spacing within the limits of what the language allows.
+
+
+#### Documentation
+
+Comments in code are not documentation. Documentation is a detailed explanation of the purpose of the code, how it works, how its functions work, their arguments, etc. It also includes all information someone would want to need to take over the project. In literal programs you have the opportunity to write code and documentation at the same time. Many software authoring frameworks include steps in programming that generate the documentation. For example, to add documentation to an `R` package, you need to create a "man" subdirectory that contains one file per function in the special R Documentation format (.Rd). You can see what the files look like by browsing `R` packages on GitHub. For example, [here](https://github.com/cran/ada) is the repository for the `ada` package.
+
+
+At a minimum a README file in Markdown should accompany the program. The file has setup instructions and use instructions someone would have to follow to execute the code. It identifies author, version, major revision history, and details on the functions in the public API---those functions called by the user of the program.
+
+There are great automated documentation systems such as [doxygen](https://www.doxygen.nl/) which annotate the source code in such a way that documentation can be extracted automatically. 
+
+
+<!---
+https://www.datacamp.com/tutorial/coding-best-practices-and-guidelines
+--->

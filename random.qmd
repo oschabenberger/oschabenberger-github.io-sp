@@ -1,5 +1,5 @@
 
-# Random Number Generation {#sec-random}
+# Random Numbers {#sec-random}
 
 Statistical computing and computational statistics (see @sec-comp-stat) rely heavily on processing streams of random numbers. Stochastic processes make assumptions about the probabilistic behavior of data, we need computational methods to study the processes. For example, a common assumption in models for continuous response $Y$ is
 $$
@@ -12,7 +12,7 @@ $$
 Y(t) = \rho Y(t-1) + \epsilon(t)
 $$
 
-Here, $Y(t)$ is the observation of the time series at time $t$, $\rho$ is a parameter of the process and the $\epsilon(t)$ are independent random errors, also called the **random shocks** or **innovations** of the process. How do you generate a time series in the computer that is a realization of this process?
+Here, $Y(t)$ is the observation of the time series at time $t$, $\rho$ is a parameter of the process, and the $\epsilon(t)$ are independent random errors, also called the **random shocks** or **innovations** of the process. How do you generate a time series in the computer that is a realization of this process?
 
 ## Pseudo Random Number Generation
 

@@ -226,7 +226,7 @@ Because we are reading many tables from the `ads.ddb` database, you can write a 
 duckload <- function(tableName, whereClause=NULL, dbName="ads.ddb") {
     if (!is.null(tableName)) {
         if (!("duckdb" %in% (.packages()))) {
-            suppressWarnings(libary("duckdb"))
+            suppressWarnings(library("duckdb"))
         }
         con <- dbConnect(duckdb(), dbdir=dbName, read_only=TRUE)
         query_string <- paste("SELECT * from ", tableName)

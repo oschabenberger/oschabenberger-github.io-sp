@@ -44,6 +44,17 @@ year={2018},
 url={https://r-graphics.org/}
 }
 
+@article{GelmanUnwin2013,
+title={Infovis and Statistical Graphics: Different Goals, Different Looks},
+url={https://www.tandfonline.com/doi/full/10.1080/10618600.2012.761137}, 
+author={Gelman, A., and Unwin, A.},
+journal={Journal of Computational and Graphical Statistics}, 
+volume={22}, 
+year={2013},
+issue={1},
+pages={2--28}
+}
+
 @article{Knuth1984,
     author = {Knuth, D. E.},
     title = "{Literate Programming}",
@@ -84,6 +95,40 @@ year={2022},
 url={https://wesmckinney.com/book/}
 }
 
+@book{Schabenberger2001,
+title={Contemporary Statistical Models for the Plant and Soil Sciences},
+author={Schabenberger, O. and Pierce, Francis J.},
+year={2001},
+publisher={CRC Press, Boca Raton}
+}
+
+@book{Tufte_1983,
+title={The Visual Display of Quantitative Information}, 
+author={Tufte, E.},
+year={1983},
+publisher={Graphics Press}
+}
+
+@book{Tufte_2001,
+title={The Visual Display of Quantitative Information, 2nd ed.}, 
+author={Tufte, E.},
+year={2001},
+publisher={Graphics Press}
+}
+
+@article{Tukey1993,
+ ISSN = {10618600},
+ URL = {http://www.jstor.org/stable/1390951},
+ author = {John W. Tukey},
+ journal = {Journal of Computational and Graphical Statistics},
+ number = {1},
+ pages = {1--33},
+ publisher = {[American Statistical Association, Taylor & Francis, Ltd., Institute of Mathematical Statistics, Interface Foundation of America]},
+ title = {Graphic Comparisons of Several Linked Aspects: Alternatives and Suggested Principles},
+ urldate = {2024-07-30},
+ volume = {2},
+ year = {1993}
+}
 
 @book{VanderPlas,
 title={Python Data Science Handbook},
@@ -120,6 +165,14 @@ author={Wickham, H. and Cetinkaya-Rundel, M., and Grolemund, G.},
 publisher={O'Reilly Media},
 year={2023},
 url={https://r4ds.hadley.nz/}
+}
+
+@book{Wilke2019,
+author={Wilke, Claus O.},
+title={Fundamentals of Data Visualization},
+publisher={O'Reilly Media},
+url={https://clauswilke.com/dataviz/},
+year={2019}
 }
 
 @book{Xie_etal,

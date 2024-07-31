@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Statistical Programming - 10&nbsp; Iteratively Reweighted Least Squares</title>
+<title>Statistical Programming - 11&nbsp; Iteratively Reweighted Least Squares</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -167,7 +167,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./irls_literate.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Iteratively Reweighted Least Squares</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./irls_literate.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Iteratively Reweighted Least Squares</span></a></li></ol></nav>
         <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -238,32 +238,38 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Visualization</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./matrices.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Vectors and Matrices</span></span></a>
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Vectors and Matrices</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./random.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Random Number Generation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Random Numbers</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./debugging.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Debugging in <code>R</code></span></span></a>
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Debugging in <code>R</code></span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./reproducibility.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Reproducible Research and Data Analysis</span></span></a>
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Reproducible Research and Data Analysis</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./irls_literate.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Iteratively Reweighted Least Squares</span></span></a>
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Iteratively Reweighted Least Squares</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -282,16 +288,16 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#generalized-linear-models" id="toc-generalized-linear-models" class="nav-link active" data-scroll-target="#generalized-linear-models"><span class="header-section-number">10.1</span> Generalized Linear Models</a></li>
-  <li><a href="#iteratively-reweighted-least-squares" id="toc-iteratively-reweighted-least-squares" class="nav-link" data-scroll-target="#iteratively-reweighted-least-squares"><span class="header-section-number">10.2</span> Iteratively Reweighted Least Squares</a></li>
-  <li><a href="#literate-programming" id="toc-literate-programming" class="nav-link" data-scroll-target="#literate-programming"><span class="header-section-number">10.3</span> Literate Programming</a>
+  <li><a href="#generalized-linear-models" id="toc-generalized-linear-models" class="nav-link active" data-scroll-target="#generalized-linear-models"><span class="header-section-number">11.1</span> Generalized Linear Models</a></li>
+  <li><a href="#iteratively-reweighted-least-squares" id="toc-iteratively-reweighted-least-squares" class="nav-link" data-scroll-target="#iteratively-reweighted-least-squares"><span class="header-section-number">11.2</span> Iteratively Reweighted Least Squares</a></li>
+  <li><a href="#literate-programming" id="toc-literate-programming" class="nav-link" data-scroll-target="#literate-programming"><span class="header-section-number">11.3</span> Literate Programming</a>
   <ul>
   <li><a href="#the-data" id="toc-the-data" class="nav-link" data-scroll-target="#the-data">The Data</a></li>
   <li><a href="#starting-values" id="toc-starting-values" class="nav-link" data-scroll-target="#starting-values">Starting Values</a></li>
   <li><a href="#functions" id="toc-functions" class="nav-link" data-scroll-target="#functions">Functions</a></li>
   <li><a href="#iterations" id="toc-iterations" class="nav-link" data-scroll-target="#iterations">Iterations</a></li>
   </ul></li>
-  <li><a href="#to-do" id="toc-to-do" class="nav-link" data-scroll-target="#to-do"><span class="header-section-number">10.4</span> To Do</a></li>
+  <li><a href="#to-do" id="toc-to-do" class="nav-link" data-scroll-target="#to-do"><span class="header-section-number">11.4</span> To Do</a></li>
   </ul>
 </nav>
     </div>
@@ -300,7 +306,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span id="sec-irls-literate" class="quarto-section-identifier"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Iteratively Reweighted Least Squares</span></span></h1>
+<h1 class="title"><span id="sec-irls-literate" class="quarto-section-identifier"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Iteratively Reweighted Least Squares</span></span></h1>
 </div>
 
 
@@ -319,11 +325,11 @@ window.Quarto = {
 
 <p>In statistical training of generalized linear models (GLMs), the iteratively reweighted least squares (IRLS) algorithm plays an important role. This algorithm uses repeated estimation of a linear model to find the maximum likelihood estimates of a GLM.</p>
 <p>In this chapter we explain the necessary basics of GLMs and IRLS, then write a literate <code>R</code> program to perform regression with a Poisson-distributed target variable from scratch.</p>
-<section id="generalized-linear-models" class="level2" data-number="10.1">
-<h2 data-number="10.1" class="anchored" data-anchor-id="generalized-linear-models"><span class="header-section-number">10.1</span> Generalized Linear Models</h2>
+<section id="generalized-linear-models" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="generalized-linear-models"><span class="header-section-number">11.1</span> Generalized Linear Models</h2>
 <p>The <strong>generalization</strong> of GLMs is found in a comparison to the classical linear model with Gaussian errors: <span id="eq-linearmodel-gaussian"><span class="math display">\[
 Y = \textbf{x}^\prime\boldsymbol{\beta}+ \epsilon, \quad \epsilon \sim \textit{ iid } G(0, \sigma^2)
-\tag{10.1}\]</span></span></p>
+\tag{11.1}\]</span></span></p>
 <p>Here <span class="math inline">\(Y\)</span> is the target variable of interest (dependent variable), <span class="math inline">\(\textbf{x}= [1, x_1,\cdots,x_p]^\prime\)</span> is a <span class="math inline">\((p \times 1)\)</span> vector of input variables, <span class="math inline">\(\boldsymbol{\beta}\)</span> is the vector of parameters of the mean function, and <span class="math inline">\(\epsilon\)</span> is an error term. These error terms are independently and identically distributed as Gaussian random variables with mean zero and common variance <span class="math inline">\(\sigma^2\)</span>.</p>
 <p>GLMs relax several elements of this model:</p>
 <ol type="1">
@@ -340,12 +346,12 @@ Y = \textbf{x}^\prime\boldsymbol{\beta}+ \epsilon, \quad \epsilon \sim \textit{ 
 <li><span class="math inline">\(\eta = \textbf{x}^\prime\boldsymbol{\beta}\)</span>: a predictor <span class="math inline">\(\eta\)</span> that is linear in the parameters</li>
 <li><span class="math inline">\(g(\mu) = \eta\)</span>: A transformation of the mean is linearly related to the parameters. The function <span class="math inline">\(g()\)</span> is called the <strong>link function</strong> of the GLM and is invertible, that is, <span class="math inline">\(\mu = g^{-1}(\eta)\)</span>.</li>
 </ul>
-<p>The parameters <span class="math inline">\(\boldsymbol{\beta}\)</span> in <a href="#eq-linearmodel-gaussian" class="quarto-xref">Equation&nbsp;<span>10.1</span></a> can be estimated by least squares in closed form. That means we can compute the parameter estimates directly. If <span class="math inline">\(\textbf{X}\)</span> is of full column rank, the ordinary least squares estimates is <span class="math display">\[
+<p>The parameters <span class="math inline">\(\boldsymbol{\beta}\)</span> in <a href="#eq-linearmodel-gaussian" class="quarto-xref">Equation&nbsp;<span>11.1</span></a> can be estimated by least squares in closed form. That means we can compute the parameter estimates directly. If <span class="math inline">\(\textbf{X}\)</span> is of full column rank, the ordinary least squares estimates is <span class="math display">\[
 \widehat{\boldsymbol{\beta}} = \left(\textbf{X}^\prime\textbf{X}\right)^{-1}\textbf{X}^\prime\textbf{Y}
 \]</span> and this is also the maximum likelihood estimator of <span class="math inline">\(\boldsymbol{\beta}\)</span>.</p>
 </section>
-<section id="iteratively-reweighted-least-squares" class="level2" data-number="10.2">
-<h2 data-number="10.2" class="anchored" data-anchor-id="iteratively-reweighted-least-squares"><span class="header-section-number">10.2</span> Iteratively Reweighted Least Squares</h2>
+<section id="iteratively-reweighted-least-squares" class="level2" data-number="11.2">
+<h2 data-number="11.2" class="anchored" data-anchor-id="iteratively-reweighted-least-squares"><span class="header-section-number">11.2</span> Iteratively Reweighted Least Squares</h2>
 <p>For other GLMs, the maximum likelihood estimates have to be found numerically. <span class="citation" data-cites="McCullaghNelder">McCullagh and Nelder Frs (<a href="references.html#ref-McCullaghNelder" role="doc-biblioref">1989</a>)</span> show that the following procedure, known as iteratively reweighted least squares, converges to the maximum likelihood estimates. To motivate the algorithm we start by a linear approximation (a first-order Taylor series) of the linked <u>observations</u> about an estimate of the mean: <span id="eq-irls-linearization"><span class="math display">\[
 \begin{align*}
 g(y) &amp;= g(\widehat{\mu}) + (y-\widehat{\mu})\left[ \frac{\partial g(y)}{\partial y}\right]_{\vert_{\widehat{\mu}}} \\
@@ -353,14 +359,14 @@ g(y) &amp;= g(\widehat{\mu}) + (y-\widehat{\mu})\left[ \frac{\partial g(y)}{\par
 &amp;= \widehat{\eta} + (y-\widehat{\mu})\left[\frac{\partial \eta}{\partial \mu} \right]_{\vert_{\widehat{\mu}}}  \\
 &amp;= z
 \end{align*}
-\tag{10.2}\]</span></span></p>
-<p><span class="math inline">\(z\)</span> is called an adjusted dependent variable or a working response variable or a pseudo-response. The final expression in <a href="#eq-irls-linearization" class="quarto-xref">Equation&nbsp;<span>10.2</span></a> can be viewed as a linear model with response variable <span class="math inline">\(z\)</span>, systematic part <span class="math inline">\(\widehat{\eta} = \textbf{x}^\prime\widehat{\boldsymbol{\beta}}\)</span> and error term <span class="math inline">\((y-\mu)[\partial \eta/\partial \mu]\)</span>. The variance of this error term is <span class="math display">\[
+\tag{11.2}\]</span></span></p>
+<p><span class="math inline">\(z\)</span> is called an adjusted dependent variable or a working response variable or a pseudo-response. The final expression in <a href="#eq-irls-linearization" class="quarto-xref">Equation&nbsp;<span>11.2</span></a> can be viewed as a linear model with response variable <span class="math inline">\(z\)</span>, systematic part <span class="math inline">\(\widehat{\eta} = \textbf{x}^\prime\widehat{\boldsymbol{\beta}}\)</span> and error term <span class="math inline">\((y-\mu)[\partial \eta/\partial \mu]\)</span>. The variance of this error term is <span class="math display">\[
 \text{Var}[z] = \left[\frac{\partial \eta}{\partial \mu}\right]^2 \text{Var}[Y]
 \]</span></p>
 <p>The iterative procedure is as follows: given an initial value of <span class="math inline">\(z\)</span>, which requires an initial estimate of <span class="math inline">\(\mu\)</span>, fit a weighted linear model with inputs <span class="math inline">\(\textbf{x}= [x_1,\cdots,x_p]^\prime\)</span> and weights given by the inverse of <span class="math inline">\(\text{Var}[z]\)</span>. The solution to the weighted linear model is an updated parameter vector <span class="math inline">\(\boldsymbol{\beta}\)</span>. Re-calculate <span class="math inline">\(z\)</span> and the weights and repeat the weighted linear regression fit. Continue until the relative change in the parameter estimates, the log likelihood function, the deviance, or some other criterion is negligible.</p>
 </section>
-<section id="literate-programming" class="level2" data-number="10.3">
-<h2 data-number="10.3" class="anchored" data-anchor-id="literate-programming"><span class="header-section-number">10.3</span> Literate Programming</h2>
+<section id="literate-programming" class="level2" data-number="11.3">
+<h2 data-number="11.3" class="anchored" data-anchor-id="literate-programming"><span class="header-section-number">11.3</span> Literate Programming</h2>
 <p>Iteratively reweighted least squares (IRLS) can be implemented without explicit specification of the probability distribution of the target variable <span class="math inline">\(Y\)</span>. All we need for the algorithm is the following:</p>
 <ul>
 <li><p>The input variables <span class="math inline">\(\textbf{x}= [1, x_1, \cdots, x_p]^\prime\)</span> that form the linear predictor <span class="math inline">\(\eta = \textbf{x}^\prime\boldsymbol{\beta}\)</span></p></li>
@@ -398,7 +404,7 @@ g(y) &amp;= g(\widehat{\mu}) + (y-\widehat{\mu})\left[ \frac{\partial g(y)}{\par
 </section>
 <section id="starting-values" class="level3">
 <h3 class="anchored" data-anchor-id="starting-values">Starting Values</h3>
-<p>Since the algorithm is iterative, we need to get it off the ground with starting values. From <a href="#eq-irls-linearization" class="quarto-xref">Equation&nbsp;<span>10.2</span></a> we can spy two different approaches for starting the iterations: with an initial value <span class="math inline">\(\boldsymbol{\beta}^{(0)}\)</span> from which we calculate <span class="math inline">\(\mu^{(0)} =  g^{-1})(\textbf{x}^\prime\boldsymbol{\beta}^{(0)})\)</span> or with an initial value <span class="math inline">\(\mu^{(0)}\)</span> determined independently from <span class="math inline">\(\boldsymbol{\beta}\)</span>.</p>
+<p>Since the algorithm is iterative, we need to get it off the ground with starting values. From <a href="#eq-irls-linearization" class="quarto-xref">Equation&nbsp;<span>11.2</span></a> we can spy two different approaches for starting the iterations: with an initial value <span class="math inline">\(\boldsymbol{\beta}^{(0)}\)</span> from which we calculate <span class="math inline">\(\mu^{(0)} =  g^{-1})(\textbf{x}^\prime\boldsymbol{\beta}^{(0)})\)</span> or with an initial value <span class="math inline">\(\mu^{(0)}\)</span> determined independently from <span class="math inline">\(\boldsymbol{\beta}\)</span>.</p>
 <p>The second approach works if the data can be evaluated at the link function, possibly after a small adjustment. With a log link we need to worry about whether any of the counts are zero.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>initial <span class="ot">&lt;-</span> <span class="cf">function</span>(values, <span class="at">link=</span><span class="st">"log"</span>, <span class="at">c=</span><span class="fl">0.5</span>) {</span>
@@ -540,8 +546,8 @@ g(y) &amp;= g(\widehat{\mu}) + (y-\widehat{\mu})\left[ \frac{\partial g(y)}{\par
 </div>
 </section>
 </section>
-<section id="to-do" class="level2" data-number="10.4">
-<h2 data-number="10.4" class="anchored" data-anchor-id="to-do"><span class="header-section-number">10.4</span> To Do</h2>
+<section id="to-do" class="level2" data-number="11.4">
+<h2 data-number="11.4" class="anchored" data-anchor-id="to-do"><span class="header-section-number">11.4</span> To Do</h2>
 <p>You can improve on the above implementation in a number of ways and you should give it a try:</p>
 <ul>
 <li><p>Monitor the log likelihood or deviance instead or in addition to the parameter estimates.</p></li>
@@ -1120,7 +1126,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./reproducibility.html" class="pagination-link" aria-label="Reproducible Research and Data Analysis">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Reproducible Research and Data Analysis</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Reproducible Research and Data Analysis</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
