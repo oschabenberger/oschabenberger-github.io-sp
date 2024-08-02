@@ -374,7 +374,7 @@ Here are some coding practices for you to consider.
 
 #### Naming
 
-- Choose names for variables and functions that are easy to understand. Variable and function names should be self explanatory. Most modern programming languages and tools no longer limit the length of function or variable names, there is no excuse for using `a1`, `a2`, `b3` as variable names.
+- Choose names for variables and functions that are easy to understand. Variable and function names should be self explanatory. Most modern programming languages and tools no longer limit the length of function or variable names, there is no excuse for using `a1`, `a2`, `b3` as variable names. Use nouns for names of variables and objects that describe what the item holds; for example, `originalData` and `randomForestResult` instead of `d` and `out`.
 
 - Stick with a naming convention such as snake_case, PascalCase, or camelCase. In snake_case, spaces between words are replaced with an underscore. In camelCase, words are concatenated and the first letter of the word is capitalized. PascalCase is a special case where the first letter of the entire name is also capitalized; camelCase is ambivalent about capitalizing the first letter of the name. The following are examples of names in camelCase.
 
@@ -513,6 +513,165 @@ xyplot(diameter ~ measurement | Tree,
 
 With languages such as Python, where whitespace is functionally relevant, you have to use spacing within the limits of what the language allows.
 
+#### Functions
+
+In `R` almost everything is a function. When should **you** write functions instead of one-off lines of code? As always, it depends; a partial answer hides in the question. When you do something only once, then writing a bunch of lines of code instead of packaging the code in a function makes sense. When you write a function you have to think about function arguments (is the string being passed a single string or a vector?), default values, return values, and so on.
+
+However, many programming tasks are not one-offs. Check your own code, you probably write the same two or three "one-off" lines of code over and over again. If you do it more than once, consider writing a function for it. If you do a substantial task over and over, consider writing a package.
+
+:::{.callout-note}
+If you are interested in writing an `R` package, check out [this](https://bookdown.org/rdpeng/RProgDA/building-r-packages.html) 
+chapter in the book by @Pengetal2020.
+:::
+
+Function names should be verbs associated with the function purpose, e.g., `joinTables()`, `updateWeights()`. For functions that retrieve or set values, using `get` and `set` is common: `getWeights()`, `setOptimizationInput()`.
+
+The comment block for function should document the function purpose, required arguments, and returns.
+
+Some argue that it is good coding practice to have default values on function arguments. For example,
+
+```{.default}
+addNumbers <- function(a=1, b=2) {return(a+b)}
+```
+
+instead of 
+
+```{.default}
+addNumbers <- function(a, b) {return(a+b)}
+```
+
+Adding defaults ensures that all variables are initialized with valid values and simplifies calling the function.
+On the other hand, it can mask important ways to control the behavior of the function. Users will call a function as they see it being used by others and not necessarily look at the function signature. Take the `duckload()` function:
+
+```{r, eval=FALSE}
+duckload <- function(tableName, whereClause=NULL, dbName="ads.ddb") {
+    if (!is.null(tableName)) {
+        if (!("duckdb" %in% (.packages()))) {
+            suppressWarnings(library("duckdb"))
+            message("duckdb library was loaded to execute duckload().")
+        }
+        con <- dbConnect(duckdb(), dbdir=dbName, read_only=TRUE)
+        query_string <- paste("SELECT * from ", tableName)
+        if (!is.null(whereClause)) {
+            query_string <- paste(query_string, " WHERE ", whereClause)
+        }
+        df_ <- dbGetQuery(con, query_string)
+        dbDisconnect(con)
+        return (df_)
+    } else {
+        return (NULL)
+    }
+}
+```
+
+Would you know from the following usage pattern that you can pass a WHERE clause to the SQL string?
+
+```{r, eval=FALSE}
+duckload("apples")
+```
+
+If the function arguments had no defaults, the function call would reveal its capabilities:
+
+```{r, eval=FALSE}
+duckload("apples", whereClause=NULL, dbName="ads.ddb")
+# or
+duckload("apples",NULL,"ads.ddb")
+```
+
+Other good practices to observe when writing functions:
+
+* Always have an explicit `return` argument. It makes it much easier to figure out where you return from the function and what exactly is being returned.
+
+* Check for NULL inputs
+
+* Check for missing values unless your code can handle them. 
+
+* Handle errors (see below)
+
+* Pass through variable arguments (`...`)
+
+* If you return multiple values, organize them in a list or a data frame. Lists are convenient to collect objects that are of different types and sizes into a single object. The following function returns a list with three elements,
+
+```{r, eval=FALSE}
+iterationWeight <- function(Gm,wts,method="tree") {
+    pclass <- predict(Gm,type="vector")
+    misclass <- pclass != Gm$y
+    Em <- sum(wts*misclass)/sum(wts)
+    alpha_m <- log((1-Em)/Em)
+    return (list("misclass"=misclass,"Em"=Em,"alpha_m"=alpha_m))
+}
+```
+
+#### Error Handling
+
+Think of a function as a contract between you and the user. If the user provides specified arguments, the function  produces predictable results. What should happen when the user specifies invalid arguments or when the function encounters situations that would create unpredictable results or situations that keep it from continuing?
+
+Your opportunities to handle these situations include issue warning messages with `warning()`, informational messages with `message()`, stopping the execution with `stop()` and `stopifnot()` and try-catch-finally execution blocks.
+In general, stopping the execution of a function with `stop` or `stopifnot` is a last resort if the function cannot possibly continue. If the data passed are of the wrong type and cannot be coerced into the correct data type, or if coercion would result in something nonsensical, then stop.
+
+In the event that inputs are invalid and you cannot perform the required calculations, could you still return NULL as a result? If so, do not stop the execution of the function. You can issue a warning message and then return NULL. Warning messages are also appropriate when the function behavior is changing in an unexpected way. For example, the input data contains missing values (NAs) and your algorithm cannot handle them. If you process the data after omitting missing values, then issue a warning message if that affects the dimensions of the returned objects.
+
+Keep in mind that `R` is used in scripts and as an interactive language. Messages from your code are intended for human consumption so they should be explicit and easy to understand. But avoid making your code too chatty. 
+
+To check whether input values have the expected types you can use functions such as
+
+```{r, eval=FALSE}
+is.numeric()
+is.character()
+is.factor()
+is.ordered()
+is.vector()
+is.matrix()
+```
+
+and to coerce between data types you can use the `as.` versions
+
+```{r, eval=FALSE}
+as.numeric()
+as.character()
+as.factor()
+as.ordered()
+as.vector()
+as.matrix()
+```
+
+`tryCatch()` is the `R` implementation of the try-catch-finally logic you might have seen in other languages. It is part of the condition system that provides a mechanism for signaling and handling unusual conditions in programs. `tryCatch` attempts to evaluate expression `expr`, and if it succeeds, executes the code in the `finally` block. You can add erorr and warning handlers with the `error=` and `warning=` options.
+
+```{r, eval=FALSE}
+tryCatch(expr,
+         error = function(e){
+           message("An error occurred:\n", e)
+         },
+         warning = function(w){
+           message("A warning occured:\n", w)
+         },
+         finally = {
+           message("Finally done!")
+         }
+        )
+```
+
+`tryCatch` is an elegant way to handle conditions, but you should not overdo it. It can be a drag on performance. For example, if you require input to be of numeric type, then it is easier and faster to check with `is.numeric` than to wrap the execution in `tryCatch`.
+
+#### Dependencies
+
+It is a good idea to check dependencies in functions. Are the required packages loaded?
+It is kind of you to load required packages on behave of the caller rather than stopping execution. If you do, 
+issue a message to that effect. See `duckload()` above for an example.
+
+Installing packages on behalf of the caller is a step too far in  my opinion, since you
+are now changing the `R` environment. You can check whether a package is installed with
+`require`. The following code stops executing if the `dplyr` package is not installed.
+
+``` {r, eval=FALSE}
+check_pkg_deps <- function() {
+    if (!require(dplyr))
+        stop("the 'dplyr' package needs to be installed first")
+}
+```
+
+`require()` is similar to `library()`, but while the latter fails with an error if the package cannot be loaded, `require` returns TRUE or FALSE depending on whether the library was loaded and does not throw an error if the package cannot be found. Think of `require` as the version of `library` you should use inside of functions.
+
 
 #### Documentation
 
@@ -521,9 +680,6 @@ Comments in code are not documentation. Documentation is a detailed explanation 
 
 At a minimum a README file in Markdown should accompany the program. The file has setup instructions and use instructions someone would have to follow to execute the code. It identifies author, version, major revision history, and details on the functions in the public API---those functions called by the user of the program.
 
-There are great automated documentation systems such as [doxygen](https://www.doxygen.nl/) which annotate the source code in such a way that documentation can be extracted automatically. 
+There are great automated documentation systems such as [doxygen](https://www.doxygen.nl/) which annotate the source code in such a way that documentation can be extracted automatically. An `R` package for generating inline documentation that was inspired by doxygen is `roxygen2`.
 
 
-<!---
-https://www.datacamp.com/tutorial/coding-best-practices-and-guidelines
---->

@@ -95,6 +95,13 @@ year={2022},
 url={https://wesmckinney.com/book/}
 }
 
+@book{Pengetal2020,
+title={Mastering Software Development in R},
+author={Peng, Roger D. and Kross, Sean and Anderson, Brooke},
+year={2020},
+url={https://bookdown.org/rdpeng/RProgDA/}
+}
+
 @book{Schabenberger2001,
 title={Contemporary Statistical Models for the Plant and Soil Sciences},
 author={Schabenberger, O. and Pierce, Francis J.},

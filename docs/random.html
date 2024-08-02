@@ -277,6 +277,12 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./latex_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">(<span class="math inline">\(\LaTeX\)</span>) Basics</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./references.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">References</span></a>
   </div>
@@ -346,7 +352,7 @@ Y(t) = \rho Y(t-1) + \epsilon(t)
 <div id="fig-cloudflare-lamps" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig.align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-cloudflare-lamps-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/CloudflareLavaLamps.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="images/CloudflareLavaLamps.jpeg" class="img-fluid figure-img" style="width:90.0%" data-fig.align="center"></a>
+<a href="images/CloudflareLavaLamps.jpeg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="images/CloudflareLavaLamps.jpeg" class="img-fluid figure-img" style="width:90.0%" data-fig.align="center"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cloudflare-lamps-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;8.1: Lava lamps in the lobby of the headquarters of Cloudflare. <a href="https://blog.cloudflare.com/randomness-101-lavarand-in-production">Source.</a>
@@ -445,7 +451,7 @@ Z_2 &amp;= \sqrt{-2\log U_1} \sin(2\pi U_2)
 <div id="fig-rej-sampling" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig.algin="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-rej-sampling-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/RejectionRNG_1.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2"><img src="images/RejectionRNG_1.png" class="img-fluid figure-img" style="width:90.0%" data-fig.algin="center"></a>
+<a href="images/RejectionRNG_1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2"><img src="images/RejectionRNG_1.png" class="img-fluid figure-img" style="width:90.0%" data-fig.algin="center"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rej-sampling-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;8.4: Random numbers via acceptance-rejection sampling.
@@ -461,7 +467,7 @@ Figure&nbsp;8.4: Random numbers via acceptance-rejection sampling.
 <div id="fig-rej-algo" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig.algin="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-rej-algo-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/RejectionRNG_2.png" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="quarto-lightbox-gallery-3"><img src="images/RejectionRNG_2.png" class="img-fluid figure-img" style="width:70.0%" data-fig.algin="center"></a>
+<a href="images/RejectionRNG_2.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" data-glightbox="description: .lightbox-desc-3"><img src="images/RejectionRNG_2.png" class="img-fluid figure-img" style="width:70.0%" data-fig.algin="center"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rej-algo-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;8.5: Random numbers via acceptance-rejection sampling.
@@ -656,7 +662,7 @@ Figure&nbsp;8.7: Two sets of succesive pairs of 40,000 U(0,1) random numbers plo
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="cn">NULL</span>)</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>.Random.seed[<span class="dv">10</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 757380321</code></pre>
+<pre><code>[1] -242599482</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(.Random.seed[<span class="dv">10</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -1266,7 +1272,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","selector":".lightbox","loop":false,"openEffect":"zoom","descPosition":"bottom"});
+<script>var lightboxQuarto = GLightbox({"loop":false,"openEffect":"zoom","closeEffect":"zoom","descPosition":"bottom","selector":".lightbox"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

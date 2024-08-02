@@ -4,9 +4,9 @@ project:
   
 book:
   title: "Statistical Programming"
-  subtitle: "with R and Python"
+  subtitle: "Beyond the Numbers"
   author: "Oliver Schabenberger"
-  date: "7/25/2024"
+  date: "8/02/2024"
   reader-mode: true
 
   page-footer:
@@ -29,7 +29,7 @@ book:
     - debugging.qmd 
     - reproducibility.qmd
     - irls_literate.qmd
- 
+    - latex_basics.qmd
     - references.qmd
     
 bibliography: sp_references.bib

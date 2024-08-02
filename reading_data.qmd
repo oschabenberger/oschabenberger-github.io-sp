@@ -227,6 +227,8 @@ duckload <- function(tableName, whereClause=NULL, dbName="ads.ddb") {
     if (!is.null(tableName)) {
         if (!("duckdb" %in% (.packages()))) {
             suppressWarnings(library("duckdb"))
+            message("duckdb library was loaded to execute duckload().")
+
         }
         con <- dbConnect(duckdb(), dbdir=dbName, read_only=TRUE)
         query_string <- paste("SELECT * from ", tableName)

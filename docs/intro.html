@@ -274,6 +274,12 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./latex_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">(<span class="math inline">\(\LaTeX\)</span>) Basics</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./references.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">References</span></a>
   </div>
@@ -293,11 +299,13 @@ window.Quarto = {
   <li><a href="#statistical-programming-and-software-engineering" id="toc-statistical-programming-and-software-engineering" class="nav-link" data-scroll-target="#statistical-programming-and-software-engineering"><span class="header-section-number">1.3</span> Statistical Programming and Software Engineering</a></li>
   <li><a href="#what-is-in-this-book" id="toc-what-is-in-this-book" class="nav-link" data-scroll-target="#what-is-in-this-book"><span class="header-section-number">1.4</span> What is in this Book?</a>
   <ul>
-  <li><a href="#r-resources" id="toc-r-resources" class="nav-link" data-scroll-target="#r-resources">R Resources</a></li>
-  <li><a href="#basic-packages" id="toc-basic-packages" class="nav-link" data-scroll-target="#basic-packages">Basic Packages</a></li>
+  <li><a href="#r-resources" id="toc-r-resources" class="nav-link" data-scroll-target="#r-resources">R Resources</a>
+  <ul class="collapse">
+  <li><a href="#basic-packages" id="toc-basic-packages" class="nav-link" data-scroll-target="#basic-packages">Basic packages</a></li>
+  </ul></li>
   <li><a href="#python-resources" id="toc-python-resources" class="nav-link" data-scroll-target="#python-resources">Python Resources</a>
   <ul class="collapse">
-  <li><a href="#basic-libraries" id="toc-basic-libraries" class="nav-link" data-scroll-target="#basic-libraries">Basic Libraries</a></li>
+  <li><a href="#basic-libraries" id="toc-basic-libraries" class="nav-link" data-scroll-target="#basic-libraries">Basic libraries</a></li>
   </ul></li>
   </ul></li>
   </ul>
@@ -501,10 +509,10 @@ $sd
 <li><p><a href="https://r-graphics.org/">R Graphics Cookbook: Practical Recipes for Visualizaing Data, 2nd ed.</a> <span class="citation" data-cites="Chang_2018">(<a href="references.html#ref-Chang_2018" role="doc-biblioref">Chang 2018</a>)</span></p></li>
 <li><p><a href="https://bookdown.org/yihui/rmarkdown/">R Markdown: The Definite Guide</a> <span class="citation" data-cites="Xie_etal">(<a href="references.html#ref-Xie_etal" role="doc-biblioref">Xie, Allaire, and Grolemund 2019</a>)</span></p></li>
 <li><p><a href="https://bookdown.org/yihui/rmarkdown-cookbook/">R Markdown Cookbook</a> <span class="citation" data-cites="Xie_Cookbook">(<a href="references.html#ref-Xie_Cookbook" role="doc-biblioref">Xie, Dervieux, and Riederer 2021</a>)</span></p></li>
+<li><p><a href="https://bookdown.org/rdpeng/RProgDA/">Mastering Software Development in R</a> <span class="citation" data-cites="Pengetal2020">(<a href="references.html#ref-Pengetal2020" role="doc-biblioref">Peng, Kross, and Anderson 2020</a>)</span></p></li>
 </ul>
-</section>
-<section id="basic-packages" class="level3">
-<h3 class="anchored" data-anchor-id="basic-packages">Basic Packages</h3>
+<section id="basic-packages" class="level4">
+<h4 class="anchored" data-anchor-id="basic-packages">Basic packages</h4>
 <ul>
 <li><p><a href="https://rdrr.io/find/?repos=cran&amp;page=0&amp;fuzzy_slug=">Find an R Package</a></p></li>
 <li><p><a href="https://www.tidyverse.org/">tidyverse</a></p>
@@ -512,8 +520,219 @@ $sd
 <li><a href="https://dplyr.tidyverse.org/">dplyr</a></li>
 <li><a href="https://ggplot2.tidyverse.org/">ggplot2</a></li>
 <li><a href="https://stringr.tidyverse.org/">stringr</a></li>
+<li><a href="https://readr.tidyverse.org/">readr</a></li>
+<li><a href="https://forcats.tidyverse.org/">forcats</a></li>
 </ul></li>
 </ul>
+<p><a href="#tbl-stat-packages" class="quarto-xref">Table&nbsp;<span>1.1</span></a> lists some commonly used packages for statistical work.</p>
+<div id="tbl-stat-packages" class="quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-stat-packages-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1.1: Analytic packages commonly used in statistical programming
+</figcaption>
+<div aria-describedby="tbl-stat-packages-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 75%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Package Name</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ada</td>
+<td>The R Package Ada for Stochastic Boosting</td>
+</tr>
+<tr class="even">
+<td>arules</td>
+<td>Mining Association Rules and Frequent Itemsets</td>
+</tr>
+<tr class="odd">
+<td>betareg</td>
+<td>Beta Regression</td>
+</tr>
+<tr class="even">
+<td>biclust</td>
+<td>BiCluster Algorithms</td>
+</tr>
+<tr class="odd">
+<td>BMA</td>
+<td>Bayesian Model Averaging</td>
+</tr>
+<tr class="even">
+<td>boot</td>
+<td>Bootstrap Functions</td>
+</tr>
+<tr class="odd">
+<td>class</td>
+<td>Functions for Classification</td>
+</tr>
+<tr class="even">
+<td>cluster</td>
+<td>“Finding Groups in Data”: Cluster Analysis Extended Rousseeuw et al.</td>
+</tr>
+<tr class="odd">
+<td>caret</td>
+<td>Classification and Regression Training</td>
+</tr>
+<tr class="even">
+<td>data.table</td>
+<td>Extension of <code>data.frame</code></td>
+</tr>
+<tr class="odd">
+<td>DBI</td>
+<td>R Database Interface</td>
+</tr>
+<tr class="even">
+<td>dbplyr</td>
+<td>A ‘dplyr’ Back End for Databases</td>
+</tr>
+<tr class="odd">
+<td>e1071</td>
+<td>Misc Functions of the Department of Statistics, Probability Theory Group (Formerly: E1071), TU Wien</td>
+</tr>
+<tr class="even">
+<td>factoextra</td>
+<td>Extract and Visualize the Results of Multivariate Data Analyses</td>
+</tr>
+<tr class="odd">
+<td>gam</td>
+<td>Generalized Additive Models</td>
+</tr>
+<tr class="even">
+<td>gbm</td>
+<td>Generalized Boosted Regression Models</td>
+</tr>
+<tr class="odd">
+<td>glmnet</td>
+<td>Lasso and Elastic-Net Regularized Generalized Linear Models</td>
+</tr>
+<tr class="even">
+<td>keras</td>
+<td>R Interface to ‘Keras’</td>
+</tr>
+<tr class="odd">
+<td>KernSmooth</td>
+<td>Functions for Kernel Smoothing Supporting Wand &amp; Jones (1995)</td>
+</tr>
+<tr class="even">
+<td>kohonen</td>
+<td>Supervised and Unsupervised Self-Organising Maps</td>
+</tr>
+<tr class="odd">
+<td>lattice</td>
+<td>Trellis Graphics for R</td>
+</tr>
+<tr class="even">
+<td>leaps</td>
+<td>Regression Subset Selection</td>
+</tr>
+<tr class="odd">
+<td>lmtest</td>
+<td>Testing Linear Regression Models</td>
+</tr>
+<tr class="even">
+<td>lubridate</td>
+<td>Make Dealing with Dates a Little Easier</td>
+</tr>
+<tr class="odd">
+<td>MASS</td>
+<td>Support Functions and Datasets for Venables and Ripley’s MASS</td>
+</tr>
+<tr class="even">
+<td>Matrix</td>
+<td>Sparse and Dense Matrix Classes and Methods</td>
+</tr>
+<tr class="odd">
+<td>mclust</td>
+<td>Gaussian Mixture Modelling for Model-Based Clustering, Classification, and Density Estimation</td>
+</tr>
+<tr class="even">
+<td>mgcv</td>
+<td>Mixed GAM Computation Vehicle with Automatic Smoothness Estimation</td>
+</tr>
+<tr class="odd">
+<td>mlogit</td>
+<td>Multinomial Logit Models</td>
+</tr>
+<tr class="even">
+<td>nlme</td>
+<td>Linear and Nonlinear Mixed Effects Models</td>
+</tr>
+<tr class="odd">
+<td>nls2</td>
+<td>Non-Linear Regression with Brute Force</td>
+</tr>
+<tr class="even">
+<td>plotly</td>
+<td>Create Interactive Web Graphics via ‘plotly.js’</td>
+</tr>
+<tr class="odd">
+<td>pROC</td>
+<td>Display and Analyze ROC Curves</td>
+</tr>
+<tr class="even">
+<td>randomForest</td>
+<td>Breiman and Cutler’s Random Forests for Classification and Regression</td>
+</tr>
+<tr class="odd">
+<td>ReinforcementLearning</td>
+<td>Model-Free Reinforcement Learning</td>
+</tr>
+<tr class="even">
+<td>reticulate</td>
+<td>Interface to Python</td>
+</tr>
+<tr class="odd">
+<td>Rfast</td>
+<td>A Collection of Efficient and Extremely Fast R Functions</td>
+</tr>
+<tr class="even">
+<td>rpart</td>
+<td>Recursive Partitioning and Regression Trees</td>
+</tr>
+<tr class="odd">
+<td>SHAPforxgboost</td>
+<td>SHAP Plots for XGBoost</td>
+</tr>
+<tr class="even">
+<td>statmod</td>
+<td>Statistical Modeling</td>
+</tr>
+<tr class="odd">
+<td>spatial</td>
+<td>Functions for Kriging and Point Pattern Analysis</td>
+</tr>
+<tr class="even">
+<td>splines</td>
+<td>Regression Spline Functions and Classes</td>
+</tr>
+<tr class="odd">
+<td>tensorflow</td>
+<td>R Interface to TensorFlow</td>
+</tr>
+<tr class="even">
+<td>tree</td>
+<td>Classification and Regression Trees</td>
+</tr>
+<tr class="odd">
+<td>tseries</td>
+<td>Time Series Analysis and Computational Finance</td>
+</tr>
+<tr class="even">
+<td>xgboost</td>
+<td>Extreme Gradient Boosting</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</section>
 </section>
 <section id="python-resources" class="level3">
 <h3 class="anchored" data-anchor-id="python-resources">Python Resources</h3>
@@ -522,7 +741,7 @@ $sd
 <li><p><a href="https://jakevdp.github.io/PythonDataScienceHandbook">Python Data Science Handbook</a> <span class="citation" data-cites="VanderPlas">(<a href="references.html#ref-VanderPlas" role="doc-biblioref">VanderPlas 2016</a>)</span></p></li>
 </ul>
 <section id="basic-libraries" class="level4">
-<h4 class="anchored" data-anchor-id="basic-libraries">Basic Libraries</h4>
+<h4 class="anchored" data-anchor-id="basic-libraries">Basic libraries</h4>
 <ul>
 <li><p><a href="https://numpy.org/doc/stable/user/index.html">NumPy User’s Guide</a></p></li>
 <li><p><a href="https://pandas.pydata.org/docs/">pandas documentation</a></p></li>
@@ -539,6 +758,9 @@ Chang, Winston. 2018. <em>R Graphics Cookbook: Practical Recipes for Visualizing
 </div>
 <div id="ref-McKinney_PDA" class="csl-entry" role="listitem">
 McKinney, Wes. 2022. <em>Python for Data Analysis: Data Wrangling with Pandas, NumPy and Jupyter, 3rd Ed.</em> O’Reilly Media. <a href="https://wesmckinney.com/book/">https://wesmckinney.com/book/</a>.
+</div>
+<div id="ref-Pengetal2020" class="csl-entry" role="listitem">
+Peng, Roger D., Sean Kross, and Brooke Anderson. 2020. <em>Mastering Software Development in r</em>. <a href="https://bookdown.org/rdpeng/RProgDA/">https://bookdown.org/rdpeng/RProgDA/</a>.
 </div>
 <div id="ref-VanderPlas" class="csl-entry" role="listitem">
 VanderPlas, J. 2016. <em>Python Data Science Handbook</em>. O’Reilly Media. <a href="https://jakevdp.github.io/PythonDataScienceHandbook/">https://jakevdp.github.io/PythonDataScienceHandbook/</a>.

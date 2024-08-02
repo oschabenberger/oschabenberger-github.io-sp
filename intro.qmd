@@ -173,8 +173,10 @@ The approach will be to solve practical problems in statistical programming and 
 
 - [R Markdown Cookbook](https://bookdown.org/yihui/rmarkdown-cookbook/) [@Xie_Cookbook]
 
+- [Mastering Software Development in R](https://bookdown.org/rdpeng/RProgDA/) [@Pengetal2020]
 
-### Basic Packages
+
+#### Basic packages
 
 - [Find an R Package](https://rdrr.io/find/?repos=cran&page=0&fuzzy_slug=)
 
@@ -182,6 +184,61 @@ The approach will be to solve practical problems in statistical programming and 
     - [dplyr](https://dplyr.tidyverse.org/)
     - [ggplot2](https://ggplot2.tidyverse.org/)
     - [stringr](https://stringr.tidyverse.org/)
+    - [readr](https://readr.tidyverse.org/)
+    - [forcats](https://forcats.tidyverse.org/)
+
+@tbl-stat-packages lists some commonly used packages for statistical work.
+
+| Package Name | Notes |
+|----|------------|
+| ada        | The R Package Ada for Stochastic Boosting|
+| arules     | Mining Association Rules and Frequent Itemsets |
+| betareg    | Beta Regression |
+| biclust    | BiCluster Algorithms |
+| BMA        | Bayesian Model Averaging |
+| boot       | Bootstrap Functions |
+| class      | Functions for Classification |
+| cluster    | "Finding Groups in Data": Cluster Analysis Extended Rousseeuw et al. |
+| caret      | Classification and Regression Training |
+| data.table | Extension of `data.frame` |
+| DBI        | R Database Interface |
+| dbplyr     | A 'dplyr' Back End for Databases |
+| e1071      | Misc Functions of the Department of Statistics, Probability Theory Group (Formerly: E1071), TU Wien |
+| factoextra | Extract and Visualize the Results of Multivariate Data Analyses |
+| gam        | Generalized Additive Models |
+| gbm        | Generalized Boosted Regression Models |
+| glmnet     | Lasso and Elastic-Net Regularized Generalized Linear Models |
+| keras      | R Interface to 'Keras' |
+| KernSmooth | Functions for Kernel Smoothing Supporting Wand & Jones (1995) |
+| kohonen    | Supervised and Unsupervised Self-Organising Maps |
+| lattice    | Trellis Graphics for R |
+| leaps      | Regression Subset Selection |
+| lmtest     | Testing Linear Regression Models |
+| lubridate  | Make Dealing with Dates a Little Easier |
+| MASS       | Support Functions and Datasets for Venables and Ripley's MASS |
+| Matrix     | Sparse and Dense Matrix Classes and Methods |
+| mclust     | Gaussian Mixture Modelling for Model-Based Clustering, Classification, and Density Estimation
+| mgcv       | Mixed GAM Computation Vehicle with Automatic Smoothness Estimation |
+| mlogit     | Multinomial Logit Models |
+| nlme       | Linear and Nonlinear Mixed Effects Models |
+| nls2       | Non-Linear Regression with Brute Force |
+| plotly     | Create Interactive Web Graphics via 'plotly.js' |
+| pROC       | Display and Analyze ROC Curves |
+| randomForest | Breiman and Cutler's Random Forests for Classification and Regression |
+| ReinforcementLearning | Model-Free Reinforcement Learning |
+| reticulate | Interface to Python |
+| Rfast      | A Collection of Efficient and Extremely Fast R Functions |
+| rpart      | Recursive Partitioning and Regression Trees |
+| SHAPforxgboost | SHAP Plots for XGBoost |
+| statmod    | Statistical Modeling |
+| spatial    | Functions for Kriging and Point Pattern Analysis |
+| splines    | Regression Spline Functions and Classes |
+| tensorflow | R Interface to TensorFlow |
+| tree       | Classification and Regression Trees |
+| tseries    | Time Series Analysis and Computational Finance |
+| xgboost    | Extreme Gradient Boosting |
+
+: Analytic packages commonly used in statistical programming {#tbl-stat-packages}
 
 
 ### Python Resources
@@ -190,7 +247,7 @@ The approach will be to solve practical problems in statistical programming and 
 
 - [Python Data Science Handbook](https://jakevdp.github.io/PythonDataScienceHandbook) [@VanderPlas]
 
-#### Basic Libraries
+#### Basic libraries
 
 - [NumPy User's Guide](https://numpy.org/doc/stable/user/index.html)
 

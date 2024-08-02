@@ -277,6 +277,12 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./latex_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">(<span class="math inline">\(\LaTeX\)</span>) Basics</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./references.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">References</span></a>
   </div>
@@ -322,6 +328,9 @@ window.Quarto = {
   <li><a href="#naming" id="toc-naming" class="nav-link" data-scroll-target="#naming">Naming</a></li>
   <li><a href="#comments" id="toc-comments" class="nav-link" data-scroll-target="#comments">Comments</a></li>
   <li><a href="#whitespace" id="toc-whitespace" class="nav-link" data-scroll-target="#whitespace">Whitespace</a></li>
+  <li><a href="#functions" id="toc-functions" class="nav-link" data-scroll-target="#functions">Functions</a></li>
+  <li><a href="#error-handling" id="toc-error-handling" class="nav-link" data-scroll-target="#error-handling">Error Handling</a></li>
+  <li><a href="#dependencies" id="toc-dependencies" class="nav-link" data-scroll-target="#dependencies">Dependencies</a></li>
   <li><a href="#documentation" id="toc-documentation" class="nav-link" data-scroll-target="#documentation">Documentation</a></li>
   </ul></li>
   </ul></li>
@@ -657,7 +666,7 @@ Tip
 <section id="naming" class="level4">
 <h4 class="anchored" data-anchor-id="naming">Naming</h4>
 <ul>
-<li><p>Choose names for variables and functions that are easy to understand. Variable and function names should be self explanatory. Most modern programming languages and tools no longer limit the length of function or variable names, there is no excuse for using <code>a1</code>, <code>a2</code>, <code>b3</code> as variable names.</p></li>
+<li><p>Choose names for variables and functions that are easy to understand. Variable and function names should be self explanatory. Most modern programming languages and tools no longer limit the length of function or variable names, there is no excuse for using <code>a1</code>, <code>a2</code>, <code>b3</code> as variable names. Use nouns for names of variables and objects that describe what the item holds; for example, <code>originalData</code> and <code>randomForestResult</code> instead of <code>d</code> and <code>out</code>.</p></li>
 <li><p>Stick with a naming convention such as snake_case, PascalCase, or camelCase. In snake_case, spaces between words are replaced with an underscore. In camelCase, words are concatenated and the first letter of the word is capitalized. PascalCase is a special case where the first letter of the entire name is also capitalized; camelCase is ambivalent about capitalizing the first letter of the name. The following are examples of names in camelCase.</p></li>
 </ul>
 <div class="sourceCode" id="cb16"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>accountBalance</span>
@@ -756,14 +765,136 @@ Tip
 <span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>      )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>With languages such as Python, where whitespace is functionally relevant, you have to use spacing within the limits of what the language allows.</p>
 </section>
+<section id="functions" class="level4">
+<h4 class="anchored" data-anchor-id="functions">Functions</h4>
+<p>In <code>R</code> almost everything is a function. When should <strong>you</strong> write functions instead of one-off lines of code? As always, it depends; a partial answer hides in the question. When you do something only once, then writing a bunch of lines of code instead of packaging the code in a function makes sense. When you write a function you have to think about function arguments (is the string being passed a single string or a vector?), default values, return values, and so on.</p>
+<p>However, many programming tasks are not one-offs. Check your own code, you probably write the same two or three “one-off” lines of code over and over again. If you do it more than once, consider writing a function for it. If you do a substantial task over and over, consider writing a package.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If you are interested in writing an <code>R</code> package, check out <a href="https://bookdown.org/rdpeng/RProgDA/building-r-packages.html">this</a> chapter in the book by <span class="citation" data-cites="Pengetal2020">Peng, Kross, and Anderson (<a href="references.html#ref-Pengetal2020" role="doc-biblioref">2020</a>)</span>.</p>
+</div>
+</div>
+<p>Function names should be verbs associated with the function purpose, e.g., <code>joinTables()</code>, <code>updateWeights()</code>. For functions that retrieve or set values, using <code>get</code> and <code>set</code> is common: <code>getWeights()</code>, <code>setOptimizationInput()</code>.</p>
+<p>The comment block for function should document the function purpose, required arguments, and returns.</p>
+<p>Some argue that it is good coding practice to have default values on function arguments. For example,</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>addNumbers &lt;- function(a=1, b=2) {return(a+b)}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>instead of</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>addNumbers &lt;- function(a, b) {return(a+b)}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Adding defaults ensures that all variables are initialized with valid values and simplifies calling the function. On the other hand, it can mask important ways to control the behavior of the function. Users will call a function as they see it being used by others and not necessarily look at the function signature. Take the <code>duckload()</code> function:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>duckload <span class="ot">&lt;-</span> <span class="cf">function</span>(tableName, <span class="at">whereClause=</span><span class="cn">NULL</span>, <span class="at">dbName=</span><span class="st">"ads.ddb"</span>) {</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(tableName)) {</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (<span class="sc">!</span>(<span class="st">"duckdb"</span> <span class="sc">%in%</span> (<span class="fu">.packages</span>()))) {</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>            <span class="fu">suppressWarnings</span>(<span class="fu">library</span>(<span class="st">"duckdb"</span>))</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>            <span class="fu">message</span>(<span class="st">"duckdb library was loaded to execute duckload()."</span>)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>        con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(), <span class="at">dbdir=</span>dbName, <span class="at">read_only=</span><span class="cn">TRUE</span>)</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>        query_string <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">"SELECT * from "</span>, tableName)</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(whereClause)) {</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>            query_string <span class="ot">&lt;-</span> <span class="fu">paste</span>(query_string, <span class="st">" WHERE "</span>, whereClause)</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>        df_ <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, query_string)</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>        <span class="fu">dbDisconnect</span>(con)</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span> (df_)</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span> (<span class="cn">NULL</span>)</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Would you know from the following usage pattern that you can pass a WHERE clause to the SQL string?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">duckload</span>(<span class="st">"apples"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If the function arguments had no defaults, the function call would reveal its capabilities:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">duckload</span>(<span class="st">"apples"</span>, <span class="at">whereClause=</span><span class="cn">NULL</span>, <span class="at">dbName=</span><span class="st">"ads.ddb"</span>)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="co"># or</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">duckload</span>(<span class="st">"apples"</span>,<span class="cn">NULL</span>,<span class="st">"ads.ddb"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Other good practices to observe when writing functions:</p>
+<ul>
+<li><p>Always have an explicit <code>return</code> argument. It makes it much easier to figure out where you return from the function and what exactly is being returned.</p></li>
+<li><p>Check for NULL inputs</p></li>
+<li><p>Check for missing values unless your code can handle them.</p></li>
+<li><p>Handle errors (see below)</p></li>
+<li><p>Pass through variable arguments (<code>...</code>)</p></li>
+<li><p>If you return multiple values, organize them in a list or a data frame. Lists are convenient to collect objects that are of different types and sizes into a single object. The following function returns a list with three elements,</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>iterationWeight <span class="ot">&lt;-</span> <span class="cf">function</span>(Gm,wts,<span class="at">method=</span><span class="st">"tree"</span>) {</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>    pclass <span class="ot">&lt;-</span> <span class="fu">predict</span>(Gm,<span class="at">type=</span><span class="st">"vector"</span>)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    misclass <span class="ot">&lt;-</span> pclass <span class="sc">!=</span> Gm<span class="sc">$</span>y</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    Em <span class="ot">&lt;-</span> <span class="fu">sum</span>(wts<span class="sc">*</span>misclass)<span class="sc">/</span><span class="fu">sum</span>(wts)</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    alpha_m <span class="ot">&lt;-</span> <span class="fu">log</span>((<span class="dv">1</span><span class="sc">-</span>Em)<span class="sc">/</span>Em)</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> (<span class="fu">list</span>(<span class="st">"misclass"</span><span class="ot">=</span>misclass,<span class="st">"Em"</span><span class="ot">=</span>Em,<span class="st">"alpha_m"</span><span class="ot">=</span>alpha_m))</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="error-handling" class="level4">
+<h4 class="anchored" data-anchor-id="error-handling">Error Handling</h4>
+<p>Think of a function as a contract between you and the user. If the user provides specified arguments, the function produces predictable results. What should happen when the user specifies invalid arguments or when the function encounters situations that would create unpredictable results or situations that keep it from continuing?</p>
+<p>Your opportunities to handle these situations include issue warning messages with <code>warning()</code>, informational messages with <code>message()</code>, stopping the execution with <code>stop()</code> and <code>stopifnot()</code> and try-catch-finally execution blocks. In general, stopping the execution of a function with <code>stop</code> or <code>stopifnot</code> is a last resort if the function cannot possibly continue. If the data passed are of the wrong type and cannot be coerced into the correct data type, or if coercion would result in something nonsensical, then stop.</p>
+<p>In the event that inputs are invalid and you cannot perform the required calculations, could you still return NULL as a result? If so, do not stop the execution of the function. You can issue a warning message and then return NULL. Warning messages are also appropriate when the function behavior is changing in an unexpected way. For example, the input data contains missing values (NAs) and your algorithm cannot handle them. If you process the data after omitting missing values, then issue a warning message if that affects the dimensions of the returned objects.</p>
+<p>Keep in mind that <code>R</code> is used in scripts and as an interactive language. Messages from your code are intended for human consumption so they should be explicit and easy to understand. But avoid making your code too chatty.</p>
+<p>To check whether input values have the expected types you can use functions such as</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">is.numeric</span>()</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">is.character</span>()</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="fu">is.factor</span>()</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="fu">is.ordered</span>()</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="fu">is.vector</span>()</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="fu">is.matrix</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>and to coerce between data types you can use the <code>as.</code> versions</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.numeric</span>()</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">as.character</span>()</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">as.factor</span>()</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="fu">as.ordered</span>()</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="fu">as.vector</span>()</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="fu">as.matrix</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>tryCatch()</code> is the <code>R</code> implementation of the try-catch-finally logic you might have seen in other languages. It is part of the condition system that provides a mechanism for signaling and handling unusual conditions in programs. <code>tryCatch</code> attempts to evaluate expression <code>expr</code>, and if it succeeds, executes the code in the <code>finally</code> block. You can add erorr and warning handlers with the <code>error=</code> and <code>warning=</code> options.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tryCatch</span>(expr,</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>         <span class="at">error =</span> <span class="cf">function</span>(e){</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>           <span class="fu">message</span>(<span class="st">"An error occurred:</span><span class="sc">\n</span><span class="st">"</span>, e)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>         },</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">warning =</span> <span class="cf">function</span>(w){</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>           <span class="fu">message</span>(<span class="st">"A warning occured:</span><span class="sc">\n</span><span class="st">"</span>, w)</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>         },</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">finally =</span> {</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>           <span class="fu">message</span>(<span class="st">"Finally done!"</span>)</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>         }</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>        )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>tryCatch</code> is an elegant way to handle conditions, but you should not overdo it. It can be a drag on performance. For example, if you require input to be of numeric type, then it is easier and faster to check with <code>is.numeric</code> than to wrap the execution in <code>tryCatch</code>.</p>
+</section>
+<section id="dependencies" class="level4">
+<h4 class="anchored" data-anchor-id="dependencies">Dependencies</h4>
+<p>It is a good idea to check dependencies in functions. Are the required packages loaded? It is kind of you to load required packages on behave of the caller rather than stopping execution. If you do, issue a message to that effect. See <code>duckload()</code> above for an example.</p>
+<p>Installing packages on behalf of the caller is a step too far in my opinion, since you are now changing the <code>R</code> environment. You can check whether a package is installed with <code>require</code>. The following code stops executing if the <code>dplyr</code> package is not installed.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>check_pkg_deps <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(dplyr))</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">stop</span>(<span class="st">"the 'dplyr' package needs to be installed first"</span>)</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>require()</code> is similar to <code>library()</code>, but while the latter fails with an error if the package cannot be loaded, <code>require</code> returns TRUE or FALSE depending on whether the library was loaded and does not throw an error if the package cannot be found. Think of <code>require</code> as the version of <code>library</code> you should use inside of functions.</p>
+</section>
 <section id="documentation" class="level4">
 <h4 class="anchored" data-anchor-id="documentation">Documentation</h4>
 <p>Comments in code are not documentation. Documentation is a detailed explanation of the purpose of the code, how it works, how its functions work, their arguments, etc. It also includes all information someone would want to need to take over the project. In literal programs you have the opportunity to write code and documentation at the same time. Many software authoring frameworks include steps in programming that generate the documentation. For example, to add documentation to an <code>R</code> package, you need to create a “man” subdirectory that contains one file per function in the special R Documentation format (.Rd). You can see what the files look like by browsing <code>R</code> packages on GitHub. For example, <a href="https://github.com/cran/ada">here</a> is the repository for the <code>ada</code> package.</p>
 <p>At a minimum a README file in Markdown should accompany the program. The file has setup instructions and use instructions someone would have to follow to execute the code. It identifies author, version, major revision history, and details on the functions in the public API—those functions called by the user of the program.</p>
-<p>There are great automated documentation systems such as <a href="https://www.doxygen.nl/">doxygen</a> which annotate the source code in such a way that documentation can be extracted automatically.</p>
-<!---
-https://www.datacamp.com/tutorial/coding-best-practices-and-guidelines
---->
+<p>There are great automated documentation systems such as <a href="https://www.doxygen.nl/">doxygen</a> which annotate the source code in such a way that documentation can be extracted automatically. An <code>R</code> package for generating inline documentation that was inspired by doxygen is <code>roxygen2</code>.</p>
 
 
 <div class="hidden" aria-hidden="true">
@@ -772,6 +903,9 @@ https://www.datacamp.com/tutorial/coding-best-practices-and-guidelines
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
 <div id="ref-Knuth1984" class="csl-entry" role="listitem">
 Knuth, D. E. 1984. <span>“<span>Literate Programming</span>.”</span> <em>The Computer Journal</em> 27 (2): 97–111. <a href="https://doi.org/10.1093/comjnl/27.2.97">https://doi.org/10.1093/comjnl/27.2.97</a>.
+</div>
+<div id="ref-Pengetal2020" class="csl-entry" role="listitem">
+Peng, Roger D., Sean Kross, and Brooke Anderson. 2020. <em>Mastering Software Development in r</em>. <a href="https://bookdown.org/rdpeng/RProgDA/">https://bookdown.org/rdpeng/RProgDA/</a>.
 </div>
 </div>
 </section>
@@ -1358,7 +1492,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","openEffect":"zoom","loop":false,"descPosition":"bottom","closeEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","selector":".lightbox","loop":false,"descPosition":"bottom","closeEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;
