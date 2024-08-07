@@ -368,11 +368,9 @@ To update the remote repository with the contents of the local repository, issue
 Writing code, maintaining code, reviewing code, and fixing code are essential elements of what data professionals do. Understanding and following best practices is important. 80\% of jobs in data science are outside of academic environments. Those employers have standard operating procedures for software developers that will apply also to statistical programming and data science projects. For example, many companies use code reviews by fellow developers to evaluate new or modified code before it can be committed to a repository. The feedback from code reviews flows into performance evaluations and has impact on your career. Not following the coding guidelines and best practices of an organization is a great way of shortening tenure. 
 Software projects are collaborative projects and someone else will need to work with your code. How easy is it to understand? Is it well documented? Is it properly structured and modular? How easy is it to debug?
 
-Here are some coding practices for you to consider. 
+Here are some practices for you to consider to improve structure and organization of your code.
 
-### Structure and Organization
-
-#### Naming
+### Naming
 
 - Choose names for variables and functions that are easy to understand. Variable and function names should be self explanatory. Most modern programming languages and tools no longer limit the length of function or variable names, there is no excuse for using `a1`, `a2`, `b3` as variable names. Use nouns for names of variables and objects that describe what the item holds; for example, `originalData` and `randomForestResult` instead of `d` and `out`.
 
@@ -421,8 +419,7 @@ These assignments override the global variable whose value is set to `TRUE` for 
 ?C()
 ```
 
-
-#### Comments
+### Comments
 
 Unless you write a literal program use comments throughout to clarify **why** code is written a certain way and what the code is supposed to accomplish. Even with literal programs, comments associated with code are a good practice because the code-portion of the literal program can get separated from the text material at some later point. 
 
@@ -461,7 +458,7 @@ getIRLSWeights <- function(eta, link="log", dist="poisson") {
 
 If you program in Python, you would add docstrings to the function. This also serves as the help information for the user.
 
-#### Whitespace
+### Whitespace
 
 Judicious use of whitespace makes code more readable. It helps to differentiate visually and to see patterns. Examples are indentation (use spaces, not tabs), alignment within code blocks, placement of parentheses, and so forth.
 
@@ -513,7 +510,7 @@ xyplot(diameter ~ measurement | Tree,
 
 With languages such as Python, where whitespace is functionally relevant, you have to use spacing within the limits of what the language allows.
 
-#### Functions
+### Functions
 
 In `R` almost everything is a function. When should **you** write functions instead of one-off lines of code? As always, it depends; a partial answer hides in the question. When you do something only once, then writing a bunch of lines of code instead of packaging the code in a function makes sense. When you write a function you have to think about function arguments (is the string being passed a single string or a vector?), default values, return values, and so on.
 
@@ -602,7 +599,7 @@ iterationWeight <- function(Gm,wts,method="tree") {
 }
 ```
 
-#### Error Handling
+### Error Handling
 
 Think of a function as a contract between you and the user. If the user provides specified arguments, the function  produces predictable results. What should happen when the user specifies invalid arguments or when the function encounters situations that would create unpredictable results or situations that keep it from continuing?
 
@@ -653,7 +650,7 @@ tryCatch(expr,
 
 `tryCatch` is an elegant way to handle conditions, but you should not overdo it. It can be a drag on performance. For example, if you require input to be of numeric type, then it is easier and faster to check with `is.numeric` than to wrap the execution in `tryCatch`.
 
-#### Dependencies
+### Dependencies
 
 It is a good idea to check dependencies in functions. Are the required packages loaded?
 It is kind of you to load required packages on behave of the caller rather than stopping execution. If you do, 
@@ -673,7 +670,7 @@ check_pkg_deps <- function() {
 `require()` is similar to `library()`, but while the latter fails with an error if the package cannot be loaded, `require` returns TRUE or FALSE depending on whether the library was loaded and does not throw an error if the package cannot be found. Think of `require` as the version of `library` you should use inside of functions.
 
 
-#### Documentation
+### Documentation
 
 Comments in code are not documentation. Documentation is a detailed explanation of the purpose of the code, how it works, how its functions work, their arguments, etc. It also includes all information someone would want to need to take over the project. In literal programs you have the opportunity to write code and documentation at the same time. Many software authoring frameworks include steps in programming that generate the documentation. For example, to add documentation to an `R` package, you need to create a "man" subdirectory that contains one file per function in the special R Documentation format (.Rd). You can see what the files look like by browsing `R` packages on GitHub. For example, [here](https://github.com/cran/ada) is the repository for the `ada` package.
 

@@ -202,13 +202,13 @@ The approach will be to solve practical problems in statistical programming and 
 | caret      | Classification and Regression Training |
 | data.table | Extension of `data.frame` |
 | DBI        | R Database Interface |
-| dbplyr     | A 'dplyr' Back End for Databases |
+| dbplyr     | A `dplyr` Back End for Databases |
 | e1071      | Misc Functions of the Department of Statistics, Probability Theory Group (Formerly: E1071), TU Wien |
 | factoextra | Extract and Visualize the Results of Multivariate Data Analyses |
 | gam        | Generalized Additive Models |
 | gbm        | Generalized Boosted Regression Models |
 | glmnet     | Lasso and Elastic-Net Regularized Generalized Linear Models |
-| keras      | R Interface to 'Keras' |
+| keras      | R Interface to Keras |
 | KernSmooth | Functions for Kernel Smoothing Supporting Wand & Jones (1995) |
 | kohonen    | Supervised and Unsupervised Self-Organising Maps |
 | lattice    | Trellis Graphics for R |
@@ -222,7 +222,7 @@ The approach will be to solve practical problems in statistical programming and 
 | mlogit     | Multinomial Logit Models |
 | nlme       | Linear and Nonlinear Mixed Effects Models |
 | nls2       | Non-Linear Regression with Brute Force |
-| plotly     | Create Interactive Web Graphics via 'plotly.js' |
+| plotly     | Create Interactive Web Graphics via plotly.js |
 | pROC       | Display and Analyze ROC Curves |
 | randomForest | Breiman and Cutler's Random Forests for Classification and Regression |
 | ReinforcementLearning | Model-Free Reinforcement Learning |

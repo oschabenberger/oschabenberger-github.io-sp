@@ -1,0 +1,198 @@
+\documentclass[11pt,oneside, letterpaper]{article}
+\usepackage{amsmath}
+\usepackage[parfill]{parskip}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\newcommand{\btheta}{\boldsymbol{\theta}}
+\newcommand{\bbeta}{\boldsymbol{\beta}}
+\newcommand{\balpha}{\boldsymbol{\alpha}}
+\newcommand{\bdelta}{\boldsymbol{\delta}}
+\newcommand{\bepsilon}{\boldsymbol{\epsilon}}
+\newcommand{\bmu}{\boldsymbol{\mu}}
+\newcommand{\bSigma}{\boldsymbol{\Sigma}}
+\newcommand{\bsigma}{\boldsymbol{\sigma}}
+
+\newcommand{\bXpX}{\textbf{X}^\prime\textbf{X}}
+\newcommand{\bzero}{\textbf{0}}
+\newcommand{\bX}{\textbf{X}}
+\newcommand{\bY}{\textbf{Y}}
+\newcommand{\bZ}{\textbf{Z}}
+\newcommand{\ba}{\textbf{a}}
+\newcommand{\bb}{\textbf{b}}
+\newcommand{\bc}{\textbf{c}}
+\newcommand{\by}{\textbf{y}}
+\newcommand{\bV}{\textbf{V}}
+\newcommand{\bW}{\textbf{W}}
+\newcommand{\bx}{\textbf{x}}
+
+\newcommand{\MSE}{\text{MSE}}
+\newcommand{\Var}{\text{Var}}
+\newcommand{\Cov}{\text{Cov}}
+\newcommand{\Corr}{\text{Corr}}
+\newcommand{\Exp}{\text{E}}
+
+
+\title{Not Much of an Article}
+\author{Oliver Schabenberger}
+\date{August 5, 2024}   % You can use \today for the current date
+
+\begin{document}
+\maketitle
+
+\newcommand{\bincoef}[2]{{#1 \choose #2}}
+\newcommand{\binco}[2][n]{{#1 \choose #2}}
+
+\section{Introduction}
+
+The Beta distribution is a member of the two-parameter
+\textbf{exponential family} of distributions. 
+\LaTeX\ ignores spaces, but there are some rules; a blank line starts a new paragraph.
+
+A random variable has a Beta distribution with parameters $\alpha$ and $\beta$,
+denoted $Y \sim \text{Beta}(\alpha,\beta)$, if its density function is given 
+by 
+$$
+f(y) = \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)}\, y^{\alpha-1}\,(1-y)^{\beta-1}\quad 0 < y < 1
+$$
+
+\section{Basic Math}
+
+\subsection{Subscripts and superscripts}
+
+\begin{itemize}
+	\item Subscripts: $x_1$, $x_{12}$
+	\item Superscripts: $a^2$, $y^{(t)}$
+	\item Operators with subscripts/superscripts:
+	$$ \sum_{i=1}^n Y_{ij} \qquad  \int_{-\infty}^\infty f(x) dx$$
+	$$ \prod_{k=1}^m p(y_k) \qquad \int_0^1 f(u) du$$
+	
+\end{itemize}
+
+In inline mode, the formulas are typeset differently so that they fit within the line width,
+for example $\sum_{i=1}^n (y_i - \overline{y})^2$.
+
+Double subscripts/superscripts are possible, but often frowned upon. You have to be clever
+with the syntax for \LaTeX\ to not throw an error:
+$$
+Y_{i_{jk}}  \qquad Y_{i_{j_k}}
+$$
+
+\subsection{Parentheses and brackets}
+
+\begin{itemize}
+	\item Parentheses: \verb|(x+y)| renders $(x+y)$
+	\item Brackets: \verb|[x+y]| renders $[x+y]$
+	\item Curly Braces: \verb|\{x + y\}| renders $\{x + y\}$
+	\item Angle Brackets: \verb|\langle x + y \rangle| renders $\langle x + y \rangle$
+	\item Vertical Bars: \texttt{|x+y|} renders $|x + y|$
+\end{itemize}
+
+You can size elements using \verb|\bigl|, \verb|\Bigl|, \verb|\biggl|, and \verb|Biggl|:
+
+$$
+\bigl\{ \quad \Bigl\{ \quad \biggl\{ \quad \text{ and } \Biggl\{
+$$
+
+It is easier to use \verb|\left| and \verb|\right| to automatically size parentheses to the height of the enclosed expression:
+
+$$
+\sum_{i=1}^n \left( \frac{Y_{ij} - \overline{Y}} {\left|Y_{ij}\right| - \text{median}(Y)} \right )^2
+$$
+
+\subsection{Spacing}
+
+\begin{align*}
+f(x,\!a) &= x^2\! +5x\! +a \\
+f(x,a) &= x^2+5x+a \\
+f(x,\,a) &= x^2\, +5x\, +a \\
+f(x,\:) &= x^2\: +5x\: +a \\
+f(x,\;a) &= x^2\; +5x\; +a \\
+f(x,\ a) &= x^2\ +5x\ +a \\
+f(x,\quad a) &= x^2\quad +5x\quad +a \\
+f(x,\qquad a) &= x^2\qquad +5x\qquad +a
+\end{align*}
+
+\subsection{Arrays and matrices}
+
+$$
+\begin{bmatrix}
+   a_{11} & a_{12} & a_{13} \\
+   a_{21} & a_{22} & a_{23}
+\end{bmatrix}
+$$
+
+$$
+\left [
+\begin{array}{ccc}
+   a_{11} & a_{12} & a_{13} \\
+   a_{21} & a_{22} & a_{23}
+\end{array}
+\right ]
+$$
+
+\section{Commands: Binomial Coefficients}
+
+$$
+\bincoef{n}{2}
+$$
+
+$$
+\binco{2} \qquad \binco[6]{3}
+$$
+
+\section{Multi-line Equations}
+
+Aligning equations with the \texttt{align} environment.
+
+\begin{align*}
+        \MSE (h(\bY);\theta) &= \text{E} \left [ \left( h(\bY) - \theta \right)^2\right] \\
+        &= \Exp \left [h(\bY)^2 - 2 h(\bY) \theta + \theta^2\right ]\\
+        &= \Exp \left [h(\bY)^2 - \mu^2 + \mu^2 - 2 h(\bY) \theta + \theta^2\right ]\\
+        &= \Exp \left [h(\bY)^2 \right ] - \mu^2  + \mu^2 - 2 \mu \theta + \theta^2 \\
+        &= \Exp \left [h(\bY)^2 \right ] - \mu^2  + (\mu - \theta)^2 \\
+        &= \Var[h(\bY)] + \text{Bias}(h(\bY);\theta)^2
+\end{align*}
+
+
+If you do not care about alignment, then you can use the \verb|eqnarray| environment:
+
+\begin{eqnarray*}
+        \MSE (h(\bY);\theta) = \text{E} \left [ \left( h(\bY) - \theta \right)^2\right] \\
+        = \Exp \left [h(\bY)^2 - 2 h(\bY) \theta + \theta^2\right ]\\
+        = \Exp \left [h(\bY)^2 - \mu^2 + \mu^2 - 2 h(\bY) \theta + \theta^2\right ]\\
+        = \Exp \left [h(\bY)^2 \right ] - \mu^2  + \mu^2 - 2 \mu \theta + \theta^2 \\
+        = \Exp \left [h(\bY)^2 \right ] - \mu^2  + (\mu - \theta)^2 \\
+        = \Var[h(\bY)] + \text{Bias}(h(\bY);\theta)^2
+\end{eqnarray*}
+
+
+\begin{align*}
+Y &\sim \text{Bernoulli}(\mu) \\
+\eta         &= \bx^\prime\bbeta \\
+g(\mu)       &= \log \left(\frac{\mu}{1-\mu} \right) = \eta \\
+g^{-1}(\eta) &= \frac{1}{1+e^{-\eta}} = \mu
+\end{align*}
+
+\LaTeX\ is not sensitive to spacing. The following code produces the same equation
+but is much less readable.
+
+\begin{align*} Y &\sim \text{Bernoulli}(\mu) \\ \eta &= \bx^\prime\bbeta \\
+g(\mu) &= \log \left(\frac{\mu}{1-\mu} \right) = \eta \\
+g^{-1}(\eta) &= \frac{1}{1+e^{-\eta}} = \mu \end{align*}
+
+\section{Tables}
+
+\begin{center}
+\begin{tabular}{c | r r}
+Observation & $X_1$ & $X_2$ \\
+\hline
+1 & 0.1 & -0.3 \\
+2 & 0.2 & -0.4 \\
+3 & 1.4 & 10.3 \\
+\hline
+\end{tabular}
+\end{center}
+
+\end{document}
+

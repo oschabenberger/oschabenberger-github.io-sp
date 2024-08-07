@@ -278,7 +278,7 @@ window.Quarto = {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./latex_basics.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">(<span class="math inline">\(\LaTeX\)</span>) Basics</span></span></a>
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title"><span class="math inline">\(\LaTeX\)</span> Basics</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -323,8 +323,6 @@ window.Quarto = {
   </ul></li>
   <li><a href="#coding-best-practices" id="toc-coding-best-practices" class="nav-link" data-scroll-target="#coding-best-practices"><span class="header-section-number">10.4</span> Coding Best Practices</a>
   <ul>
-  <li><a href="#structure-and-organization" id="toc-structure-and-organization" class="nav-link" data-scroll-target="#structure-and-organization">Structure and Organization</a>
-  <ul class="collapse">
   <li><a href="#naming" id="toc-naming" class="nav-link" data-scroll-target="#naming">Naming</a></li>
   <li><a href="#comments" id="toc-comments" class="nav-link" data-scroll-target="#comments">Comments</a></li>
   <li><a href="#whitespace" id="toc-whitespace" class="nav-link" data-scroll-target="#whitespace">Whitespace</a></li>
@@ -332,7 +330,6 @@ window.Quarto = {
   <li><a href="#error-handling" id="toc-error-handling" class="nav-link" data-scroll-target="#error-handling">Error Handling</a></li>
   <li><a href="#dependencies" id="toc-dependencies" class="nav-link" data-scroll-target="#dependencies">Dependencies</a></li>
   <li><a href="#documentation" id="toc-documentation" class="nav-link" data-scroll-target="#documentation">Documentation</a></li>
-  </ul></li>
   </ul></li>
   </ul>
 </nav>
@@ -536,7 +533,7 @@ Tip
 <div id="fig-git-file" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-git-file-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/git_file_lifecycle.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="images/git_file_lifecycle.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="images/git_file_lifecycle.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="images/git_file_lifecycle.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-git-file-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;10.2: The lifecycle of a file in Git. <a href="https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository">Source</a>
@@ -660,11 +657,9 @@ Tip
 <section id="coding-best-practices" class="level2" data-number="10.4">
 <h2 data-number="10.4" class="anchored" data-anchor-id="coding-best-practices"><span class="header-section-number">10.4</span> Coding Best Practices</h2>
 <p>Writing code, maintaining code, reviewing code, and fixing code are essential elements of what data professionals do. Understanding and following best practices is important. 80% of jobs in data science are outside of academic environments. Those employers have standard operating procedures for software developers that will apply also to statistical programming and data science projects. For example, many companies use code reviews by fellow developers to evaluate new or modified code before it can be committed to a repository. The feedback from code reviews flows into performance evaluations and has impact on your career. Not following the coding guidelines and best practices of an organization is a great way of shortening tenure. Software projects are collaborative projects and someone else will need to work with your code. How easy is it to understand? Is it well documented? Is it properly structured and modular? How easy is it to debug?</p>
-<p>Here are some coding practices for you to consider.</p>
-<section id="structure-and-organization" class="level3">
-<h3 class="anchored" data-anchor-id="structure-and-organization">Structure and Organization</h3>
-<section id="naming" class="level4">
-<h4 class="anchored" data-anchor-id="naming">Naming</h4>
+<p>Here are some practices for you to consider to improve structure and organization of your code.</p>
+<section id="naming" class="level3">
+<h3 class="anchored" data-anchor-id="naming">Naming</h3>
 <ul>
 <li><p>Choose names for variables and functions that are easy to understand. Variable and function names should be self explanatory. Most modern programming languages and tools no longer limit the length of function or variable names, there is no excuse for using <code>a1</code>, <code>a2</code>, <code>b3</code> as variable names. Use nouns for names of variables and objects that describe what the item holds; for example, <code>originalData</code> and <code>randomForestResult</code> instead of <code>d</code> and <code>out</code>.</p></li>
 <li><p>Stick with a naming convention such as snake_case, PascalCase, or camelCase. In snake_case, spaces between words are replaced with an underscore. In camelCase, words are concatenated and the first letter of the word is capitalized. PascalCase is a special case where the first letter of the entire name is also capitalized; camelCase is ambivalent about capitalizing the first letter of the name. The following are examples of names in camelCase.</p></li>
@@ -692,8 +687,8 @@ Tip
 <div class="sourceCode" id="cb20"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>?T</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>?C()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="comments" class="level4">
-<h4 class="anchored" data-anchor-id="comments">Comments</h4>
+<section id="comments" class="level3">
+<h3 class="anchored" data-anchor-id="comments">Comments</h3>
 <p>Unless you write a literal program use comments throughout to clarify <strong>why</strong> code is written a certain way and what the code is supposed to accomplish. Even with literal programs, comments associated with code are a good practice because the code-portion of the literal program can get separated from the text material at some later point.</p>
 <p>Comments frequently are intended by programmers to leave themselves some notes, for example, about functions yet to be written or to be refactored later. Make it clear with a “TODO” at the beginning of the comment where those sections of the program are and make the TODO comment stand out visually from other comments.</p>
 <p>It is a good practice to have a standardized form for writing comments. For example, you can have a standard comment block at the beginning of functions. Some organizations will require you to write very detailed comment blocks that explain all inputs and outputs down to length of vectors and data types.</p>
@@ -724,8 +719,8 @@ Tip
 <span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>If you program in Python, you would add docstrings to the function. This also serves as the help information for the user.</p>
 </section>
-<section id="whitespace" class="level4">
-<h4 class="anchored" data-anchor-id="whitespace">Whitespace</h4>
+<section id="whitespace" class="level3">
+<h3 class="anchored" data-anchor-id="whitespace">Whitespace</h3>
 <p>Judicious use of whitespace makes code more readable. It helps to differentiate visually and to see patterns. Examples are indentation (use spaces, not tabs), alignment within code blocks, placement of parentheses, and so forth.</p>
 <p>Which of the following two functions is easier to read? It does not matter for the <code>R</code> interpreter but it matters for the programmer.</p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>get_z &lt;- function(y, eta, link) {</span>
@@ -765,8 +760,8 @@ Tip
 <span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>      )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>With languages such as Python, where whitespace is functionally relevant, you have to use spacing within the limits of what the language allows.</p>
 </section>
-<section id="functions" class="level4">
-<h4 class="anchored" data-anchor-id="functions">Functions</h4>
+<section id="functions" class="level3">
+<h3 class="anchored" data-anchor-id="functions">Functions</h3>
 <p>In <code>R</code> almost everything is a function. When should <strong>you</strong> write functions instead of one-off lines of code? As always, it depends; a partial answer hides in the question. When you do something only once, then writing a bunch of lines of code instead of packaging the code in a function makes sense. When you write a function you have to think about function arguments (is the string being passed a single string or a vector?), default values, return values, and so on.</p>
 <p>However, many programming tasks are not one-offs. Check your own code, you probably write the same two or three “one-off” lines of code over and over again. If you do it more than once, consider writing a function for it. If you do a substantial task over and over, consider writing a package.</p>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -838,8 +833,8 @@ Note
 <span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="error-handling" class="level4">
-<h4 class="anchored" data-anchor-id="error-handling">Error Handling</h4>
+<section id="error-handling" class="level3">
+<h3 class="anchored" data-anchor-id="error-handling">Error Handling</h3>
 <p>Think of a function as a contract between you and the user. If the user provides specified arguments, the function produces predictable results. What should happen when the user specifies invalid arguments or when the function encounters situations that would create unpredictable results or situations that keep it from continuing?</p>
 <p>Your opportunities to handle these situations include issue warning messages with <code>warning()</code>, informational messages with <code>message()</code>, stopping the execution with <code>stop()</code> and <code>stopifnot()</code> and try-catch-finally execution blocks. In general, stopping the execution of a function with <code>stop</code> or <code>stopifnot</code> is a last resort if the function cannot possibly continue. If the data passed are of the wrong type and cannot be coerced into the correct data type, or if coercion would result in something nonsensical, then stop.</p>
 <p>In the event that inputs are invalid and you cannot perform the required calculations, could you still return NULL as a result? If so, do not stop the execution of the function. You can issue a warning message and then return NULL. Warning messages are also appropriate when the function behavior is changing in an unexpected way. For example, the input data contains missing values (NAs) and your algorithm cannot handle them. If you process the data after omitting missing values, then issue a warning message if that affects the dimensions of the returned objects.</p>
@@ -878,8 +873,8 @@ Note
 </div>
 <p><code>tryCatch</code> is an elegant way to handle conditions, but you should not overdo it. It can be a drag on performance. For example, if you require input to be of numeric type, then it is easier and faster to check with <code>is.numeric</code> than to wrap the execution in <code>tryCatch</code>.</p>
 </section>
-<section id="dependencies" class="level4">
-<h4 class="anchored" data-anchor-id="dependencies">Dependencies</h4>
+<section id="dependencies" class="level3">
+<h3 class="anchored" data-anchor-id="dependencies">Dependencies</h3>
 <p>It is a good idea to check dependencies in functions. Are the required packages loaded? It is kind of you to load required packages on behave of the caller rather than stopping execution. If you do, issue a message to that effect. See <code>duckload()</code> above for an example.</p>
 <p>Installing packages on behalf of the caller is a step too far in my opinion, since you are now changing the <code>R</code> environment. You can check whether a package is installed with <code>require</code>. The following code stops executing if the <code>dplyr</code> package is not installed.</p>
 <div class="cell">
@@ -890,8 +885,8 @@ Note
 </div>
 <p><code>require()</code> is similar to <code>library()</code>, but while the latter fails with an error if the package cannot be loaded, <code>require</code> returns TRUE or FALSE depending on whether the library was loaded and does not throw an error if the package cannot be found. Think of <code>require</code> as the version of <code>library</code> you should use inside of functions.</p>
 </section>
-<section id="documentation" class="level4">
-<h4 class="anchored" data-anchor-id="documentation">Documentation</h4>
+<section id="documentation" class="level3">
+<h3 class="anchored" data-anchor-id="documentation">Documentation</h3>
 <p>Comments in code are not documentation. Documentation is a detailed explanation of the purpose of the code, how it works, how its functions work, their arguments, etc. It also includes all information someone would want to need to take over the project. In literal programs you have the opportunity to write code and documentation at the same time. Many software authoring frameworks include steps in programming that generate the documentation. For example, to add documentation to an <code>R</code> package, you need to create a “man” subdirectory that contains one file per function in the special R Documentation format (.Rd). You can see what the files look like by browsing <code>R</code> packages on GitHub. For example, <a href="https://github.com/cran/ada">here</a> is the repository for the <code>ada</code> package.</p>
 <p>At a minimum a README file in Markdown should accompany the program. The file has setup instructions and use instructions someone would have to follow to execute the code. It identifies author, version, major revision history, and details on the functions in the public API—those functions called by the user of the program.</p>
 <p>There are great automated documentation systems such as <a href="https://www.doxygen.nl/">doxygen</a> which annotate the source code in such a way that documentation can be extracted automatically. An <code>R</code> package for generating inline documentation that was inspired by doxygen is <code>roxygen2</code>.</p>
@@ -908,7 +903,6 @@ Knuth, D. E. 1984. <span>“<span>Literate Programming</span>.”</span> <em>The
 Peng, Roger D., Sean Kross, and Brooke Anderson. 2020. <em>Mastering Software Development in r</em>. <a href="https://bookdown.org/rdpeng/RProgDA/">https://bookdown.org/rdpeng/RProgDA/</a>.
 </div>
 </div>
-</section>
 </section>
 </section>
 
@@ -1492,7 +1486,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","selector":".lightbox","loop":false,"descPosition":"bottom","closeEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","openEffect":"zoom","loop":false,"descPosition":"bottom","closeEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;
