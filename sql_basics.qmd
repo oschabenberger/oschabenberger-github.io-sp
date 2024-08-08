@@ -1,0 +1,607 @@
+
+# SQL Basics {#sec-sql-basics}
+
+## Introduction
+
+SQL is a declarative programming language, you express through programming statements what you want to happen, not how to control the flow of the program. Other examples of declarative languages are CSS, HTML, XML, and Prolog. To support writing scripts, functions, and procedures, database vendors have added flow-control statements (if-then, loops, switches, etc.), but these are extensions of the database and not of the SQL language.
+
+Is it pronounced “S-Q-L” or “sequel”? Both are acceptable but if you want to give a nod to its origin, then you would pronounce it ”sequel” like SEQUEL; the name given to the project by its inventors at IBM in the 1970s. The description as structured query language and the acronym SQL came later.
+
+The concept of a *query* in SQL is very general: any interaction with a (relational) database. A query in the narrow sense asks questions about the data in the database or retrieves data. Commands that create tables, alter databases, update or delete records, and so on, are also considered queries.
+
+SQL has been standardized and revised since 1986. SQL-92, for example, refers to the revision of the standard in 1992. However, SQL implementations are vendor-specific and do not necessarily comply with any standard. The SQL syntax between databases is similar enough that you can move your SQL code from one dialect to another without too much pain. Moving between databases you will find that the devil is not in the details of the SQL language, but in the details of how NULLs are represented, how date-time values are handled, how indexes work, how data are partitioned, whether foreign keys are supported, and so on. Since we use DuckDB in this chapter, we are following the DuckDB SQL syntax.
+
+SQL can be difficult to master.
+
+-   Many programmers are more familiar and comfortable with imperative languages that specify the program flow step by step.
+
+-   Declarative languages are domain specific, the domain for SQL is the manipulation of data in relational systems. This is associated with a lot of special terminology and domain-specific logic. The data scientist thinks in terms of rows and columns, the database engineer thinks in terms of predicates, projections, clauses, constraints, and relations.
+
+-   While the number of relevant SQL commands is rather small, SQL queries can become astonishingly complex and unwieldy. A single SQL query that accesses multiple tables with correlated (dependent) subqueries, joins, and common table expressions can be hundreds of lines long. If you are not used to reading SQL, a simple subquery such as this one might give you a headache:
+
+```{.default}
+SELECT employee_number, name,
+        (SELECT AVG(salary) 
+           FROM employees
+          WHERE department = emp.department) AS department_average
+   FROM employees emp
+```
+
+-   The point of a declarative language is that the programmer specifies the desired result and leaves it to the particular implementation to achieve it. SQL novices often get frustrated because they know exactly *what* they want but not *how* to ask for it using SQL syntax.
+
+-   Debugging SQL code is more difficult than debugging code in an imperative language. Error messages can be cryptic. A query that runs successfully is never wrong from the databases point of view, but it is wrong from the coder’s point of view if it does not produce the desired result.
+
+-   A query that executes quickly for one database can run slowly in another database. It depends on database architecture, implementation, optimizations, etc. You must learn to ask for the right thing in the right way.
+
+An interesting aspect (quirk) of domain-specific logic in SQL is three-valued logic. In classical (boolean) logic, there are two logical values, TRUE and FALSE, expressing the relation of a proposition to the truth. In three-valued logic there is a third value, NULL, expressing an unknown state. NULL values are used in databases to represent absent entries and are akin to the concept of the missing value in analytics. NULL values are not zero or empty values. An empty string (“”) in a text column is a known value, a zero-byte string. A NULL value on the other hand states that a string is absent.
+
+The examples that follow in this section use DuckDB with the `ads.ddb` database from the command line as follows:
+
+```{.default}
+> duckdb ads.ddb
+D
+```
+
+To install the command line interface for DuckDB on your machine, check [here](https://duckdb.org/docs/installation/).
+
+
+Because NULL is a logical state, SQL defines operations on NULL values. Suppose A is TRUE, B is FALSE, and C is NULL, then A or B and A or C both evaluate to TRUE, but A and B is FALSE whereas A and C is also NULL (unknown). To achieve “expected” results when operating on NULL values, special syntax is needed. For example,
+
+```{.default}
+SELECT * FROM landsales WHERE improve = NULL;
+
+┌───────┬─────────┬───────┬───────┬───────────┐
+│ land  │ improve │ total │ sale  │ appraisal │
+│ int64 │  int64  │ int64 │ int64 │  double   │
+├─────────────────────────────────────────────┤
+│                   0 rows                    │
+└─────────────────────────────────────────────┘
+```
+
+returns no rows since the comparison `x = NULL` is never TRUE, its result is always unknown (NULL). If you use this syntax to check for missing values in your data you will conclude that there are none.
+
+The correct query uses syntax designed to operate with NULL values:
+
+```{.default}
+SELECT * FROM landsales WHERE improve IS NULL;
+┌───────┬─────────┬───────┬────────┬───────────┐
+│ land  │ improve │ total │  sale  │ appraisal │
+│ int64 │  int64  │ int64 │ int64  │  double   │
+├───────┼─────────┼───────┼────────┼───────────┤
+│ 42394 │         │       │ 168000 │           │
+│ 93200 │         │       │ 422000 │           │
+│ 65376 │         │       │ 286500 │           │
+│ 42400 │         │       │        │           │
+└───────┴─────────┴───────┴────────┴───────────┘
+
+SELECT count(*) FROM landsales WHERE improve IS NULL;
+┌──────────────┐
+│ count_star() │
+│    int64     │
+├──────────────┤
+│            4 │
+└──────────────┘ 
+
+```
+
+## Types of SQL Commands
+
+SQL commands are arranged in logical groups. The most important group for the data scientist is the Data Manipulation Language (DML) group, it consists of statements that change the data stored within a database table and traditionally also includes the most important SQL statement, SELECT. The second most important group of SQL commands is the Data Definition Language (DDL), it provides syntax to create and modify database objects.
+
+-   **Data Definition Language** (DDL): syntax to create and modify database objects. The commands are about the objects themselves, not the data they contain. For example, the CREATE TABLE statement defines the schema of a table and creates it, but it does not populate the table with data. Commands in this group include CREATE, DROP, ALTER.
+
+-   **Data Manipulation Language** (DML): syntax to query and modify the contents of tables. The most important SQL command in this group is SELECT. Other commands in this group are INSERT, UPDATE, DELETE. The SELECT statement is sometimes pulled into a separate group, the Data Querying Language (DQL). Since it would be the only statement in that group and because SELECT INTO also modifies rows in a table, the SELECT statement is often included as part of the DML.
+
+-   **Data Control Language** (DCL): to control access and manage permissions for users of the database. Commands such as GRANT, DENY, and REVOKE are part of the DCL. As a data scientist you are unlikely to work with DCL commands, they are the domain of the database administrator (DBA). However, you might be charged with setting up and maintaining a database and DCL will help you to change what users (or roles) are allowed to do in the database. The following statements allow `user1` to run a SELECT statement on `table_foo` but disallows updates to the table.
+
+```{.default}
+GRANT SELECT ON table_foo TO user1;
+DENY UPDATE ON table_foo TO user1;
+
+```
+
+Not all databases support DCL. SQLite and DuckDB do not.
+
+## Most Common SQL Commands
+
+The most important SQL commands for a data scientist are the following:
+
+-   CREATE TABLE
+
+-   ALTER TABLE
+
+-   DROP TABLE
+
+-   SELECT
+
+-   INSERT INTO
+
+-   UPDATE
+
+-   DELETE FROM
+
+### Creating and Modifying a Table
+
+We demonstrate these with a small example using DuckDB. You can find the complete documentation for SQL in DuckDB [here](https://duckdb.org/docs/sql/introduction). A separate section then dives into the SELECT statement, the workhorse for data analysis in relational DBMS.
+
+First, let’s create a small table with information on some cities around the world.
+
+```{.default}
+CREATE TABLE Cities (Country VARCHAR, Name VARCHAR, Year INT, Population INT);
+```
+
+The table has four columns named `Country`, `Name`, `Year`, and `Population`, respectively. The first two are of type VARCHAR (allowing character strings of variable length), the last two are of type INT.
+
+If we were to issue the CREATE TABLE statement again, the database would throw an error because the Cities table now exists. To replace an existing table, use CREATE OR REPLACE TABLE:
+
+```{.default}
+CREATE OR REPLACE TABLE Cities (Country    VARCHAR, 
+                                Name       VARCHAR, 
+                                Year       INT, 
+                                Population INT);
+
+```
+
+A very useful feature is the addition of check constraints. Suppose you want to make sure that only data after the year 2000 are entered for the `Year` column. You can add a check constraint like this:
+
+```{.default}
+CREATE OR REPLACE TABLE Cities (Country    VARCHAR, 
+                                Name       VARCHAR, 
+                                Year       INT CHECK (Year >= 2000), 
+                                Population INT);
+
+```
+
+Trying to insert a record that fails the check will result in an error:
+
+```{.default}
+INSERT INTO Cities VALUES ('NL', 'Amsterdam', 1999, 1005);
+
+Error: Constraint Error: CHECK constraint failed: Cities
+```
+
+Once the table exists in the catalog, we can use the ALTER TABLE statement to change its structure, for example, by renaming, adding, or removing columns, changing data types or defaults.
+
+```{.default}
+ALTER TABLE Cities RENAME Name to CityName;
+ALTER TABLE Cities ADD Column k INTEGER;
+ALTER TABLE Cities RENAME to WorldCities;
+
+```
+
+The first statement renames the Name column to `CityName`, the second statement adds an integer column named k, and the third statement renames the table.
+
+To populate the table with data, we insert rows. The following statements add one row at a time and then retrieves the entire contents of the table:
+
+```{.default}
+INSERT INTO WorldCities VALUES ('NL', 'Amsterdam', 2000, 1005, 1);
+INSERT INTO WorldCities VALUES ('NL', 'Amsterdam', 2010, 1065, 3);
+INSERT INTO WorldCities VALUES ('NL', 'Amsterdam', 2020, 1158, 4);
+INSERT INTO WorldCities VALUES ('US', 'Seattle', 2000, 564, 5432);
+INSERT INTO WorldCities VALUES ('US', 'Seattle', 2010, 608, 46);
+INSERT INTO WorldCities VALUES ('US', 'Seattle', 2020, 738, 986);
+INSERT INTO WorldCities VALUES ('US', 'New York City', 2000, 8015, 0);
+INSERT INTO WorldCities VALUES ('US', 'New York City', 2010, 8175, 987);
+INSERT INTO WorldCities VALUES ('US', 'New York City', 2020, 8772, 23);
+
+SELECT * FROM WorldCities;
+
+┌─────────┬───────────────┬───────┬────────────┬───────┐
+│ Country │   CityName    │ Year  │ Population │   k   │
+│ varchar │    varchar    │ int32 │   int32    │ int32 │
+├─────────┼───────────────┼───────┼────────────┼───────┤
+│ NL      │ Amsterdam     │  2000 │       1005 │     1 │
+│ NL      │ Amsterdam     │  2010 │       1065 │     3 │
+│ NL      │ Amsterdam     │  2020 │       1158 │     4 │
+│ US      │ Seattle       │  2000 │        564 │  5432 │
+│ US      │ Seattle       │  2010 │        608 │    46 │
+│ US      │ Seattle       │  2020 │        738 │   986 │
+│ US      │ New York City │  2000 │       8015 │     0 │
+│ US      │ New York City │  2010 │       8175 │   987 │
+│ US      │ New York City │  2020 │       8772 │    23 │
+└─────────┴───────────────┴───────┴────────────┴───────┘ 
+
+```
+
+We won’t need the column k anymore, so we can drop it with
+
+```{.default}
+ALTER TABLE WorldCities DROP COLUMN k;
+```
+
+### Pivoting a Table
+
+A pivot table is a summary for data that contains categorical variables. If the aggregation is a simple count, the pivot table is also called a contingency table. These tables are useful to summarize data by categories and to see trends. DuckDB implements the SQL PIVOT statement; the basic syntax is
+
+```{.default}
+PIVOT ⟨dataset⟩ 
+  ON ⟨columns⟩
+  USING ⟨values⟩ 
+  GROUP BY ⟨rows⟩  
+  ORDER BY ⟨columns_with_order_directions⟩
+  LIMIT ⟨number_of_rows⟩;
+
+```
+
+The ON clause lists the columns on which to pivot the table. In the `WorldCities` example we might want to pivot on `Year` to retrieve the average population for each year:
+
+```{.default}
+ PIVOT WorldCities on YEAR USING mean(population);
+
+┌─────────┬───────────────┬────────┬────────┬────────┐
+│ Country │   CityName    │  2000  │  2010  │  2020  │
+│ varchar │    varchar    │ double │ double │ double │
+├─────────┼───────────────┼────────┼────────┼────────┤
+│ US      │ New York City │ 8015.0 │ 8175.0 │ 8772.0 │
+│ NL      │ Amsterdam     │ 1005.0 │ 1065.0 │ 1158.0 │
+│ US      │ Seattle       │  564.0 │  608.0 │  738.0 │
+└─────────┴───────────────┴────────┴────────┴────────┘ 
+
+```
+
+The USING clause determines how to aggregate the values that are split into columns. If it is not provided, the PIVOT statement defaults to `count(*)` aggregation.
+
+The GROUP BY clause allows you to further aggregate the results and the ORDER BY statement affects how the output is displayed:
+
+```{.default}
+PIVOT WorldCities on YEAR
+      USING mean(population) 
+      GROUP BY Country 
+      ORDER BY Country DESC;
+
+┌─────────┬────────┬────────┬────────┐
+│ Country │  2000  │  2010  │  2020  │
+│ varchar │ double │ double │ double │
+├─────────┼────────┼────────┼────────┤
+│ US      │ 4289.5 │ 4391.5 │ 4755.0 │
+│ NL      │ 1005.0 │ 1065.0 │ 1158.0 │
+└─────────┴────────┴────────┴────────┘ 
+
+```
+
+To obtain multiple aggregations, provide a list in the USING clause:
+
+```{.default}
+PIVOT WorldCities on YEAR
+      USING mean(population) as mn,
+            max(population) as mx
+      GROUP BY Country 
+      ORDER BY Country DESC;
+
+┌─────────┬─────────┬─────────┬─────────┬─────────┬─────────┬─────────┐
+│ Country │ 2000_mn │ 2000_mx │ 2010_mn │ 2010_mx │ 2020_mn │ 2020_mx │
+│ varchar │ double  │  int32  │ double  │  int32  │ double  │  int32  │
+├─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┤
+│ US      │  4289.5 │    8015 │  4391.5 │    8175 │  4755.0 │    8772 │
+│ NL      │  1005.0 │    1005 │  1065.0 │    1065 │  1158.0 │    1158 │
+└─────────┴─────────┴─────────┴─────────┴─────────┴─────────┴─────────┘ 
+
+```
+
+You might want to combine creation of a table and populating it with data into a single step. For example, you might want to create a database table from the contents of a CSV file. That is accomplished by adding an AS SELECT clause to the CREATE TABLE statement:
+
+```{.default}
+CREATE OR REPLACE TABLE iris AS SELECT * FROM "../datasets/iris.csv”;
+```
+
+You can use just FROM as a shorthand for SELECT \* FROM:
+
+```{.default}
+CREATE OR REPLACE TABLE iris AS FROM "../dataswts/iris.csv”;
+```
+
+This shorthand works in general in DuckDB:
+
+```{.default}
+FROM WorldCities WHERE Country='NL';
+
+┌─────────┬───────────┬───────┬────────────┐
+│ Country │ CityName  │ Year  │ Population │
+│ varchar │  varchar  │ int32 │   int32    │
+├─────────┼───────────┼───────┼────────────┤
+│ NL      │ Amsterdam │  2000 │       1005 │
+│ NL      │ Amsterdam │  2010 │       1065 │
+│ NL      │ Amsterdam │  2020 │       1158 │
+└─────────┴───────────┴───────┴────────────┘ 
+
+```
+
+If you want to create a temporary table that resides in memory and is automatically dropped when the connection to DuckDB is closed, use CREATE TEMP TABLE:
+
+```{.default}
+CREATE TEMP TABLE foo AS FROM "../datasets/iris.csv";
+```
+
+### Dropping a Table
+
+Finally, when the table is no longer needed, we can remove it from the catalog with DROP TABLE:
+
+```{.default}
+DROP TABLE WorldCities;
+```
+
+## SELECT Statement
+
+The SELECT statement is the workhorse for querying, analyzing, combining, and ordering data in database tables. The more important basic syntax elements of SELECT are
+
+```{.default}
+SELECT select_list
+   FROM tables
+   WHERE condition
+   GROUP BY groups
+   HAVING group_filter
+   ORDER BY order_expr
+   LIMIT n;
+
+```
+
+The logical start of the SELECT query is the FROM clause where you specify the data source for the query. The `select_list` prior to the FROM clause specifies the columns in the result set of the query. This can be columns from results in the FROM clause, aggregations, and combinations. If you want to specifically name element of the `select_list`, you can assign an alias with the AS clause, as in this example:
+
+```{.default}
+SELECT sepal_length AS SL, sepal_width AS SW from iris LIMIT 5;
+
+┌────────┬────────┐
+│   SL   │   SW   │
+│ double │ double │
+├────────┼────────┤
+│    5.1 │    3.5 │
+│    4.9 │    3.0 │
+│    4.7 │    3.2 │
+│    4.6 │    3.1 │
+│    5.0 │    3.6 │
+├────────┴────────┤
+│     5 rows      │
+└─────────────────┘ 
+
+```
+
+To include everything in the FROM clause into the `select_list`, use the asterisk wildcard (star notation):
+
+```{.default}
+SELECT * FROM iris LIMIT 4;
+
+┌──────────────┬─────────────┬──────────────┬─────────────┬─────────┐
+│ sepal_length │ sepal_width │ petal_length │ petal_width │ species │
+│    double    │   double    │    double    │   double    │ varchar │
+├──────────────┼─────────────┼──────────────┼─────────────┼─────────┤
+│          5.1 │         3.5 │          1.4 │         0.2 │ setosa  │
+│          4.9 │         3.0 │          1.4 │         0.2 │ setosa  │
+│          4.7 │         3.2 │          1.3 │         0.2 │ setosa  │
+│          4.6 │         3.1 │          1.5 │         0.2 │ setosa  │
+└──────────────┴─────────────┴──────────────┴─────────────┴─────────┘ 
+
+```
+
+SELECT queries can quickly get complicated because the FROM clause can contain a single table, multiple tables that are joined together, or another SELECT query (this is called a subquery):
+
+```{.default}
+SELECT land, improve, 
+       (SELECT avg(sale) FROM landsales as average) 
+FROM (SELECT * from landsales where total > 100000);
+
+┌────────┬─────────┬──────────────────────────────────────────────┐
+│  land  │ improve │ (SELECT avg(sale) FROM landsales AS average) │
+│ int64  │  int64  │                   double                     │
+├────────┼─────────┼──────────────────────────────────────────────┤
+│  45990 │   91402 │                           217445.45454545456 │
+│  56658 │  153806 │                           217445.45454545456 │
+│  51428 │   72451 │                           217445.45454545456 │
+│  76125 │   78172 │                           217445.45454545456 │
+│ 154360 │   61934 │                           217445.45454545456 │
+│  40800 │   92606 │                           217445.45454545456 │
+└────────┴─────────┴──────────────────────────────────────────────┘ 
+
+```
+
+In the previous SQL code, the `select_list` contains a SELECT statement that returns the average sale price for all land sales. The FROM clause contains another SELECT statement with a WHERE clause. The result set consists of the land and improvement value for sales where the total value exceeded 100,000 and the average sale for all properties (including the ones with total value below 100,000).
+
+The WHERE clause in the SELECT applies filters to the data. Only rows that match the WHERE clause are processed.
+
+```{.default}
+SELECT * FROM iris WHERE species LIKE '%osa' LIMIT 10;
+Output
+┌──────────────┬─────────────┬──────────────┬─────────────┬─────────┐
+│ sepal_length │ sepal_width │ petal_length │ petal_width │ species │
+│    double    │   double    │    double    │   double    │ varchar │
+├──────────────┼─────────────┼──────────────┼─────────────┼─────────┤
+│          5.1 │         3.5 │          1.4 │         0.2 │ setosa  │
+│          4.9 │         3.0 │          1.4 │         0.2 │ setosa  │
+│          4.7 │         3.2 │          1.3 │         0.2 │ setosa  │
+│          4.6 │         3.1 │          1.5 │         0.2 │ setosa  │
+│          5.0 │         3.6 │          1.4 │         0.2 │ setosa  │
+│          5.4 │         3.9 │          1.7 │         0.4 │ setosa  │
+│          4.6 │         3.4 │          1.4 │         0.3 │ setosa  │
+│          5.0 │         3.4 │          1.5 │         0.2 │ setosa  │
+│          4.4 │         2.9 │          1.4 │         0.2 │ setosa  │
+│          4.9 │         3.1 │          1.5 │         0.1 │ setosa  │
+├──────────────┴─────────────┴──────────────┴─────────────┴─────────┤
+│ 10 rows                                                 5 columns │
+└───────────────────────────────────────────────────────────────────┘ 
+
+```
+
+The GROUP BY clause specifies the groupings for aggregations.
+
+```{.default}
+SELECT count(*), max(sepal_length) FROM iris GROUP BY species;
+
+┌──────────────┬───────────────────┐
+│ count_star() │ max(sepal_length) │
+│    int64     │      double       │
+├──────────────┼───────────────────┤
+│           50 │               7.9 │
+│           50 │               5.8 │
+│           50 │               7.0 │
+└──────────────┴───────────────────┘ 
+
+```
+
+You can specify multiple columns in the grouping or use the GROUP BY ALL shorthand. The following are equivalent:
+
+```{.default}
+SELECT League, Division, mean(RBI) FROM Hitters GROUP BY League, Division;
+SELECT League, Division, mean(RBI) FROM Hitters GROUP BY ALL;
+
+┌─────────┬──────────┬───────────────────┐
+│ League  │ Division │     mean(RBI)     │
+│ varchar │ varchar  │      double       │
+├─────────┼──────────┼───────────────────┤
+│ A       │ E        │ 54.37647058823529 │
+│ A       │ W        │ 48.81111111111111 │
+│ N       │ E        │ 44.94444444444444 │
+│ N       │ W        │ 42.85333333333333 │
+└─────────┴──────────┴───────────────────┘
+
+```
+
+The HAVING clause in the SELECT statement causes confusion sometimes, but it is fairly easy to understand as a filter that is applied **after** the GROUP BY clause. The WHERE clause on the other hand is a filter applied **before** the GROUP BY clause. In other words, the WHERE clause selects which rows participate in the GROUP BY operation. The HAVING clause determines which result of the GROUP BY operation are filtered.
+
+```{.default}
+SELECT League, Division, 
+       count(*) as count, 
+       avg(RBI) AS average 
+FROM Hitters 
+GROUP BY ALL
+HAVING count > 80;
+
+┌─────────┬──────────┬───────┬───────────────────┐
+│ League  │ Division │ count │      average      │
+│ varchar │ varchar  │ int64 │      double       │
+├─────────┼──────────┼───────┼───────────────────┤
+│ A       │ E        │    85 │ 54.37647058823529 │
+│ A       │ W        │    90 │ 48.81111111111111 │
+└─────────┴──────────┴───────┴───────────────────┘ 
+
+```
+
+Without the HAVING clause, the SELECT statement would return results on two additional groupings:
+
+```{.default}
+SELECT League, Division, 
+       count(*) as count, 
+       avg(RBI) AS average 
+FROM Hitters 
+GROUP BY ALL;
+
+┌─────────┬──────────┬───────┬───────────────────┐
+│ League  │ Division │ count │      average      │
+│ varchar │ varchar  │ int64 │      double       │
+├─────────┼──────────┼───────┼───────────────────┤
+│ A       │ E        │    85 │ 54.37647058823529 │
+│ A       │ W        │    90 │ 48.81111111111111 │
+│ N       │ E        │    72 │ 44.94444444444444 │
+│ N       │ W        │    75 │ 42.85333333333333 │
+└─────────┴──────────┴───────┴───────────────────┘  
+
+```
+
+The ORDER BY and LIMIT clause also operate on the result set of the query. LIMIT is applied at the end of the query and returns only a specified number of rows in the result set. The ORDER BY clause affects how the rows of the result set are arranged. LIMIT without an ORDER BY can be non-deterministic, multiple runs can produce different results depending on the parallel processing of the data. However, combining ORDER BY and LIMIT generates reproducible results and is a common technique to fetch the top or bottom rows. The following SELECT statement retrieves statistics for the baseball players with the five highest RBI values:
+
+```{.default}
+SELECT AtBat, Hits, HmRun, Runs, RBI, Walks, Errors 
+   FROM Hitters ORDER BY RBI DESC LIMIT 5;
+
+┌───────┬───────┬───────┬───────┬───────┬───────┬────────┐
+│ AtBat │ Hits  │ HmRun │ Runs  │  RBI  │ Walks │ Errors │
+│ int64 │ int64 │ int64 │ int64 │ int64 │ int64 │ int64  │
+├───────┼───────┼───────┼───────┼───────┼───────┼────────┤
+│   663 │   200 │    29 │   108 │   121 │    32 │      6 │
+│   600 │   144 │    33 │    85 │   117 │    65 │     14 │
+│   637 │   174 │    31 │    89 │   116 │    56 │      9 │
+│   677 │   238 │    31 │   117 │   113 │    53 │      6 │
+│   618 │   200 │    20 │    98 │   110 │    62 │      8 │
+└───────┴───────┴───────┴───────┴───────┴───────┴────────┘ 
+
+```
+
+## Subqueries
+
+A subquery is a query inside another query. The subquery is also called the inner query and the query containing it is referred to as the outer query. Subqueries are said to be **uncorrelated** if they are self-contained and can be run without the outer query. For example, the following SQL statement contains an uncorrelated subquery, `select min(weight) from auto`, which you can run as a stand-alone query
+
+```{.default}
+select name from auto where weight = (select min(weight) from auto);
+
+┌─────────────┐
+│    name     │
+│   varchar   │
+├─────────────┤
+│ datsun 1200 │
+└─────────────┘ 
+
+```
+
+The outer query in this example is `SELECT name FROM auto WHERE weight =`.
+
+You can use subqueries together with SELECT EXISTS to test for the existence of rows in the subquery:
+
+```{.default}
+select exists(select * from auto where horsepower > 300);
+
+┌─────────────────────────────────────────────────────┐
+│ EXISTS(SELECT * FROM auto WHERE (horsepower > 300)) │
+│                       boolean                       │
+├─────────────────────────────────────────────────────┤
+│ false                                               │
+└─────────────────────────────────────────────────────┘
+
+```
+
+A subquery is said to be **correlated** if the subquery uses values from the outer query. You can think of the subquery as a function that is run for every row in the data. Suppose we want to find the minimum reaction time for each subject in the sleep table. The data represent reaction times for 18 subjects measured on ten days of a sleep deprivation study.
+
+```{.default}
+SELECT *
+  FROM sleep AS s
+  WHERE Reaction =
+      (SELECT MIN(Reaction)
+       FROM sleep
+       WHERE sleep.Subject=s.Subject);
+
+┌──────────┬───────┬─────────┐
+│ Reaction │ Days  │ Subject │
+│  double  │ int64 │  int64  │
+├──────────┼───────┼─────────┤
+│   249.56 │     0 │     308 │
+│ 202.9778 │     2 │     309 │
+│ 194.3322 │     1 │     310 │
+│ 280.2396 │     6 │     330 │
+│    285.0 │     1 │     331 │
+│ 234.8606 │     0 │     332 │
+│ 276.7693 │     2 │     333 │
+│ 243.3647 │     2 │     334 │
+│  235.311 │     7 │     335 │
+│ 291.6112 │     2 │     337 │
+│ 230.3167 │     1 │     349 │
+│ 243.4543 │     1 │     350 │
+│ 250.5265 │     0 │     351 │
+│ 221.6771 │     0 │     352 │
+│ 257.2424 │     2 │     369 │
+│  225.264 │     0 │     370 │
+│ 259.2658 │     6 │     371 │
+│ 269.4117 │     0 │     372 │
+├──────────┴───────┴─────────┤
+│ 18 rows          3 columns │
+└────────────────────────────┘ 
+
+```
+
+Subject 308 has the smallest reaction time on day 0 of the study, subject 309 has the smallest reaction time at day 2, and so forth. The subquery is correlated, because it uses the column `s.Subject` from the outer query.
+
+We could have achieved the same aggregation of smallest reaction time by subject with a simple query with GROUP BY clause:
+
+```{.default}
+select min(Reaction), Subject from sleep group by subject limit 5;
+
+┌───────────────┬─────────┐
+│ min(Reaction) │ Subject │
+│    double     │  int64  │
+├───────────────┼─────────┤
+│        249.56 │     308 │
+│      202.9778 │     309 │
+│      194.3322 │     310 │
+│      280.2396 │     330 │
+│         285.0 │     331 │
+└─────────────────────────┘ 
+
+```
+
+The difference is that the correlated subquery returns actual records from the table whereas the SELECT with GROUP BY clause returns the result of aggregation. Put it another way: do you want to see the min reaction time for each subject or do you want to see the records that match the min reaction time for each subject?

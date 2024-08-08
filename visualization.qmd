@@ -17,7 +17,7 @@ It is used to convey information without distracting from it. It should be usefu
 1. **Discovery**
     -   Give an **overview**---a qualitative sense of what is in a data set.
     -   **Convey scale and complexity**---a network graph does not reveal the underlying structure but gives a sense of the size and connectivity in the network.
-    -   **Exploration*---discover unexpected aspects of the data.
+    -   **Exploration**---discover unexpected aspects of the data.
     
 2. **Communication**
     - **Tell a story**---to self and others by displaying information in an understandable way. “If we communicate well, we call it storytelling”.
