@@ -348,9 +348,9 @@ TL;DR What you Need
 <div class="callout-body-container callout-body">
 <p>To work with <code>R</code> in this course, you need to be able to run <code>R</code> code, mix it with prose and formulas in a notebook-style environment, and turn program and output into pdf and html files. To accomplish this you will need</p>
 <ul>
-<li><p><code>R</code>. Download from <a href="https://cran.rstudio.com/">CRAN</a></p></li>
-<li><p>RStudio. Download RStudio Desktop from <a href="https://posit.co/downloads/">Posit</a></p></li>
-<li><p>LaTex. <a href="https://yihui.org/tinytex/">TinyTeX</a> is a small distribution based on Tex Live that works well with <code>R</code> and can be manipulated through the <code>tinytex</code> <code>R</code> package.</p></li>
+<li><p><strong><code>R</code></strong>. Download from <a href="https://cran.rstudio.com/">CRAN</a></p></li>
+<li><p><strong>RStudio</strong>. Download RStudio Desktop from <a href="https://posit.co/downloads/">Posit</a></p></li>
+<li><p><strong>LaTex</strong>. <a href="https://yihui.org/tinytex/">TinyTeX</a> is a small distribution based on Tex Live that works well with <code>R</code> and can be manipulated through the <code>tinytex</code> <code>R</code> package.</p></li>
 </ul>
 <p>You can skip <code>R</code> and RStudio installs if you do the work in a <a href="https://posit.cloud/">Posit Cloud</a> account. These are available for free <a href="https://posit.cloud/plans/free">here</a>.</p>
 </div>
@@ -377,7 +377,7 @@ TL;DR What you Need
 <div id="fig-rstudio-ide" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-rstudio-ide-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/RStudio.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="images/RStudio.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+<a href="images/RStudio.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="images/RStudio.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rstudio-ide-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;2.1: RStudio IDE
@@ -689,7 +689,7 @@ Built: R 4.3.1; ; 2023-09-18 12:03:34 UTC; unix
 <section id="latex-latex" class="level3">
 <h3 class="anchored" data-anchor-id="latex-latex">LaTeX (<span class="math inline">\(\LaTeX\)</span>)</h3>
 <p><span class="math inline">\(\LaTeX\)</span> (pronounced “LAY-tek” or “LAH-tek”) is a high-quality typesetting system; it includes features designed for the production of technical and scientific documents. <span class="math inline">\(\LaTeX\)</span> is the de facto standard for the communication and publication of scientific documents and is available for free from <a href="http://latex-project.org">here</a>.</p>
-<p>If you are working in mathematics or statistics, you will be producing <span class="math inline">\(\LaTeX\)</span> documents. You can write equations with other authoring tools as well—even the Microsoft Equation Editor has improved greatly over the years, in part because it now accepts <span class="math inline">\(\LaTeX\)</span> syntax! <span class="math inline">\(\LaTeX\)</span> is not a WYSIWYG—what you see is what you get—environment. Instead, you write a plain text file where text is interspersed with <span class="math inline">\(\LaTeX\)</span> commands. The document is processed (“compiled”) into an output file (usually pdf) by running it through a TeX engine. In other words, you focus on writing the contents of the document with <span class="math inline">\(\LaTeX\)</span> commands and let the Tex engine take care of converting the commands into a visual appearance.</p>
+<p>If you are working in mathematics or statistics, you will be producing <span class="math inline">\(\LaTeX\)</span> documents. You can write equations with other authoring tools as well—even the Microsoft Equation Editor has improved greatly over the years, in part because it now accepts <span class="math inline">\(\LaTeX\)</span> syntax! <span class="math inline">\(\LaTeX\)</span> is not a WYSIWYG—what you see is what you get—environment. Instead, you write a plain text file where text is interspersed with <span class="math inline">\(\LaTeX\)</span> commands. The document is processed (“compiled”) into an output file (usually pdf) by running it through a TeX engine. In other words, you focus on writing the contents of the document with <span class="math inline">\(\LaTeX\)</span> commands and let the Tex engine take care of typesetting the commands into a professional document.</p>
 <p>RStudio, Rmarkdown, and Quarto support <span class="math inline">\(\LaTeX\)</span> natively and this makes it very easy to combine text, code, and formulas. For example, to show the probability density function of a G(0,1) random variable in this Quarto document, I typed the <span class="math inline">\(\LaTeX\)</span> instructions</p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>f(y) = \frac{1}{\sqrt{2\pi\sigma^{2}}} \exp </span>
@@ -698,6 +698,7 @@ Built: R 4.3.1; ; 2023-09-18 12:03:34 UTC; unix
 <p>in the editor. When the document is rendered, these instructions produce <span class="math display">\[
 f(y) = \frac{1}{\sqrt{2\pi\sigma^{2}}}\exp\left\{ - \frac{1}{2\sigma^{2}}(y - \mu)^{2} \right\}
 \]</span></p>
+<p>An introduction to basic <span class="math inline">\(\LaTeX\)</span> document structure, formatting, and typesetting follows in <a href="latex_basics.html" class="quarto-xref"><span>Chapter 13</span></a>.</p>
 <p>RStudio does not add a <span class="math inline">\(\LaTeX\)</span> system to your computer, so you need to do that yourself. If you are planning to use <span class="math inline">\(\LaTeX\)</span> outside of <code>R</code> and RStudio, I recommend installing a full distribution. If you just want to get by with the minimal <span class="math inline">\(\LaTeX\)</span> needed to add formulas to html and pdf files created from RStudio, then <code>tinytex</code> will suffice.</p>
 <ul>
 <li><p><a href="https://www.tug.org/mactex/">MacTex</a>: This <span class="math inline">\(\LaTeX\)</span> distribution contains everything you need for MacOS.</p></li>
@@ -1363,7 +1364,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"loop":false,"openEffect":"zoom","closeEffect":"zoom","selector":".lightbox","descPosition":"bottom"});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","selector":".lightbox","descPosition":"bottom","loop":false,"openEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

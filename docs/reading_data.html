@@ -293,7 +293,11 @@ window.Quarto = {
   <li><a href="#excel-files" id="toc-excel-files" class="nav-link" data-scroll-target="#excel-files"><span class="header-section-number">3.2</span> Excel Files</a></li>
   <li><a href="#sec-json-files" id="toc-sec-json-files" class="nav-link" data-scroll-target="#sec-json-files"><span class="header-section-number">3.3</span> JSON Files</a></li>
   <li><a href="#parquet-files" id="toc-parquet-files" class="nav-link" data-scroll-target="#parquet-files"><span class="header-section-number">3.4</span> Parquet Files</a></li>
-  <li><a href="#working-with-a-database" id="toc-working-with-a-database" class="nav-link" data-scroll-target="#working-with-a-database"><span class="header-section-number">3.5</span> Working with a Database</a></li>
+  <li><a href="#working-with-a-database" id="toc-working-with-a-database" class="nav-link" data-scroll-target="#working-with-a-database"><span class="header-section-number">3.5</span> Working with a Database</a>
+  <ul>
+  <li><a href="#reading-a-duckdb-table" id="toc-reading-a-duckdb-table" class="nav-link" data-scroll-target="#reading-a-duckdb-table">Reading a DuckDB Table</a></li>
+  <li><a href="#creating-an-in-memory-data-base" id="toc-creating-an-in-memory-data-base" class="nav-link" data-scroll-target="#creating-an-in-memory-data-base">Creating an In-memory Data Base</a></li>
+  </ul></li>
   <li><a href="#saving-and-loading-rdata" id="toc-saving-and-loading-rdata" class="nav-link" data-scroll-target="#saving-and-loading-rdata"><span class="header-section-number">3.6</span> Saving and Loading <code>RData</code></a></li>
   </ul>
 </nav>
@@ -448,7 +452,7 @@ On CSV Files
 <div id="fig-data-json-structure" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-data-json-structure-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/JSON_Structure.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="images/JSON_Structure.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="images/JSON_Structure.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="images/JSON_Structure.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-data-json-structure-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;3.1: Elements of a JSON document. Because values can contain objects and arrays, JSON documents can be highly structured and deeply nested.
@@ -459,7 +463,7 @@ Figure&nbsp;3.1: Elements of a JSON document. Because values can contain objects
 <div id="fig-data-json-example" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-data-json-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/JSON_Example.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2"><img src="images/JSON_Example.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="images/JSON_Example.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2"><img src="images/JSON_Example.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-data-json-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;3.2: A simple JSON document. The entire document is a name—value pair with name “menu”. The value is an object with names “id”, “value”, and “popup”. The value of “popup” is an object with name “menuitem” whose value is an array. The elements of the array are objects with names “value” and “onclick”.
@@ -610,7 +614,7 @@ $ E_no_group             &lt;list&gt; [&lt;data.frame[2 x 6]&gt;], [&lt;data.fra
 <div id="fig-data-parquet" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-data-parquet-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/ParquetStorage.png" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="quarto-lightbox-gallery-3"><img src="images/ParquetStorage.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="images/ParquetStorage.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" data-glightbox="description: .lightbox-desc-3"><img src="images/ParquetStorage.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-data-parquet-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;3.3: The Parquet file architecture. Chunks of columns are stored in row groups. The footer contains important metadata. <a href="https://towardsdatascience.com/parquet-file-format-everything-you-need-to-know-4eed5c0019e7">Source</a>: Parquet File Format: Everything You Need to Know, by Nikola Ilic.
@@ -692,10 +696,12 @@ Figure&nbsp;3.3: The Parquet file architecture. Chunks of columns are stored in 
 <section id="working-with-a-database" class="level2" data-number="3.5">
 <h2 data-number="3.5" class="anchored" data-anchor-id="working-with-a-database"><span class="header-section-number">3.5</span> Working with a Database</h2>
 <p>You interface with a database from <code>R</code> with the <code>DBI</code> package. It provides a common syntax and functions to connect to supported databases, and to send queries to the database. In addition to the <code>DBI</code> package you need the driver packages specific to the database you are working with (<code>RMySQL</code> for MySQL, <code>RSQLite</code> for SQLite, and so on).</p>
-<p>My favorite database for analytic work is duckDB, a highly efficient, embedded database designed for processing data analytically. The file <code>ads.ddb</code>, contains the database tables used in this and other courses in duckDB format. To add the duckDB driver package to your system, use</p>
+<p>My favorite database for analytic work is DuckDB, a highly efficient, embedded database designed for processing data analytically. The file <code>ads.ddb</code>, contains the database tables used in this and other courses in DuckDB format. To add the DuckDB driver package to your system, use</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"duckdb"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<section id="reading-a-duckdb-table" class="level3">
+<h3 class="anchored" data-anchor-id="reading-a-duckdb-table">Reading a DuckDB Table</h3>
 <p>To read a table from that database into an <code>R</code> data frame, follow the steps in the next code snippet:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="annotated-cell-11"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><a class="code-annotation-anchor" data-target-cell="annotated-cell-11" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-11-1" class="code-annotation-target"><a href="#annotated-cell-11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"duckdb"</span>)</span>
@@ -710,7 +716,7 @@ Figure&nbsp;3.3: The Parquet file architecture. Chunks of columns are stored in 
 </dd>
 <dt data-target-cell="annotated-cell-11" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-cell="annotated-cell-11" data-code-lines="2" data-code-annotation="2">Make a connection to duckDB through the DBI interface, specifying the database you want to work with, here <code>ads.ddb</code></span>
+<span data-code-cell="annotated-cell-11" data-code-lines="2" data-code-annotation="2">Make a connection to DuckDB through the DBI interface, specifying the database you want to work with, here <code>ads.ddb</code>. Choosing <code>read_only=TRUE</code> opens the connection in read-only mode. You cannot write to the database, but it can be shared in this mode by multiple R processes.</span>
 </dd>
 <dt data-target-cell="annotated-cell-11" data-target-annotation="3">3</dt>
 <dd>
@@ -788,18 +794,48 @@ Figure&nbsp;3.3: The Parquet file architecture. Chunks of columns are stored in 
 </div>
 <p>You can modify the function to load a <strong>projection</strong> of columns from the database table by replacing the <code>*</code> in the SELECT query with the selected columns.</p>
 </section>
+<section id="creating-an-in-memory-data-base" class="level3">
+<h3 class="anchored" data-anchor-id="creating-an-in-memory-data-base">Creating an In-memory Data Base</h3>
+<p>You can create and work with a purely in-memory database with DuckDB. The database is instantiated in the <code>R</code> session and goes away when the <code>R</code> session terminates or when you close the connection. To specify an in-memory database, simply do not specify the <code>dbdir=</code> parameter when opening a connection, or specify <code>dbdir = ":memory:"</code>.</p>
+<p>Since the default for <code>read_only</code> is <code>read_only=FALSE</code>, the following statement opens a connection to an in-memory database that you can write to.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To write an <code>R</code> data frame to this (or any other) DuckDB database, use the <code>dbWriteTable</code> function.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">43</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="fu">rnorm</span>(<span class="dv">100</span>),<span class="at">nrow=</span><span class="dv">20</span>,<span class="at">ncol=</span><span class="dv">5</span>))</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dbWriteTable</span>(con,<span class="st">"gauss_vars"</span>,df)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dbWriteTable</span>(con,<span class="st">"iris_data"</span>,iris)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dbGetQuery</span>(con,<span class="st">"SHOW TABLES;"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        name
+1 gauss_vars
+2  iris_data</code></pre>
+</div>
+</div>
+<p>This closes the connection and because the database exists in memory, releases the memory (and destroys the database).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
 <section id="saving-and-loading-rdata" class="level2" data-number="3.6">
 <h2 data-number="3.6" class="anchored" data-anchor-id="saving-and-loading-rdata"><span class="header-section-number">3.6</span> Saving and Loading <code>RData</code></h2>
 <p><code>R</code> has its own format (binary or ASCII) to read and write <code>R</code> objects. This is convenient to save a data frame to disk and later load it back into an <code>R</code> session.</p>
 <p>To save any <code>R</code> object, use the <code>save</code> or <code>saveRDS</code> function, to load it into an <code>R</code> session use the <code>load</code> function. <code>save</code> can save one or more objects to a <code>.RData</code> file, while <code>saveRDS</code> creates an <code>.RDS</code> file from a single object.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(<span class="dv">200</span>),<span class="at">nrow=</span><span class="dv">50</span>,<span class="at">ncol=</span><span class="dv">4</span>)</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">crossprod</span>(a)</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>cor_mat <span class="ot">&lt;-</span> <span class="fu">cor</span>(a)</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(a,b,cor_mat,<span class="at">file=</span><span class="st">"data/matrixStuff.RData"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(<span class="dv">200</span>),<span class="at">nrow=</span><span class="dv">50</span>,<span class="at">ncol=</span><span class="dv">4</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">crossprod</span>(a)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>cor_mat <span class="ot">&lt;-</span> <span class="fu">cor</span>(a)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(a,b,cor_mat,<span class="at">file=</span><span class="st">"data/matrixStuff.RData"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Before reloading the objects, let’s clear them from the environment, so we can see how <code>load</code> brings them back into the environment:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list=</span><span class="fu">c</span>(<span class="st">"a"</span>,<span class="st">"b"</span>,<span class="st">"cor_mat"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"data/matrixStuff.RData"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"data/matrixStuff.RData"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>When you load <code>R</code> objects from a <code>.RData</code> file, you do not assign the result of the function. The objects are created in the work environment with their original names.</p>
 <div class="callout callout-style-default callout-caution callout-titled">
@@ -817,10 +853,11 @@ Caution
 </div>
 <p><code>.RData</code> files can contain many objects, for example, all the objects in your environment when it is saved upon closing an <code>R</code> session. If you load from an <code>.RDS</code> file, you can assign the result to an <code>R</code> object which helps avoid name collisions.</p>
 <p>In general, it is better coding practice to use <code>saveRDS</code> and <code>readRDS</code> with single objects. The code is cleaner and easier to follow if single objects are saved/loaded and these are explicitly named in the code.</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>a = rnorm(100)</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>saveRDS(a, file = "stuff.RDS") </span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>normal_rvs &lt;- readRDS("stuff.RDS")</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(a, <span class="at">file =</span> <span class="st">"data/stuff.RDS"</span>) </span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>normal_rvs <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"data/stuff.RDS"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 
 
 <div class="hidden" aria-hidden="true">
@@ -1410,7 +1447,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","openEffect":"zoom","loop":false,"selector":".lightbox"});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"selector":".lightbox","openEffect":"zoom","descPosition":"bottom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

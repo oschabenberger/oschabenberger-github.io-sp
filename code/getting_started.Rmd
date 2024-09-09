@@ -1,0 +1,267 @@
+---
+title: "STAT 5014, Fall 2024, Getting Started"
+author: "Oliver Schabenberger"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document: default
+  html_document:
+    df_print: paged
+editor_options: 
+  markdown: 
+    wrap: 80
+---
+
+```{r setup, include=FALSE}
+options(width=80)
+knitr::opts_chunk$set(echo=TRUE, warning=F, message=F, fig.asp=0.7, cache=FALSE)
+```
+
+# Getting Started {#sec-getting-started}
+
+## Getting Started with R {#sec-getting-started-R}
+
+To work with `R` in this course, you need to be able to run `R` code, mix it
+with prose and formulas in a notebook-style environment, and turn program and
+output into pdf and html files. To accomplish this you will need
+
+-   **`R`**. Download from [CRAN](https://cran.rstudio.com/)
+
+-   **RStudio**. Download RStudio Desktop from
+    [Posit](https://posit.co/downloads/)
+
+-   **LaTex**. [TinyTeX](https://yihui.org/tinytex/) is a small distribution
+    based on Tex Live that works well with `R` and can be manipulated through
+    the `tinytex` `R` package.
+
+You can skip `R` and RStudio installs if you do the work in a [Posit
+Cloud](https://posit.cloud/) account. These are available for free
+[here](https://posit.cloud/plans/free).
+
+--------------------------------------------------------------------------------
+
+To get started with `R` as a statistical programming language you need access to
+`R` itself and a development environment from which to submit `R` code.
+
+Download `R` for your operating system from the
+[CRAN](https://cran.rstudio.com/) site. CRAN is the "Comprehensive R Archive
+Network" and also serves as the package management system to add new packages to
+your installation.
+
+If you use VS Code as a development environment, add the "R Extension for Visual
+Studio" to your environment. We are focusing on RStudio as a development
+environment here.
+
+### Posit Cloud
+
+In today's cloud world, you can get both through [Posit
+Cloud](https://posit.cloud/). Posit is the company behind RStudio, Quarto, and
+other cool tools. Their cloud offering gives you access to an RStudio instance
+in the cloud. You can sign up for a free account
+[here](https://posit.cloud/plans/free). The only drawback of the free account is
+its limitations in terms of RAM, CPU, execution time, etc. For the work you will
+be doing in this course, and probably many other courses, you will not exceed
+the limitations of the free account.
+
+Once you have created an account, the workspace is organized the same way as a
+RStudio session on your desktop.
+
+### R and RStudio
+
+RStudio is an integrated development environment (IDE) for `R`, but supports
+other languages as well. For example, using Quarto in RStudio, you can mix `R`,
+Python, and other code within the same document. Download Rstudio Desktop
+[here](https://posit.co/downloads/).
+
+The RStudio IDE is organized in panes, each pane can have multiple tabs
+(@fig-rstudio-ide). The important panes are
+
+-   **Source**. The files you edit. These can be R files (.R), Rmarkdown (.Rmd),
+    Quarto (.qmd), or any other text files.
+
+-   **Console**. Here you can enter `R` commands directly at the command prompt
+    "\>". This pane also has a `Terminal` tab for an OS terminal and a
+    `Background Jobs` tab. The latter is important when you knit documents into
+    pdf or html format.
+
+-   **Environment**. Displays information about the objects created in the `R`
+    session. You can click on an object for a more detailed look at it in the
+    `Viewer`.
+
+-   **Help**. This pane contains many useful tabs, such as a File browse,
+    package information, access to the documentation and help system. Plots
+    generated from the `Console` or from an `R` script are displayed in the
+    `Plots` tab of this pane.
+
+![RStudio IDE](../images/RStudio.png){#fig-rstudio-ide .lightbox
+fig-align="center" width="90%"}
+
+### Package Management
+
+The `R` installation comes with attached base packages, you do not need to
+install or load those. Any other packages are enabled in a two-step process:
+
+1.  Install the package
+2.  Load the package in your `R` session with the `library()` command.
+
+Installing the package is done once, this step adds the package to your system.
+Loading the library associated with the package needs to be done in every `R`
+session. Without loading the library, `R` cannot find the functions exported by
+the library.
+
+#### Installing standard packages
+
+A **standard** `R` package is made available through the
+[CRAN](https://cran.r-project.org/) (Comprehensive R Archive Network)
+repositories. To install package "foo" from CRAN use
+
+```{r eval=FALSE}
+install.packages("harmony")
+```
+
+To install multiple packages, specify them as a character vector:
+
+```{r eval=FALSE}
+install.packages(c("foo","bar","foobar"))
+```
+
+To uninstall (remove) one or more packages from a system, use the
+
+```{r eval=FALSE}
+remove.packages(c("foo","bar"))
+```
+
+command.
+
+Packages are installed by default into the directory given as the first element
+of the `.libPaths()` function. On my Mac this is
+
+```{r}
+.libPaths()[1]
+```
+
+If you wish to install a package in a different location, provide the location
+in the `lib=""` argument of `install.packages()`. Note that if you use a
+non-default location for the package install you need to specify that location
+when you load the library with the `library` command.
+
+To make the functionality in a package available to your `R` session, use the
+library command. For example, the following statements make the `dplyr` and
+`Rfast` functions available.
+
+```{r, warning=FALSE, message=FALSE}
+library("dplyr")
+library("Rfast")
+```
+
+Libraries export functions into the `R` name space and sometimes these can
+collide. For example, the `Rfast` package exports functions `knn` and `knn.cv`
+for $k$-nearest neighbor and cross-validated $k$-nearest neighbor analysis.
+Functions by the same name also exist in the `class` package. To make it
+explicit which function to use, prepend the function name with the package name:
+
+```{r eval=FALSE}
+Rfast::knn()
+
+class::knn.cv()
+```
+
+To load a library from a non-standard location, for example, when you installed
+the package in a special directory by using `lib=` on `install.packages()`, you
+need to specify the `lib.loc=""` option in the `library` command.
+
+```{r eval=FALSE}
+install.packages("some_package_name", lib="/custom_path/to/packages/")
+
+library("some_package_name", lib.loc="/custom_path/to/packages/")
+```
+
+All available packages in your `R` environment can be seen with the
+
+```{r eval=FALSE}
+library() 
+```
+
+command.
+
+Libraries have dependencies and if you want to install all libraries that a
+given one depends on, choose `dependencies=TRUE` in the `install.packages()`
+call:
+
+```{r eval=FALSE}
+install.packages("randomForest", dependencies=TRUE)
+```
+
+#### Installing non-standard packages
+
+A package that is not served by the CRAN repository cannot be installed with
+`install.packages()`. The need for this might arise when you want to install a
+developer-modified version of a package before it lands on CRAN. This can be
+accomplished with the `devtools` package. The following statements install
+"some_package" from GitHub.
+
+```{r eval=FALSE}
+library("devtools")
+devtools::install_github("some_package")
+```
+
+Once a non-standard package is installed you load it into a session in the same
+way as a standard package, with the `library` command.
+
+You can see all packages installed on your system with
+
+```{r eval=FALSE}
+as.vector(installed.packages()[,"Package"])
+```
+
+and the packages loaded into your workspace with
+
+```{r}
+(.packages())
+```
+
+A more detailed breakdown of the packages in groups, along with other
+information about the session, is available from `sessionInfo()`.
+
+As you write more `R` code and add packages to your system, you will ask
+yourself "Did I not install that previously?" The following code snippet helps
+to install only those packages from a list that are not already installed.
+
+```{r}
+libs_to_load <- c("dplyr", "readr", "magrittr","reshape2","ggplot2")
+libs_to_install <- libs_to_load[!libs_to_load %in% installed.packages()]
+for (lib in libs_to_install) install.packages(lib, dependencies=TRUE)
+sapply(libs_to_load, library, character=TRUE)
+```
+
+#### Unloading a library
+
+The easiest way to unload the libraries you loaded in an `R` session is to
+restart the session. :)
+
+To unload a library from an `R` session you can use the `detach` function with
+the `unload=TRUE` option. For example, to remove the `randomForest` library
+without restarting the session:
+
+```{r eval=FALSE}
+detach("package:randomForest",unload=TRUE)
+```
+
+### Session Information
+
+It is a good practice to add at the end of `R` programs a listing of the
+environment in which the program executed. This will show others what packages
+were loaded and their version. If you use the `RNG=TRUE` option, the random
+number generators are also reported, more on this in @sec-random.
+
+For this session, the info is as follows:
+
+```{r}
+sinfo <- sessionInfo()
+print(sinfo,RNG=T)
+```
+
+You can drill down into the details of the information, for example,
+
+```{r}
+sinfo$loadedOnly$rmarkdown
+```

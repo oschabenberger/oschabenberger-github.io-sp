@@ -5,11 +5,11 @@
 ::: {.callout-tip title="TL;DR What you Need" collapse="true"}
 To work with `R` in this course, you need to be able to run `R` code, mix it with prose and formulas in a notebook-style environment, and turn program and output into pdf and html files. To accomplish this you will need
 
--   `R`. Download from [CRAN](https://cran.rstudio.com/)
+-   **`R`**. Download from [CRAN](https://cran.rstudio.com/)
 
--   RStudio. Download RStudio Desktop from [Posit](https://posit.co/downloads/)
+-   **RStudio**. Download RStudio Desktop from [Posit](https://posit.co/downloads/)
 
--   LaTex. [TinyTeX](https://yihui.org/tinytex/) is a small distribution based on Tex Live that works well with `R` and can be manipulated through the `tinytex` `R` package.
+-   **LaTex**. [TinyTeX](https://yihui.org/tinytex/) is a small distribution based on Tex Live that works well with `R` and can be manipulated through the `tinytex` `R` package.
 
 You can skip `R` and RStudio installs if you do the work in a [Posit Cloud](https://posit.cloud/) account. These are available for free [here](https://posit.cloud/plans/free).
 :::
@@ -164,7 +164,7 @@ detach("package:randomForest",unload=TRUE)
 
 ### Session Information
 
-It is a good practice to add at the end of `R` programs a listing of the environment in which the program executed. This will show others what packages were loaded and their version. If you use the `RNG=TRUE` option, the random number generators are also reported, more on this in @sec-random. 
+It is a good practice to add at the end of `R` programs a listing of the environment in which the program executed. This will show others what packages were loaded and their version. If you use the `RNG=TRUE` option, the random number generators are also reported, more on this in @sec-random.
 
 For this session, the info is as follows:
 
@@ -181,21 +181,24 @@ sinfo$loadedOnly$rmarkdown
 
 ### LaTeX ($\LaTeX$)
 
-$\LaTeX$ (pronounced "LAY-tek" or "LAH-tek") is a high-quality typesetting system; it includes features designed for the production of technical and scientific documents. $\LaTeX$ is the de facto standard for the communication and publication of scientific documents and is available for free from [here](http://latex-project.org). 
+$\LaTeX$ (pronounced "LAY-tek" or "LAH-tek") is a high-quality typesetting system; it includes features designed for the production of technical and scientific documents. $\LaTeX$ is the de facto standard for the communication and publication of scientific documents and is available for free from [here](http://latex-project.org).
 
-If you are working in mathematics or statistics, you will be producing $\LaTeX$ documents. You can write equations with other authoring tools as well---even the Microsoft Equation Editor has improved greatly over the years, in part because it now accepts $\LaTeX$ syntax! $\LaTeX$ is not a WYSIWYG---what you see is what you get---environment. Instead, you write a plain text file where text is interspersed with $\LaTeX$ commands. The document is processed ("compiled") into an output file (usually pdf) by running it through a TeX engine. In other words, you focus on writing the contents of the document with $\LaTeX$ commands and let the Tex engine take care of converting the commands into a visual appearance.
+If you are working in mathematics or statistics, you will be producing $\LaTeX$ documents. You can write equations with other authoring tools as well---even the Microsoft Equation Editor has improved greatly over the years, in part because it now accepts $\LaTeX$ syntax! $\LaTeX$ is not a WYSIWYG---what you see is what you get---environment. Instead, you write a plain text file where text is interspersed with $\LaTeX$ commands. The document is processed ("compiled") into an output file (usually pdf) by running it through a TeX engine. In other words, you focus on writing the contents of the document with $\LaTeX$ commands and let the Tex engine take care of typesetting the commands into a professional document.
 
 RStudio, Rmarkdown, and Quarto support $\LaTeX$ natively and this makes it very easy to combine text, code, and formulas. For example, to show the probability density function of a G(0,1) random variable in this Quarto document, I typed the $\LaTeX$ instructions
-```{.default}
+
+``` default
 $$
 f(y) = \frac{1}{\sqrt{2\pi\sigma^{2}}} \exp 
        \left\{ - \frac{1}{2\sigma^{2}}(y - \mu)^{2} \right\}
 $$
 ```
-in the editor. When the document is rendered, these instructions produce
-$$
+
+in the editor. When the document is rendered, these instructions produce $$
 f(y) = \frac{1}{\sqrt{2\pi\sigma^{2}}}\exp\left\{ - \frac{1}{2\sigma^{2}}(y - \mu)^{2} \right\}
 $$
+
+An introduction to basic $\LaTeX$ document structure, formatting, and typesetting follows in @sec-latex.
 
 RStudio does not add a $\LaTeX$ system to your computer, so you need to do that yourself. If you are planning to use $\LaTeX$ outside of `R` and RStudio, I recommend installing a full distribution. If you just want to get by with the minimal $\LaTeX$ needed to add formulas to html and pdf files created from RStudio, then `tinytex` will suffice.
 
@@ -207,13 +210,13 @@ RStudio does not add a $\LaTeX$ system to your computer, so you need to do that 
 
 -   [TinyTex](https://yihui.org/tinytex/): A small $\LaTeX$ distribution based on Tex Live that works well with `R`. The `R` package `tinytex` provides helper functions to work with TinyTex from `R`/RStudio. If you want to use TinyTex in `R`, first install the `tinytex` package
 
-```{.default}
+``` default
 install.packages("tinytex")
 ```
 
 and then download and install TinyTex with
 
-```{.default}
+``` default
 tinytex::install_tinytex()
 ```
 
@@ -231,21 +234,20 @@ If you are new to $\LaTeX$, the online LaTeX editor [Overleaf](https://www.overl
 
 When you use $\LaTeX$ commands in an Rmarkdown or Quarto document, you do not need to start the document with a preamble (`\documentclass()` ...) or wrap the commands into a `\begin{document}` `\end{document}` block. You can enter $\LaTeX$ commands immediately. The most important application of using $\LaTeX$ with `R` is to add mathematical expressions to your document.
 
-
 ## Getting Started with Python {#sec-getting-started-Python}
 
 To get started with statistical programming in Python, you need the following:
 
-1. Access to a version of Python, typically installed on your computer
+1.  Access to a version of Python, typically installed on your computer
 
-2. A development environment to write, interpret, and execute Python code. This is frequently some form of notebook interface, for example Jupyter Notebook or Google Colab.
+2.  A development environment to write, interpret, and execute Python code. This is frequently some form of notebook interface, for example Jupyter Notebook or Google Colab.
 
-3. A package management system to add/update/remove Python libraries on your system.
+3.  A package management system to add/update/remove Python libraries on your system.
 
-You can download any version of Python from [here](https://www.python.org/downloads/). The latest version as of this writing is Python 3.12.4. Some organizations still use Python 2; because of breaking changes between Python 2 and Python 3 they might not have updated to Python 3. Moving from Python 2 code to Python 3 is time consuming. Running Python 2 these days is a serious red flag. Python 2 has been [sunset](https://www.python.org/doc/sunset-python-2/) since January 1, 2020, meaning that there will be no bug fixes, not even for security bugs. 
+You can download any version of Python from [here](https://www.python.org/downloads/). The latest version as of this writing is Python 3.12.4. Some organizations still use Python 2; because of breaking changes between Python 2 and Python 3 they might not have updated to Python 3. Moving from Python 2 code to Python 3 is time consuming. Running Python 2 these days is a serious red flag. Python 2 has been [sunset](https://www.python.org/doc/sunset-python-2/) since January 1, 2020, meaning that there will be no bug fixes, not even for security bugs.
 
-:::{.callout-tip collapse=true}
-It is a great question to ask a potential employer: what version of Python are you running and how do you manage your default stack of Python libraries? 
+::: {.callout-tip collapse="true"}
+It is a great question to ask a potential employer: what version of Python are you running and how do you manage your default stack of Python libraries?
 
 It is very telling if they are still running Python 2 and have not upgraded to Python 3. This organization does not know how to handle **technical debt**---run like it is the plague.
 :::
@@ -256,7 +258,7 @@ It is very telling if they are still running Python 2 and have not upgraded to P
 
 The instructions to install pyenv on your system are [here](https://github.com/pyenv/pyenv?tab=readme-ov-file#installation). Pay attention to also update shell configurations when you install pyenv. For example, my system uses `zsh` and my `.zshrc` file contains the lines (straight from the GitHub documentation)
 
-```{.default}
+``` default
 export PYENV_ROOT="$HOME/.pyenv"
 command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
@@ -264,43 +266,40 @@ eval "$(pyenv init -)"
 
 The most common pyenv commands I use are
 
-- `pyenv install` to install a Python version on the system. For example, `pyenv install 3.11.4` will install Python 3.11.4.
+-   `pyenv install` to install a Python version on the system. For example, `pyenv install 3.11.4` will install Python 3.11.4.
 
-- `pyenv version` to see the currently active version of Python
+-   `pyenv version` to see the currently active version of Python
 
-- `pyenv local ...` to set a local (application-specific) version of Python, for example `pyenv local 3.9` makes Python 3.9 the version in the applications started from the current (local) directory. Similarly, `pyenv shell ...` sets the Python version for the shell instance and `pyenv global ...` sets the Python version globally. You see that the global version of Python can be different from the version active in a particular shell or a directory.
+-   `pyenv local ...` to set a local (application-specific) version of Python, for example `pyenv local 3.9` makes Python 3.9 the version in the applications started from the current (local) directory. Similarly, `pyenv shell ...` sets the Python version for the shell instance and `pyenv global ...` sets the Python version globally. You see that the global version of Python can be different from the version active in a particular shell or a directory.
 
-- `pyenv --help` to get help for the pyenv commands
+-   `pyenv --help` to get help for the pyenv commands
 
-- `pyenv help commnand_name` to get help for a specific pyenv command, for example `pyenv help local`
+-   `pyenv help commnand_name` to get help for a specific pyenv command, for example `pyenv help local`
 
 ### Package Management
 
 The most common management tools used with Python are `conda` and `pip`. The two are often seen as equivalent, but they serve different purposes. `pip` is a Python package manager, you use it to add/update/remove packages from your Python installation. `conda` is a **system** package manager that handles much more than Python libraries. You can manage entire development stacks with `conda`, but not with `pip`.
 
-For example, to add `jupyter` to your system with `conda` use 
+For example, to add `jupyter` to your system with `conda` use
 
-```{.default}
+``` default
 conda install jupyter
 ```
 
 and with `pip` use
 
-```{.default}
+``` default
 pip install jupyter
 ```
 
 There is a misconception that `conda` and `pip` cannot be used together on the same system. You can use them together, in fact a great way to manage your environment is to first install and set up `conda` for your project and to install the packages you need from `conda` channels. With `conda` activated, you can use the version of `pip` that is included with `conda` to install any required `pip` dependencies. The important point is that once `conda` is activated, you use **its** version of `pip`.
 
-Check 
+Check
 
-```{.default}
+``` default
 which pip
 ```
 
 to see which version of `pip` will be called.
 
 I personally use `pip` to manage Python packages, but it is not without issues. Managing the dependencies between Python libraries is a special kind of suffering. You install a new package A that happens to have a dependency on an earlier version of package B, which it downgrades upon installation to the earlier version. This can break code that depends on the newer version of package B. Once you realize this you upgrade B to the newer version, making A fail.
-
-
-

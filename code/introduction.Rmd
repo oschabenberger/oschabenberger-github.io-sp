@@ -1,0 +1,452 @@
+---
+title: "STAT 5014, Fall 2024, Introduction"
+author: "Oliver Schabenberger"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document: default
+  html_document:
+    df_print: paged
+editor_options: 
+  markdown: 
+    wrap: 80
+---
+
+# Introduction {#sec-intro}
+
+**Statistical programming** is the use of software to perform statistical
+operations on data. Such operations include
+
+-   data manipulation
+-   data summarization
+-   data visualization
+-   statistical model building
+-   statistical model validation
+-   simulation of random processes
+
+and more.
+
+Every statistician uses statistical programming---almost surely. Even
+theoretical work that consists of theorem--proof--lemma--corollary benefits from
+verifying theoretical results through software based on random numbers. That is
+statistical programming.
+
+## Statistical Computing and Computational Statistics {#sec-comp-stat}
+
+The terms **statistical computing** and **computational statistics** are often
+used interchangeably. Trying to separate them seems like semantic hair
+splitting. But we shall try.
+
+The field of statistics can broadly be categorized into **mathematical
+statistics** and **computational statistics**. The former derives results based
+on the mathematical-statistical properties of quantities derived from data. The
+central limit theorem, for example, tells us that if $Y_1,\cdots,Y_n$ are a
+random sample from a distribution with mean $\mu$ and variance $\sigma^2$, the
+distribution of $$
+Z = \frac{\overline{Y}-\mu}{\sigma/\sqrt{n}}
+$$ approaches that of a standard Gaussian ($G(0,1)$) as $n\rightarrow \infty$.
+That is a result in mathematical statistics. We also know that if the $Y_i$ are
+$\textit{iid } G(\mu,\sigma^2)$, then $Z$ is exactly $G(0,1)$ distributed (for
+any $n$) and in that case $$
+T = \frac{\overline{Y}-\mu}{s/\sqrt{n}}
+$$ follows a $t_{n-1}$ distribution with $n-1$ degrees of freedom. The quantity
+$s$ is the standard deviation of the sample, $$
+s = \sqrt{\frac{1}{n-1}\sum_{i=1}^n \left(Y_i - \overline{Y}\right)^2}
+$$
+
+To evaluate the hypothesis $H:\mu = 4$ based on a random sample from a Gaussian
+distribution, you apply **statistical computing** to the mathematical
+statistical result and evaluate the quantities with the help of a computer and
+software. The software implementation of the $t$ test needs to compute
+$\overline{y}$ and $s$ based on the sample. There are multiple ways of doing
+that. For example, on a single pass through the data the code might compute: $$
+S_1 = \sum_{i=1}^{n^*} y_i \qquad S_2 = \sum_{i=1}^{n^*} y_i^2
+$$ for the $n^*$ observations without missing values for $y$. $n^*$, the number
+of valid samples, is a by-product of this pass. The sample mean and standard
+deviation are then computed as $$
+\overline{y} = \frac{S_1}{n^*} \qquad s = \sqrt{\frac{1}{n^*-1} \left(S_2 - S_1^2/n^*\right)}
+$$ A second approach would be to perform two passes through the data, computing
+$\overline{y}$ on the first pass and the sum of the squared differences from the
+sample mean on the second pass. The third method uses the built-in `R`
+functions, however they perform the work. The fourth method uses the knowledge
+that the least-squares estimate in an intercept-only model is the sample mean
+and uses the `lm` function in `R` to fit a model. The three approaches,
+including the result from the built-in method, are shown in the following code
+snippet.
+
+```{r}
+set.seed(1335)
+y <- rnorm(100,mean=3,sd=2)
+n <- length(y)
+
+# Method 1
+S1 <- sum(y)
+S2 <- sum(y^2)
+ybar <- S1/n
+sd <- sqrt((S2-S1^2/n)/(n-1))
+cat("Sample mean: ", ybar, " Sample std. dev: ",sd,"\n")
+
+# Method 2
+ybar <- sum(y)/n
+sd <- sqrt(sum((y-ybar)^2)/(n-1))
+cat("Sample mean: ", ybar, " Sample std. dev: ",sd,"\n")
+
+# Method 3
+cat("Sample mean: ", mean(y), " Sample std. dev: ",sd(y),"\n")
+
+# Method 4
+summary(lm(y ~ 1))
+```
+
+The `Std. Error` shown in the summary from `lm` is the standard deviation of the
+`Estimate`, which in turn is $\overline{y}$. The standard error reported there
+is thus an estimate of $$
+\sqrt{\text{Var}[\overline{Y}]} = \frac{\sigma}{\sqrt{n}}
+$$
+
+**Computational statistics**, compared to mathematical statistics, uses
+computational methods to solve statistical problems. Rather than relying on
+asymptotic distributional properties of estimators, computational statistics
+uses the power of computers to derive the actual distribution of estimators. A
+famous example of a computational statistical method is the **bootstrap**, a
+resampling procedure that draws $B$ random samples of size $n$ with replacement
+from the sample data. You calculate the value of the statistic of interest in
+each bootstrap sample and build up the distribution of the statistic. At the end
+of the bootstrap procedure you can summarize this distribution any way you wish,
+using statistical computing. The next code snippet calculates the bootstrap
+estimate of the sample mean and reports the center and standard deviation of its
+distribution after 10, 100, and 1000 bootstrap samples. We know from basic
+statistics that the theoretical values are $$
+\text{E}[\overline{Y}] = \mu = 3 \qquad \sqrt{\text{Var}[\overline{Y}]} = \frac{\sigma}{\sqrt{n}}=0.2
+$$
+
+```{r}
+bootstrap <- function(y,B=500) {
+    n <- length(y)
+    S1 <- 0
+    S2 <- 0
+    for (i in 1:B) {
+        bs <- sample(n,n,replace=TRUE)
+        stat <- mean(y[bs])
+        S1 <- S1 + stat
+        S2 <- S2 + stat^2
+    }
+    ybar <- S1/B
+    sd <- sqrt((S2-S1^2/B)/(B-1))
+    return(list(ybar=ybar,sd=sd))
+}
+
+set.seed(6543)
+bootstrap(y,10)
+bootstrap(y,100)
+bootstrap(y,1000)
+```
+
+Statistical methods that rely on random number generators to derive statistical
+distributions belong to computational statistics. Cross-validation,
+bootstrapping, bagging, and Markov chain Monte Carlo methods, are examples.
+Computational statistics also includes computer-intensive methods that cannot be
+solved without the assistance of computers. Examples are numerical optimization
+for nonlinear problems, artificial neural networks, support vector machines,
+gradient boosting, and so on.
+
+By applying computer science to data, machine learning has dramatically
+increased the number of techniques that rely on computational methods over
+theory. One of the most influential papers in the last decade, entitled
+"Attention is all you need", by @Vaswani_etal_2017, introduced us to the
+multi-head attention mechanism in encoder-decoder models and laid the foundation
+for the large-language model revolution that led to GPT, Gemini and others. The
+paper has been cited over 127,000 times (as of June 2024) and does not contain a
+single theorem or proof---it is a clinic in applying computational concepts to
+data.
+
+## Languages and Tools
+
+Just like general software and application development, statistical data
+processing can be done with **no-code**, **low-code**, or **high-code**
+tools/environments. A high-code environment is a traditional programming
+environment where developers sling code. A low-code environment allows the
+assembly of software from pre-built, reusable components using visual
+drag-and-drop interfaces. A no-code environment allows users with no programming
+skills to build applications. While low-code platforms require some programming
+skills to stitch together components, no-code environments do not require any
+coding skills. This comes at the expense of rigid templates and built-ins that
+often do not offer enough opportunities for customization.
+
+The traditional way to perform statistical analysis is through statistical
+programming using an integrated development environment (IDE). Some products
+offer programmatic (high-code) and visual (no/low-code) interfaces (SAS, JMP,
+Stata, IBM SPSS); they have their own IDEs.
+
+Over the last decades open-source tools have pushed proprietary tools and
+solutions toward the edges of the data analytics market. You cannot measure this
+effect in terms of market share, as this metric is based on revenue numbers, but
+it is clearly seen in user engagement, community activity, and the anemic growth
+numbers of some of the commercial alternatives for statistical and machine
+learning software. If the market grows by 10% year-over-year and your growth is
+flat, you are losing share of the market.
+
+The big winners in this transition are `R` and Python. The former is a
+statistical programming language based originally on the S language. The
+otherwise capable commercial S-Plus product was doomed once open-source `R` took
+hold. You can still see references to original S implementations in `R`
+documentations today. Popular packages such as `MASS` (Modern Applied Statistics
+with S) started as S modules.
+
+While `R` was designed as a domain-specific programming language for statistical
+applications, Python is a general-purpose language. Through libraries such as
+`pandas`, `numpy`, `scipy`, `polars`, `statsmodels`, `scikit-learn`, `keras`,
+`matplotlib`, `seaborn` and many others, Python has evolved into a highly
+capable language for data processing. In the area of deep learning and
+artificial intelligence, Python has become *the* standard. As you progress on
+the analytic journey you will find `R` to be a great language for many
+statistical needs. As you move into modern machine learning and artificial
+intelligence you will transition toward Python.
+
+## Statistical Programming and Software Engineering
+
+A statistical program is a piece of software, but statistical programming is not
+bona fide software engineering. Data scientists and statistical programmers are
+sometimes compared to software developers. Yes, they do share certain traits;
+both are using tools, languages, and frameworks to build complex systems with
+software. And because the result is software, statistical programmers need to
+know the principles of good software engineering and how to apply these in the
+context of a statistical program:
+
+-   **Modularity**: Separate software into components according to functionality
+    and responsibility (functions, modules, public and private interfaces)
+
+-   **Separation of Concerns**: Human beings have a limited capacity to manage
+    contexts. Breaking down a larger task into units and abstractions that you
+    can deal with one at a time is helpful. Interface and implementation are
+    separate concerns. Data quality and data modeling are separate concerns. Not
+    in the sense that they are unrelated, low quality data leads to low quality
+    models---garbage in, garbage out. But in the sense that you can deal with
+    data quality prior to the modeling task. Code efficiency (runtime
+    performance) is sometimes listed as an example for separating concerns:
+    write the code first to meet criteria such as correctness and robustness,
+    then optimize the code for efficiency, focusing on the parts of the code the
+    run spends most time in.
+
+-   **Abstraction**: Separate the *behavior* of software components from their
+    *implementation*. Look at each component from two points of views: *what* it
+    does and *how* it does it. A client-facing API (Application Programming
+    Interface) specifies what a module does. It does not convey the
+    implementation details. By looking at the function interface of `prcomp` and
+    `princomp` in `R`, you cannot tell that one function is based on
+    singular-value decomposition and the other is based on eigenvalue
+    decomposition.
+
+-   **Generality**: Software should be free from restrictions that limit its use
+    as an automated solution for the problem at hand. Limiting supported data
+    types to doubles and fixed-size strings is convenient, but not sufficiently
+    general to deal with today's varied data formats (unstructured text, audio,
+    video, etc.). The "Year 2000" issue is a good example of lack of generality
+    that threatened the digital economy: to save memory, years were represented
+    in software products as two-digit numbers, causing havoc when 1999 ("99")
+    rolled over to "00" on January 1, 2000.
+
+-   **Anticipation of Change**: Software is an automated solution. It is rarely
+    finished on the first go-around; the process is iterative. Starting from
+    client requirements the product evolves in a back and forth between client
+    and developer, each side refining their understanding of the process and the
+    product at each step. Writing software that can easily change is important
+    and often difficult. When software components are tightly coupled and depend
+    on each other, it is unlikely that you can swap out for another without
+    affecting both.
+
+-   **Consistency**: It is easier to do things within a familiar context.
+    Consistent layout of code and user interfaces helps the programmer as well
+    as the user as well as the next programmer. Consistency in code formatting,
+    comments, naming conventions, variable assignments, etc. makes it easier to
+    read and modify code and helps to prevent errors. When you are consistent in
+    initializing all local variables in C functions, you will never have
+    uninitialized variable bugs.
+
+But there are important differences between statistical programming and general
+software engineering. These stem to a large part from the inherent uncertainty
+and unpredictability of the data, the raw material of a statistical program.
+
+-   **Input inherently unpredictable and uncertain**. Statistical code is
+    different from non-analytic code in that it is processing an uncertain
+    input. A JSON parser also processes variability, each JSON document is
+    different from the next. Does it not also deal with uncertain input? If the
+    parser is free of bugs, the result of parsing is known with certainty. For
+    example, we are convinced that the sentence “this book is certainly
+    concerned with uncertainty” has been correctly extracted from the JSON file.
+    Assessing the sentiment of the sentence, however, is a data science task: a
+    sentiment model is applied to the text and returns a set of probabilities
+    indicating how likely the model believes the sentiment of the text is
+    negative, neutral, or positive. Subsequent steps taken in the software are
+    based on interpreting what is probable.
+
+-   **Uncertainty about methods**. Whether a software developer uses a quicksort
+    or merge sort algorithm to order an array has impact on the performance of
+    the code but not on the result. Whether you choose a decision tree or a
+    support vector machine to classify the data in the array impacts the
+    performance **and** the result of the code. A chosen value for a tuning
+    parameter, e.g., the learning rate, can produce stable results with one data
+    set and highly volatile results with another.
+
+-   **Random elements in code**. Further uncertainty is introduced through
+    analytic steps that are themselves random. Splitting data into training and
+    test data sets, creating random folds for cross-validation, drawing
+    bootstrap samples in random forests, random starting values in clustering or
+    neural networks, selecting the predictors in random forests, Monte Carlo
+    estimation, are some examples where data analysis involves drawing random
+    numbers. The statistical programmer needs to ensure that random number
+    sequences that create different numerical results do not affect the quality
+    of the answers. The results are frequently made repeatable by fixing the
+    seed or starting value of the random number generator. While this makes the
+    program flow repeatable, it is yet another quantity that affects the
+    numerical results. It is also a potential source for misuse: “let me see if
+    another seed value produces a smaller prediction error.”
+
+-   **Data are messy**. Data contains missing values and can be full of errors.
+    There is uncertainty about how disparate data sources represent a feature (a
+    customer, a region, a temperature) that affects how you integrate the data
+    sources. These sources of uncertainty can be managed through proper data
+    quality and data integration. As a data scientist you need to be aware and
+    respectful of these issues; they can doom a project if not properly
+    addressed. In an organization without a dedicated data engineering team
+    resolving data quality issues might fall on your shoulders. If you are lucky
+    to work with a data engineering team you still need to be mindful of these
+    challenges and able to confirm that they have been addressed or deal with
+    some of them (missing values).
+
+Other differences between statistical programming and software engineering are
+
+-   The use of high-level languages. statistical programming uses languages like
+    `R` and Python. The software is written at a high level of abstraction,
+    calling into existing packages and libraries. Rather than writing your own
+    implementation of a random forest, you use someone else's implementation.
+    Instead, your concern shifts to how to use the hyperparameters of the random
+    forest to the greatest effect for the particular data set. You can perform
+    statistical programming in C, C++, or Rust. These system-level languages are
+    best for implementing efficient algorithms, that are then called from a
+    higher-level interface in `R` or Python.
+
+-   The length of the programs. Statistical programs are typically short, a few
+    hundred to a few thousands lines long. While a thousand lines of Python code
+    may sound like much, it is not much compared to the size of large software
+    engineering projects.
+
+-   The programs are often standalone. A single file or module can contain all
+    the code you need for a statistics project. That is good and bad. Good
+    because it is easy to maintain. Bad because we often skip steps of good
+    software hygiene such as documentation and source control.
+
+## What is in this Book?
+
+This book is a crash course in statistical programming based primarily on `R`
+and Python. It is not a treatise on computational statistics or statistical
+computing. It is also not an introductory text on `R` or Python. There are many
+excellent resources available for free on both languages. Below is a list of
+resources I have consulted.
+
+The approach will be to solve practical problems in statistical programming and
+introduce concepts as we go along. Rather than dwelling on data types,
+operators, flow control, basic functions, and so on, the examples in the text
+will cover some of these concepts implicitly.
+
+### R Resources
+
+-   [R for Data Science, 2nd ed.](https://r4ds.hadley.nz/) [@Wickham_RDS].
+
+-   [Advanced R](http://adv-r.had.co.nz/) [@Wickham_AdvR].
+
+-   [Modern Data Science with R, 2nd ed.](https://mdsr-book.github.io/mdsr3e/)
+    [@Baumer_etal].
+
+-   [R Graphics Cookbook: Practical Recipes for Visualizaing Data, 2nd
+    ed.](https://r-graphics.org/) [@Chang_2018]
+
+-   [R Markdown: The Definite Guide](https://bookdown.org/yihui/rmarkdown/)
+    [@Xie_etal]
+
+-   [R Markdown Cookbook](https://bookdown.org/yihui/rmarkdown-cookbook/)
+    [@Xie_Cookbook]
+
+-   [Mastering Software Development in R](https://bookdown.org/rdpeng/RProgDA/)
+    [@Pengetal2020]
+
+#### Basic packages
+
+-   [Find an R Package](https://rdrr.io/find/?repos=cran&page=0&fuzzy_slug=)
+
+-   [tidyverse](https://www.tidyverse.org/)
+
+    -   [dplyr](https://dplyr.tidyverse.org/)
+    -   [ggplot2](https://ggplot2.tidyverse.org/)
+    -   [stringr](https://stringr.tidyverse.org/)
+    -   [readr](https://readr.tidyverse.org/)
+    -   [forcats](https://forcats.tidyverse.org/)
+
+@tbl-stat-packages lists some commonly used packages for statistical work.
+
+| Package Name          | Notes                                                                                               |
+|-----------------------|-----------------------------------------------------------------------------------------------------|
+| ada                   | The R Package Ada for Stochastic Boosting                                                           |
+| arules                | Mining Association Rules and Frequent Itemsets                                                      |
+| betareg               | Beta Regression                                                                                     |
+| biclust               | BiCluster Algorithms                                                                                |
+| BMA                   | Bayesian Model Averaging                                                                            |
+| boot                  | Bootstrap Functions                                                                                 |
+| class                 | Functions for Classification                                                                        |
+| cluster               | "Finding Groups in Data": Cluster Analysis Extended Rousseeuw et al.                                |
+| caret                 | Classification and Regression Training                                                              |
+| data.table            | Extension of `data.frame`                                                                           |
+| DBI                   | R Database Interface                                                                                |
+| dbplyr                | A `dplyr` Back End for Databases                                                                    |
+| e1071                 | Misc Functions of the Department of Statistics, Probability Theory Group (Formerly: E1071), TU Wien |
+| factoextra            | Extract and Visualize the Results of Multivariate Data Analyses                                     |
+| gam                   | Generalized Additive Models                                                                         |
+| gbm                   | Generalized Boosted Regression Models                                                               |
+| glmnet                | Lasso and Elastic-Net Regularized Generalized Linear Models                                         |
+| keras                 | R Interface to Keras                                                                                |
+| KernSmooth            | Functions for Kernel Smoothing Supporting Wand & Jones (1995)                                       |
+| kohonen               | Supervised and Unsupervised Self-Organising Maps                                                    |
+| lattice               | Trellis Graphics for R                                                                              |
+| leaps                 | Regression Subset Selection                                                                         |
+| lmtest                | Testing Linear Regression Models                                                                    |
+| lubridate             | Make Dealing with Dates a Little Easier                                                             |
+| MASS                  | Support Functions and Datasets for Venables and Ripley's MASS                                       |
+| Matrix                | Sparse and Dense Matrix Classes and Methods                                                         |
+| mclust                | Gaussian Mixture Modelling for Model-Based Clustering, Classification, and Density Estimation       |
+| mgcv                  | Mixed GAM Computation Vehicle with Automatic Smoothness Estimation                                  |
+| mlogit                | Multinomial Logit Models                                                                            |
+| nlme                  | Linear and Nonlinear Mixed Effects Models                                                           |
+| nls2                  | Non-Linear Regression with Brute Force                                                              |
+| plotly                | Create Interactive Web Graphics via plotly.js                                                       |
+| pROC                  | Display and Analyze ROC Curves                                                                      |
+| randomForest          | Breiman and Cutler's Random Forests for Classification and Regression                               |
+| ReinforcementLearning | Model-Free Reinforcement Learning                                                                   |
+| reticulate            | Interface to Python                                                                                 |
+| Rfast                 | A Collection of Efficient and Extremely Fast R Functions                                            |
+| rpart                 | Recursive Partitioning and Regression Trees                                                         |
+| SHAPforxgboost        | SHAP Plots for XGBoost                                                                              |
+| statmod               | Statistical Modeling                                                                                |
+| spatial               | Functions for Kriging and Point Pattern Analysis                                                    |
+| splines               | Regression Spline Functions and Classes                                                             |
+| tensorflow            | R Interface to TensorFlow                                                                           |
+| tree                  | Classification and Regression Trees                                                                 |
+| tseries               | Time Series Analysis and Computational Finance                                                      |
+| xgboost               | Extreme Gradient Boosting                                                                           |
+
+: Analytic packages commonly used in statistical programming
+{#tbl-stat-packages}
+
+### Python Resources
+
+-   [Python for Data Analysis: Data Wrangling with pandas, NumPy and Jupyter,
+    3rd ed.](https://wesmckinney.com/book/) [@McKinney_PDA]
+
+-   [Python Data Science
+    Handbook](https://jakevdp.github.io/PythonDataScienceHandbook) [@VanderPlas]
+
+#### Basic libraries
+
+-   [NumPy User's Guide](https://numpy.org/doc/stable/user/index.html)
+
+-   [pandas documentation](https://pandas.pydata.org/docs/)
+
+-   [polars documentation](https://docs.pola.rs/)

@@ -287,11 +287,11 @@ window.Quarto = {
    
   <ul>
   <li><a href="#a-bit-of-history" id="toc-a-bit-of-history" class="nav-link active" data-scroll-target="#a-bit-of-history"><span class="header-section-number">13.1</span> A Bit of History</a></li>
-  <li><a href="#the-basic-document-structure" id="toc-the-basic-document-structure" class="nav-link" data-scroll-target="#the-basic-document-structure"><span class="header-section-number">13.2</span> The Basic Document Structure</a></li>
+  <li><a href="#the-document-structure" id="toc-the-document-structure" class="nav-link" data-scroll-target="#the-document-structure"><span class="header-section-number">13.2</span> The Document Structure</a></li>
   <li><a href="#basic-formatting" id="toc-basic-formatting" class="nav-link" data-scroll-target="#basic-formatting"><span class="header-section-number">13.3</span> Basic Formatting</a></li>
   <li><a href="#inline-math-and-display-math" id="toc-inline-math-and-display-math" class="nav-link" data-scroll-target="#inline-math-and-display-math"><span class="header-section-number">13.4</span> Inline Math and Display Math</a>
   <ul>
-  <li><a href="#writing-basic-math-expressions" id="toc-writing-basic-math-expressions" class="nav-link" data-scroll-target="#writing-basic-math-expressions">Writing Basic Math Expressions</a>
+  <li><a href="#math-expressions" id="toc-math-expressions" class="nav-link" data-scroll-target="#math-expressions">Math Expressions</a>
   <ul class="collapse">
   <li><a href="#subscripts-and-superscripts" id="toc-subscripts-and-superscripts" class="nav-link" data-scroll-target="#subscripts-and-superscripts">Subscripts and superscripts</a></li>
   <li><a href="#parentheses-and-brackets" id="toc-parentheses-and-brackets" class="nav-link" data-scroll-target="#parentheses-and-brackets">Parentheses and brackets</a></li>
@@ -349,8 +349,8 @@ window.Quarto = {
 <hr>
 <p>There is a ton of reference material on <span class="math inline">\(\LaTeX\)</span> on the internet. Every issue you are running into has likely already been asked and solved. The <a href="https://www.overleaf.com/learn">Overleaf</a> documentation is a great resource as in Stack Exchange and stack overflow.</p>
 </section>
-<section id="the-basic-document-structure" class="level2" data-number="13.2">
-<h2 data-number="13.2" class="anchored" data-anchor-id="the-basic-document-structure"><span class="header-section-number">13.2</span> The Basic Document Structure</h2>
+<section id="the-document-structure" class="level2" data-number="13.2">
+<h2 data-number="13.2" class="anchored" data-anchor-id="the-document-structure"><span class="header-section-number">13.2</span> The Document Structure</h2>
 <p>The basic structure of a <span class="math inline">\(\LaTeX\)</span> document consists of the <strong>preamble</strong> and the <strong>document body</strong>. The body is enclosed in a <code>\begin{document}</code> — <code>\end{document}</code> block. The preamble specifies the type of document and parameters such as fonts and paper size in the <code>\documentclass[]{}</code> command, which packages to load to help typesetting the document (<code>\usepackage</code>), and optionally the title, author, and date of the document.</p>
 <p>A basic article might look like this:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>\documentclass[11pt,oneside, letterpaper]{article}</span>
@@ -399,10 +399,10 @@ Figure&nbsp;13.1: Document produced from <span class="math inline">\(\LaTeX\)</s
 <section id="basic-formatting" class="level2" data-number="13.3">
 <h2 data-number="13.3" class="anchored" data-anchor-id="basic-formatting"><span class="header-section-number">13.3</span> Basic Formatting</h2>
 <ul>
-<li><code>\text{foo}</code>: to write foo in text mode while in math mode, for example, <span class="math inline">\(\alpha = \text{foo}/\beta\)</span></li>
-<li><code>\textbf{foo}</code>: <strong>bold</strong> formatting</li>
-<li><code>\textit{foo}</code>: <em>italics</em> formatting</li>
-<li><code>\underline{foo}</code>: <u>underline</u> formatting</li>
+<li><p><code>\text{foo}</code>: to write foo in text mode while in math mode, for example, <span class="math inline">\(\alpha = \text{foo}/\beta\)</span></p></li>
+<li><p><code>\textbf{foo}</code>: <strong>bold</strong> formatting</p></li>
+<li><p><code>\textit{foo}</code>: <em>italics</em> formatting</p></li>
+<li><p><code>\underline{foo}</code>: <u>underline</u> formatting</p></li>
 </ul>
 </section>
 <section id="inline-math-and-display-math" class="level2" data-number="13.4">
@@ -410,8 +410,8 @@ Figure&nbsp;13.1: Document produced from <span class="math inline">\(\LaTeX\)</s
 <p><span class="math inline">\(\LaTeX\)</span> distinguishes two environments for mathematical expressions, <strong>inline math</strong> sets mathematical symbols (in math font) in the current paragraph. You enclose math in inline mode in <code>$  $</code> or with <code>\( ... \)</code> symbols or place it in a <code>\begin{math} ... \end{math}</code> block. The text <code>denoted $Y \sim \text{Beta}(\alpha,\beta)$</code> in the <span class="math inline">\(\LaTeX\)</span> document above uses inline math.</p>
 <p>In <strong>display math</strong> mode the content is typeset on a separate line, set apart from the rest of the paragraph. Display math mode is enclosed in <code>$$ ... $$</code> or <code>\[ .... \]</code> delimiters or in a <code>\begin{displaymath} ... \end{displaymath}</code> block or in a <code>\begin{equation} ... \end{equation}</code> block.</p>
 <p>Apparently, <code>\[ ... \]</code> or the <code>\begin{} ... \end{}</code> blocks are now the preferred way to write display math instead of the TeX primitive <code>$$</code>. You can see from my <span class="math inline">\(LaTeX\)</span> files that I did not get that memo. For a discussion of the pros and cons for using <code>\[ ... \]</code> instead of <code>$$ ... $$</code>, see <a href="https://tex.stackexchange.com/questions/503/why-is-preferable-to">here</a>.</p>
-<section id="writing-basic-math-expressions" class="level3">
-<h3 class="anchored" data-anchor-id="writing-basic-math-expressions">Writing Basic Math Expressions</h3>
+<section id="math-expressions" class="level3">
+<h3 class="anchored" data-anchor-id="math-expressions">Math Expressions</h3>
 <section id="subscripts-and-superscripts" class="level4">
 <h4 class="anchored" data-anchor-id="subscripts-and-superscripts">Subscripts and superscripts</h4>
 <p>A subscript is indicated with an underscore (<code>_</code>), a superscript with a caret (<code>^</code>). The scripting applies to the character immediately following the underscore or caret. So, <code>x_ij</code> will produce <span class="math inline">\(x_ij\)</span>. To combine multiple characters into an operation, enclose them in curly braces: <code>x_{ij}</code> produces <span class="math inline">\(x_{ij}\)</span> and <code>a^{(t)}</code> produces <span class="math inline">\(a^{(t)}\)</span>.</p>

@@ -1,0 +1,245 @@
+
+/* ------------------------------------------- */
+/*
+    STAT 5014, Statistical Program Packages
+    Module 14. SQL Basics
+*/
+/* ------------------------------------------- */
+
+/* ------------------------------------------- */
+-- start the duckDB data base CLI with the ads.ddb database
+-- duckdb ads.ddb
+/* ------------------------------------------- */
+
+
+-- Let's find out which tables are in our database
+SHOW tables;
+
+-- NULL is a logical state. You have to use IS NULL
+-- to query nullity of values, not logical comparisons
+
+SELECT * FROM landsales WHERE improve = NULL;
+SELECT * FROM landsales WHERE improve IS NULL;
+SELECT count(*) FROM landsales WHERE improve IS NULL;
+
+
+/* ------------------------------------------- */
+-- Creating and Modifying a Table
+/* ------------------------------------------- */
+
+CREATE TABLE Cities (Country VARCHAR, Name VARCHAR, Year INT, Population INT);
+
+/* Creating a table that already exists */
+CREATE OR REPLACE TABLE Cities (Country    VARCHAR,
+                                Name       VARCHAR,
+                                Year       INT,
+                                Population INT);
+
+/* Creating (or replacing) a table with check constraints */
+CREATE OR REPLACE TABLE Cities (Country    VARCHAR,
+                                Name       VARCHAR,
+                                Year       INT CHECK (Year >= 2000),
+                                Population INT);
+
+/* Modify an existing table */
+ALTER TABLE Cities RENAME Name to CityName;
+ALTER TABLE Cities ADD Column k INTEGER;
+ALTER TABLE Cities RENAME to WorldCities;
+
+--- Inserting Rows into a table
+
+INSERT INTO WorldCities VALUES ('NL', 'Amsterdam', 2000, 1005, 1);
+INSERT INTO WorldCities VALUES ('NL', 'Amsterdam', 2010, 1065, 3);
+INSERT INTO WorldCities VALUES ('NL', 'Amsterdam', 2020, 1158, 4);
+INSERT INTO WorldCities VALUES ('US', 'Seattle', 2000, 564, 5432);
+INSERT INTO WorldCities VALUES ('US', 'Seattle', 2010, 608, 46);
+INSERT INTO WorldCities VALUES ('US', 'Seattle', 2020, 738, 986);
+INSERT INTO WorldCities VALUES ('US', 'New York City', 2000, 8015, 0);
+INSERT INTO WorldCities VALUES ('US', 'New York City', 2010, 8175, 987);
+INSERT INTO WorldCities VALUES ('US', 'New York City', 2020, 8772, 23);
+
+SELECT * FROM WorldCities;
+
+/* Remove the column k, we do not need it anymore */
+ALTER TABLE WorldCities DROP COLUMN k;
+
+--- Pivoting a Table
+PIVOT WorldCities on YEAR USING mean(population);
+
+PIVOT WorldCities on YEAR
+      USING mean(population)
+      GROUP BY Country
+      ORDER BY Country DESC;
+
+PIVOT WorldCities on YEAR
+      USING mean(population) as mn,
+            max(population) as mx
+      GROUP BY Country
+
+
+--- Creating a Table from a CSV file
+
+CREATE OR REPLACE TABLE iris AS SELECT * FROM "../data/iris.csv";
+
+-- "SELECT * FROM" can be abbreviated as "FROM"
+CREATE OR REPLACE TABLE iris FROM "../data/iris.csv";
+FROM WorldCities WHERE Country='NL';
+
+
+--- Creating a Temporary Table
+
+CREATE TEMP TABLE foo AS FROM "../data/iris.csv";
+
+-- Dropping a TABLE
+DROP TABLE WorldCities;
+
+
+/* ------------------------------------------- */
+-- SELECT Statement
+/* ------------------------------------------- */
+SELECT sepal_length AS SL, sepal_width AS SW from iris LIMIT 5;
+SELECT * FROM iris LIMIT 4;
+
+--- with subquery
+SELECT land, improve,
+       (SELECT avg(sale) FROM landsales as average)
+FROM (SELECT * from landsales where total > 100000);
+
+--- with WHERE
+SELECT * FROM iris WHERE species LIKE '%osa' LIMIT 10;
+
+--- with GROUPBY
+SELECT count(*), max(sepal_length) FROM iris GROUP BY species;
+
+--- with multiple GROUPBY columns (or GROUP BY ALL)
+SELECT League, Division, mean(RBI) FROM Hitters GROUP BY League, Division;
+SELECT League, Division, mean(RBI) FROM Hitters GROUP BY ALL;
+
+--- with HAVING clause, which applies a filter adter the GROUP BY
+SELECT League, Division,
+       count(*) as count,
+       avg(RBI) AS average
+FROM Hitters
+GROUP BY ALL
+HAVING count > 80;
+
+SELECT League, Division,
+       count(*) as count,
+       avg(RBI) AS average
+FROM Hitters
+GROUP BY ALL;
+
+--- with ORDER BY and LIMIT
+--- LIMIT without an ORDER BY can be non-reproducible because
+--- of parallel execution. ORDER BY + LIMIT makes the result
+--- set deterministic
+SELECT AtBat, Hits, HmRun, Runs, RBI, Walks, Errors
+   FROM Hitters ORDER BY RBI DESC LIMIT 5;
+
+/* ------------------------------------------- */
+-- Subqueries
+/* ------------------------------------------- */
+
+--- select name from auto where weight= is the outer query
+select name from auto where weight = (select min(weight) from auto);
+
+--- testing for existence of rows in subquery
+select exists(select * from auto where horsepower > 300);
+
+--- Correlated subquery uses values from the outer query
+--- in the subquery. The following query finds the minimum
+--- reaction time and the day on which it occurred for each
+--- subject in the study
+
+SELECT *
+  FROM sleep AS s
+  WHERE Reaction =
+      (SELECT MIN(Reaction)
+       FROM sleep
+       WHERE sleep.Subject=s.Subject);
+
+--- This might have been an easier way to accomplish the same
+--- The difference is that the GROUP BY returns an aggregation
+--- whereas the correlated subquery returns records from the data
+
+SELECT min(Reaction), Subject from sleep group by subject limit 5;
+
+/* ------------------------------------------- */
+-- Combining Tables (Set Operations)
+/* ------------------------------------------- */
+
+CREATE TABLE capitals(city VARCHAR, country VARCHAR);
+INSERT INTO capitals VALUES ('Amsterdam', 'NL'), ('Berlin', 'Germany');
+
+CREATE TABLE weather(city VARCHAR, degrees INTEGER, date DATE);
+INSERT INTO weather VALUES ('Amsterdam', 10, '2022-10-14'),
+                           ('Seattle', 8, '2022-10-12');
+FROM capitals;
+FROM weather;
+
+--- UNION
+SELECT city FROM capitals UNION SELECT city FROM weather;
+
+--- UNION ALL preserves duplicates
+SELECT city FROM capitals UNION ALL SELECT city FROM weather;
+
+--- INTERSECT
+SELECT city FROM capitals INTERSECT SELECT city FROM weather;
+
+--- EXCEPT
+SELECT city FROM capitals EXCEPT SELECT city FROM weather;
+
+--- To merge rows across tables with different names use
+--- UNION (ALL) BY NAME
+SELECT * FROM capitals UNION BY NAME SELECT * FROM weather;
+
+
+/* ------------------------------------------- */
+-- Combining Tables (Join Operations)
+/* ------------------------------------------- */
+
+--- Positional join
+select capitals.*, weather.* from capitals positional join weather;
+
+--- Cross join
+select capitals.*, weather.* from capitals cross join weather;
+
+
+CREATE OR REPLACE TABLE weather (
+      city           VARCHAR,
+      temp_lo        INTEGER, -- minimum temperature on a day
+      temp_hi        INTEGER, -- maximum temperature on a day
+      prcp           REAL,
+      date           DATE
+  );
+CREATE OR REPLACE TABLE cities (
+      name            VARCHAR,
+      lat             DECIMAL,
+      lon             DECIMAL
+  );
+INSERT INTO weather VALUES ('San Francisco', 46, 50, 0.25, '1994-11-27');
+INSERT INTO weather (city, temp_lo, temp_hi, prcp, date)
+      VALUES ('San Francisco', 43, 57, 0.0, '1994-11-29');
+INSERT INTO weather (date, city, temp_hi, temp_lo)
+      VALUES ('1994-11-29', 'Hayward', 54, 37);
+
+FROM weather;
+
+INSERT INTO cities VALUES ('San Francisco', -194.0, 53.0);
+FROM cities;
+
+--- Inner join
+SELECT * FROM weather INNER JOIN cities ON (weather.city = cities.name);
+
+--- Left outer join
+SELECT * FROM weather LEFT OUTER JOIN cities ON (weather.city = cities.name);
+
+--- Right outer join
+SELECT * FROM cities  RIGHT OUTER JOIN weather ON (weather.city = cities.name);
+
+--- Full outer join
+
+INSERT INTO cities VALUES ('New York',40.7, -73.9);
+FROM cities;
+
+SELECT * FROM cities FULL OUTER JOIN weather ON (weather.city = cities.name);

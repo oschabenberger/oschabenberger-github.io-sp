@@ -35,6 +35,7 @@ SELECT employee_number, name,
 
 An interesting aspect (quirk) of domain-specific logic in SQL is three-valued logic. In classical (boolean) logic, there are two logical values, TRUE and FALSE, expressing the relation of a proposition to the truth. In three-valued logic there is a third value, NULL, expressing an unknown state. NULL values are used in databases to represent absent entries and are akin to the concept of the missing value in analytics. NULL values are not zero or empty values. An empty string (“”) in a text column is a known value, a zero-byte string. A NULL value on the other hand states that a string is absent.
 
+::: {.callout-note}
 The examples that follow in this section use DuckDB with the `ads.ddb` database from the command line as follows:
 
 ```{.default}
@@ -43,9 +44,9 @@ D
 ```
 
 To install the command line interface for DuckDB on your machine, check [here](https://duckdb.org/docs/installation/).
+:::
 
-
-Because NULL is a logical state, SQL defines operations on NULL values. Suppose A is TRUE, B is FALSE, and C is NULL, then A or B and A or C both evaluate to TRUE, but A and B is FALSE whereas A and C is also NULL (unknown). To achieve “expected” results when operating on NULL values, special syntax is needed. For example,
+Because NULL is a logical state, SQL defines operations on NULL values. Suppose A is TRUE, B is FALSE, and C is NULL, then *A or B* and *A or C* both evaluate to TRUE, but *A and B* is FALSE whereas *A and C* is also NULL (unknown). To achieve “expected” results when operating on NULL values, special syntax is needed. For example,
 
 ```{.default}
 SELECT * FROM landsales WHERE improve = NULL;
@@ -58,7 +59,7 @@ SELECT * FROM landsales WHERE improve = NULL;
 └─────────────────────────────────────────────┘
 ```
 
-returns no rows since the comparison `x = NULL` is never TRUE, its result is always unknown (NULL). If you use this syntax to check for missing values in your data you will conclude that there are none.
+returns no rows since the comparison `improve = NULL` is never TRUE, its result is always unknown (NULL). If you use this syntax to check for missing values in your data you will conclude that there are none.
 
 The correct query uses syntax designed to operate with NULL values:
 
@@ -226,7 +227,7 @@ PIVOT ⟨dataset⟩
 The ON clause lists the columns on which to pivot the table. In the `WorldCities` example we might want to pivot on `Year` to retrieve the average population for each year:
 
 ```{.default}
- PIVOT WorldCities on YEAR USING mean(population);
+PIVOT WorldCities on YEAR USING mean(population);
 
 ┌─────────┬───────────────┬────────┬────────┬────────┐
 │ Country │   CityName    │  2000  │  2010  │  2020  │
@@ -281,13 +282,13 @@ PIVOT WorldCities on YEAR
 You might want to combine creation of a table and populating it with data into a single step. For example, you might want to create a database table from the contents of a CSV file. That is accomplished by adding an AS SELECT clause to the CREATE TABLE statement:
 
 ```{.default}
-CREATE OR REPLACE TABLE iris AS SELECT * FROM "../datasets/iris.csv”;
+CREATE OR REPLACE TABLE iris AS SELECT * FROM "../data/iris.csv";
 ```
 
-You can use just FROM as a shorthand for SELECT \* FROM:
+You can use just FROM as a shorthand for SELECT * FROM:
 
 ```{.default}
-CREATE OR REPLACE TABLE iris AS FROM "../dataswts/iris.csv”;
+CREATE OR REPLACE TABLE iris AS FROM "../data/iris.csv";
 ```
 
 This shorthand works in general in DuckDB:
@@ -309,7 +310,7 @@ FROM WorldCities WHERE Country='NL';
 If you want to create a temporary table that resides in memory and is automatically dropped when the connection to DuckDB is closed, use CREATE TEMP TABLE:
 
 ```{.default}
-CREATE TEMP TABLE foo AS FROM "../datasets/iris.csv";
+CREATE TEMP TABLE foo AS FROM "../data/iris.csv";
 ```
 
 ### Dropping a Table
@@ -605,3 +606,310 @@ select min(Reaction), Subject from sleep group by subject limit 5;
 ```
 
 The difference is that the correlated subquery returns actual records from the table whereas the SELECT with GROUP BY clause returns the result of aggregation. Put it another way: do you want to see the min reaction time for each subject or do you want to see the records that match the min reaction time for each subject?
+
+
+## Combining Tables with SQL
+
+The process of combining tables is based on set operations or joins. A join uses the values in specific columns of the tables to match records. A set operation is a merging of columns without considering the values in the columns. Appending the rows of one table to another table is a set operation. What happens to columns that exist in one table but not in the other during the append depends on the implementation. Similarly, what happens to columns that share the same name when tables are merged horizontally depends on the implementation.
+
+### Set Operations
+
+We draw on an example in the DuckDB documentation to explain how tables can be merged by rows or columns. First, let’s create two small tables with information on cities:
+
+```{.default}
+CREATE TABLE capitals(city VARCHAR, country VARCHAR);
+INSERT INTO capitals VALUES ('Amsterdam', 'NL'), ('Berlin', 'Germany');
+
+CREATE TABLE weather(city VARCHAR, degrees INTEGER, date DATE);
+INSERT INTO weather VALUES ('Amsterdam', 10, '2022-10-14'), 
+                           ('Seattle', 8, '2022-10-12');
+
+```
+
+```{.default}
+FROM capitals;
+
+┌───────────┬─────────┐
+│   city    │ country │
+│  varchar  │ varchar │
+├───────────┼─────────┤
+│ Amsterdam │ NL      │
+│ Berlin    │ Germany │
+└───────────┴─────────┘
+
+```
+
+```{.default}
+FROM weather;
+
+┌───────────┬─────────┬────────────┐
+│   city    │ degrees │    date    │
+│  varchar  │  int32  │    date    │
+├───────────┼─────────┼────────────┤
+│ Amsterdam │      10 │ 2022-10-14 │
+│ Seattle   │       8 │ 2022-10-12 │
+└───────────┴─────────┴────────────┘  
+
+```
+
+Set operations involve two SELECT queries. The queries are connected with clauses that control how the rows are combined:
+
+-   UNION: combines rows from queries that have the same columns (number and types) and eliminates duplicates.
+
+-   UNION ALL: combines rows from queries that have the same columns (number and types) and preserves duplicates.
+
+-   INTERSECT: selects rows that occur in both queries and removes duplicates.
+
+-   EXCEPT: selects rows that occur in the left query and removes duplicates.
+
+-   UNION BY NAME: works like UNION but does not require the queries to have the same number and types of columns. Eliminates duplicates, like UNION.
+
+-   UNION ALL BY NAME: works like UNION BY NAME but does not eliminate duplicate rows.
+
+Here are the result of UNION and UNION ALL clauses:
+
+```{.default}
+SELECT city FROM capitals UNION SELECT city FROM weather;
+
+┌───────────┐
+│   city    │
+│  varchar  │
+├───────────┤
+│ Amsterdam │
+│ Seattle   │
+│ Berlin    │
+└───────────┘
+
+```
+
+```{.default}
+SELECT city FROM capitals UNION ALL SELECT city FROM weather;
+
+┌───────────┐
+│   city    │
+│  varchar  │
+├───────────┤
+│ Amsterdam │
+│ Berlin    │
+│ Amsterdam │
+│ Seattle   │
+└───────────┘ 
+
+```
+
+Here are the results of INTERSECT and EXCEPT clauses:
+
+```{.default}
+SELECT city FROM capitals INTERSECT SELECT city FROM weather;
+
+┌───────────┐
+│   city    │
+│  varchar  │
+├───────────┤
+│ Amsterdam │
+└───────────┘
+
+```
+
+```{.default}
+SELECT city FROM capitals EXCEPT SELECT city FROM weather;
+
+┌─────────┐
+│  city   │
+│ varchar │
+├─────────┤
+│ Berlin  │
+└─────────┘ 
+
+```
+
+Notice that UNION, UNION ALL, INTERSECT, and EXCEPT require the two queries to return the same columns. The horizontal column matching is done by position. To merge rows across tables with different columns, use UNION (ALL) BY NAME:
+
+```{.default}
+SELECT * FROM capitals UNION BY NAME SELECT * FROM weather;
+
+┌───────────┬─────────┬─────────┬────────────┐
+│   city    │ country │ degrees │    date    │
+│  varchar  │ varchar │  int32  │    date    │
+├───────────┼─────────┼─────────┼────────────┤
+│ Amsterdam │ NL      │         │            │
+│ Seattle   │         │       8 │ 2022-10-12 │
+│ Berlin    │ Germany │         │            │
+│ Amsterdam │         │      10 │ 2022-10-14 │
+└───────────┴─────────┴─────────┴────────────┘ 
+
+```
+
+### Joins
+
+The previous set operations combine rows of data (vertically). To combine tables horizontally we use join operations. Joins typically are based on the values in columns of the tables to find matches. There are two exceptions, **positional** and **cross** joins.
+
+For data scientists working with rectangular data frames in which observations have a natural order, merging data horizontally is a standard operation. In relational databases this is a somewhat unnatural operation because relational tables do not work from a natural ordering of the data, they are based on keys and indices. The positional join matches row-by-row such that rows from both tables appear at least once:
+
+```{.default}
+select capitals.*, weather.* from capitals positional join weather;
+
+┌───────────┬─────────┬───────────┬─────────┬────────────┐
+│   city    │ country │   city    │ degrees │    date    │
+│  varchar  │ varchar │  varchar  │  int32  │    date    │
+├───────────┼─────────┼───────────┼─────────┼────────────┤
+│ Amsterdam │ NL      │ Amsterdam │      10 │ 2022-10-14 │
+│ Berlin    │ Germany │ Seattle   │       8 │ 2022-10-12 │
+└───────────┴─────────┴───────────┴─────────┴────────────┘ 
+
+```
+
+The cross join is actually the simplest join, it returns all possible pairs of rows:
+
+```{.default}
+select capitals.*, weather.* from capitals cross join weather;
+
+┌───────────┬─────────┬───────────┬─────────┬────────────┐
+│   city    │ country │   city    │ degrees │    date    │
+│  varchar  │ varchar │  varchar  │  int32  │    date    │
+├───────────┼─────────┼───────────┼─────────┼────────────┤
+│ Amsterdam │ NL      │ Amsterdam │      10 │ 2022-10-14 │
+│ Amsterdam │ NL      │ Seattle   │       8 │ 2022-10-12 │
+│ Berlin    │ Germany │ Amsterdam │      10 │ 2022-10-14 │
+│ Berlin    │ Germany │ Seattle   │       8 │ 2022-10-12 │
+└───────────┴─────────┴───────────┴─────────┴────────────┘ 
+
+```
+
+Joins are categorized as outer or inner joins depending on whether rows with matches are returned. An outer join returns rows that do not have any matches whereas the inner join returns only rows that get paired. The two tables in a join are called the left and right sides of the relation and outer joins are further classified as
+
+-   **Left** outer join: all rows from the left side of the relation appear at least once.
+
+-   **Right** outer join: all rows from the right side of the relation appear at least once.
+
+-   **Full** outer join: all rows from both sides of the relation appear at least once.
+
+To demonstrate the joins in DuckDB, let’s set up some simple tables:
+
+```{.default}
+CREATE OR REPLACE TABLE weather (
+      city           VARCHAR,
+      temp_lo        INTEGER, -- minimum temperature on a day
+      temp_hi        INTEGER, -- maximum temperature on a day
+      prcp           REAL,
+      date           DATE
+  );
+CREATE OR REPLACE TABLE cities (
+      name            VARCHAR,
+      lat             DECIMAL,
+      lon             DECIMAL
+  );
+INSERT INTO weather VALUES ('San Francisco', 46, 50, 0.25, '1994-11-27');
+INSERT INTO weather (city, temp_lo, temp_hi, prcp, date)
+      VALUES ('San Francisco', 43, 57, 0.0, '1994-11-29');
+INSERT INTO weather (date, city, temp_hi, temp_lo)
+      VALUES ('1994-11-29', 'Hayward', 54, 37);
+
+```
+
+```{.default}
+FROM weather;
+
+┌───────────────┬─────────┬─────────┬───────┬────────────┐
+│     city      │ temp_lo │ temp_hi │ prcp  │    date    │
+│    varchar    │  int32  │  int32  │ float │    date    │
+├───────────────┼─────────┼─────────┼───────┼────────────┤
+│ San Francisco │      46 │      50 │  0.25 │ 1994-11-27 │
+│ San Francisco │      43 │      57 │   0.0 │ 1994-11-29 │
+│ Hayward       │      37 │      54 │       │ 1994-11-29 │
+└───────────────┴─────────┴─────────┴───────┴────────────┘ 
+
+```
+
+```{.default}
+INSERT INTO cities VALUES ('San Francisco', -194.0, 53.0);
+FROM cities;
+
+┌───────────────┬───────────────┬───────────────┐
+│     name      │      lat      │      lon      │
+│    varchar    │ decimal(18,3) │ decimal(18,3) │
+├───────────────┼───────────────┼───────────────┤
+│ San Francisco │      -194.000 │        53.000 │
+└───────────────┴───────────────┴───────────────┘ 
+
+```
+
+An inner join between the tables on the columns that contain the city names will match the records for San Francisco:
+
+```{.default}
+SELECT * FROM weather INNER JOIN cities ON (weather.city = cities.name);
+
+┌───────────────┬─────────┬─────────┬───────┬────────────┬───────────────┬───────────────┬───────────────┐
+│     city      │ temp_lo │ temp_hi │ prcp  │    date    │     name      │      lat      │      lon      │
+│    varchar    │  int32  │  int32  │ float │    date    │    varchar    │ decimal(18,3) │ decimal(18,3) │
+├───────────────┼─────────┼─────────┼───────┼────────────┼───────────────┼───────────────┼───────────────┤
+│ San Francisco │      46 │      50 │  0.25 │ 1994-11-27 │ San Francisco │      -194.000 │        53.000 │
+│ San Francisco │      43 │      57 │   0.0 │ 1994-11-29 │ San Francisco │      -194.000 │        53.000 │
+└───────────────┴─────────┴─────────┴───────┴────────────┴───────────────┴───────────────┴───────────────┘ 
+
+```
+
+Note that the values for `lat` and `lon` are repeated for every row in the weather table that matches the join in the relation. Because this is an inner join (the DuckDB default), and the weather table had no matching row for city Hayward, this city does not appear in the join result. We can change that by modifying the type of join to a left outer join:
+
+```{.default}
+SELECT * FROM weather LEFT OUTER JOIN cities ON (weather.city = cities.name);
+
+┌───────────────┬─────────┬─────────┬───────┬────────────┬───────────────┬───────────────┬───────────────┐
+│     city      │ temp_lo │ temp_hi │ prcp  │    date    │     name      │      lat      │      lon      │
+│    varchar    │  int32  │  int32  │ float │    date    │    varchar    │ decimal(18,3) │ decimal(18,3) │
+├───────────────┼─────────┼─────────┼───────┼────────────┼───────────────┼───────────────┼───────────────┤
+│ San Francisco │      46 │      50 │  0.25 │ 1994-11-27 │ San Francisco │      -194.000 │        53.000 │
+│ San Francisco │      43 │      57 │   0.0 │ 1994-11-29 │ San Francisco │      -194.000 │        53.000 │
+│ Hayward       │      37 │      54 │       │ 1994-11-29 │               │               │               │
+└───────────────┴─────────┴─────────┴───────┴────────────┴───────────────┴───────────────┴───────────────┘
+
+```
+
+Because the join is an outer join, rows that do not have matches in the relation are returned. Because the outer join is a left join, every row on the left side of the relation is returned (at least once). If you change the left- and right-hand side of the relation you can achieve the same result by using a right outer join:
+
+```{.default}
+SELECT * FROM cities  RIGHT OUTER JOIN weather ON (weather.city = cities.name);
+
+┌───────────────┬───────────────┬───────────────┬───────────────┬─────────┬─────────┬───────┬────────────┐
+│     name      │      lat      │      lon      │     city      │ temp_lo │ temp_hi │ prcp  │    date    │
+│    varchar    │ decimal(18,3) │ decimal(18,3) │    varchar    │  int32  │  int32  │ float │    date    │
+├───────────────┼───────────────┼───────────────┼───────────────┼─────────┼─────────┼───────┼────────────┤
+│ San Francisco │      -194.000 │        53.000 │ San Francisco │      46 │      50 │  0.25 │ 1994-11-27 │
+│ San Francisco │      -194.000 │        53.000 │ San Francisco │      43 │      57 │   0.0 │ 1994-11-29 │
+│               │               │               │ Hayward       │      37 │      54 │       │ 1994-11-29 │
+└───────────────┴───────────────┴───────────────┴───────────────┴─────────┴─────────┴───────┴────────────┘ 
+
+```
+
+Now let’s add another record to the `cities` table without a matching record in the `weather` table:
+
+```{.default}
+INSERT INTO cities VALUES ('New York',40.7, -73.9);
+FROM cities;
+
+┌───────────────┬───────────────┬───────────────┐
+│     name      │      lat      │      lon      │
+│    varchar    │ decimal(18,3) │ decimal(18,3) │
+├───────────────┼───────────────┼───────────────┤
+│ San Francisco │      -194.000 │        53.000 │
+│ New York      │        40.700 │       -73.900 │
+└───────────────┴───────────────┴───────────────┘ 
+
+```
+
+A full outer join between the two tables ensures that rows from both sides of the relation appear at least once:
+
+```{.default}
+SELECT * FROM cities FULL OUTER JOIN weather ON (weather.city = cities.name);
+
+┌───────────────┬───────────────┬───────────────┬───────────────┬─────────┬─────────┬───────┬────────────┐
+│     name      │      lat      │      lon      │     city      │ temp_lo │ temp_hi │ prcp  │    date    │
+│    varchar    │ decimal(18,3) │ decimal(18,3) │    varchar    │  int32  │  int32  │ float │    date    │
+├───────────────┼───────────────┼───────────────┼───────────────┼─────────┼─────────┼───────┼────────────┤
+│ San Francisco │      -194.000 │        53.000 │ San Francisco │      46 │      50 │  0.25 │ 1994-11-27 │
+│ San Francisco │      -194.000 │        53.000 │ San Francisco │      43 │      57 │   0.0 │ 1994-11-29 │
+│               │               │               │ Hayward       │      37 │      54 │       │ 1994-11-29 │
+│ New York      │        40.700 │       -73.900 │               │         │         │       │            │
+└───────────────┴───────────────┴───────────────┴───────────────┴─────────┴─────────┴───────┴────────────┘ 
+
+```

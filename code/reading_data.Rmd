@@ -1,0 +1,520 @@
+---
+title: "STAT 5014, Fall 2024, Reading Data"
+author: "Oliver Schabenberger"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document: default
+  html_document:
+    df_print: paged
+editor_options: 
+  markdown: 
+    wrap: 80
+---
+
+```{r setup, include=FALSE}
+options(width=80)
+knitr::opts_chunk$set(echo=TRUE, warning=F, message=F, fig.asp=0.7, cache=FALSE)
+```
+
+# Reading Data {#sec-reading-data}
+
+Before you can work with a set of data, you have to bring it into the
+programming environment.
+
+If you are working with proprietary data analytics tools such as SAS, SPSS,
+Stata, etc., you probably do not worry much about the ways in which data are
+stored, read, and written by the software, except that you want the tool to
+support import from and export to your favorite non-proprietary format.
+
+Most statistics and data science today is performed on (a) data in databases and
+(b) data stored in open-source or open standard file formats. Proprietary
+formats are not easily exchanged between tools and applications and are
+increasingly frowned upon. Data science spans many technologies and storing data
+in a form accessible by only a subset of the tools is counterproductive. You end
+up reformatting the data into an exchangeable format at some point anyway.
+
+The most important open-standard file formats in data science are CSV, JSON, and
+Parquet, but also Avro and ORC. CSV and JSON are text-based, human-readable
+formats, whereas Parquet, Avro, and ORC are binary formats. The last three were
+designed specifically to handle Big Data use cases and are Apache open-source
+projects.
+
+The second important source for data are databases. They store the data in a
+form specific to the database engine and you interact with the data through a
+database management system (DBMS). The syntax of the DBMS is typically a SQL
+(Structured Querying Language; pronounced "sequel", like the follow-up movie) if
+the database architecture is relational. Even No-SQL non-relational databases
+such as MongoDB have a specific syntax to interface with the information in the
+database. In other words, when your data is stored in a database you need to use
+database-specific tools to read and write the data. In the case of analytic
+databases you should also use the computational power of the database engine to
+perform analytic calculations in the database.
+
+## Tabular Data
+
+The basic function to read tabular data into `R` is `read.table`. `read.csv` is
+a special case of `read.table` for CSV files with defaults such as `sep=","`
+that make sense for CSV (comma-separated values) files.
+
+OK, time for a rant. CSV files are ubiquitous and going through college one
+could get the impression that most data is stored in CSV format. First, that
+does not hold for the real world. Second, CSV is a horrible format for data. It
+does have some advantages
+
+-   **Ubiquitous**
+-   **Human readable**
+-   **Compression**
+-   **Excel**
+-   **Simple**
+
+There are some considerable disadvantages of CSV files, however:
+
+-   **Human readable**
+-   **Simple structure**
+-   **Plain text**
+-   **Efficiency**
+-   **Easily broken**
+-   **Missing values**
+-   **Encoding support**
+-   **Metadata**
+-   **Data Types**
+-   **Loss of Precision**
+
+Despite these drawbacks, CSV is one of the most common file formats. It is the
+lowest common denominator format to exchange data between disparate systems.
+
+Here is an example of reading a CSV file into `R`. The `stringsAsFactors=TRUE`
+argument requests that all character variables are converted into factors.
+
+``` default
+> head pisa.csv
+
+"Country","MathMean","MathShareLow","MathShareTop","ReadingMean","ScienceMean","GDPp","logGDPp","HighIncome"
+"Shanghai-China",613,3.8,55.4,570,580,6264.6,8.74267001852412,FALSE
+"Singapore",573,8.3,40,542,551,54451.210333388,10.9050603564591,TRUE
+"Hong Kong SAR, China",561,8.5,33.7,545,555,36707.7742282554,10.510743843442,TRUE
+"Chinese Taipei",560,12.8,37.2,523,523,,,
+"Korea",554,9.1,30.9,536,538,24453.9719124644,10.1045479321169,TRUE
+"Macao SAR, China",538,10.8,24.3,509,521,77145.0395041344,11.2534425589534,TRUE
+"Japan",536,11.1,23.7,538,547,46701.0080028836,10.7515210280682,TRUE
+"Liechtenstein",535,14.1,24.8,516,525,149160.758132157,11.9127799169572,TRUE
+"Switzerland",531,12.4,21.4,509,515,83208.68654235,11.3291070269165,TRUE
+```
+
+```{r}
+pisa <- read.csv(file="../data/pisa.csv",stringsAsFactors=TRUE)
+pisa[1:10,]
+```
+
+Note that there are missing values for `Chinese Taipei` in row 4. This is the
+result of correctly specifying the contents of the comma-separated file. For
+this row the entries of the CSV files read
+
+``` default
+"Chinese Taipei",560,12.8,37.2,523,523,,,
+```
+
+The sequence of commas indicates that the values for the corresponding variables
+are unobserved and will be set to missing.
+
+By default, `read.csv` looks for information about the column names in the first
+row of the CSV file. If names are not available in the first row, add the
+`header=FALSE` option to the function call. Other important options for
+`read.csv` and `read.table` are
+
+-   `sep`: specifies the character that separates the values of the columns, for
+    `read.csv` this defaults to `sep=","`. For `read.table` the separator
+    defaults to `sep=""`.
+-   `skip`: how many lines to skip at the top of the file before reading data.
+    This is useful if the CSV file has a comment section at the top.
+-   `nrow`: how many rows of data to read. Useful if you want to import only a
+    portion of the file.
+-   `dec`: specifies the character that indicates a decimal point.
+-   `na.strings`: a vector of character values that are interpreted as missing
+    (NA) values. I hope you do not need to specify those---using sentinel values
+    to indicate missing values is very dangerous.
+
+## Excel Files
+
+The `readxl` library is part of the `tidyverse`.
+
+```{r, message=FALSE}
+library(readxl)
+df_tesla <- read_excel("../data/TeslaDeaths.xlsx", sheet=1)
+df_tesla[1:10,]
+```
+
+## Google Sheets
+
+To read a Google sheets file, use the `googlesheets4`
+[package](https://googlesheets4.tidyverse.org/), which is part of the
+`tidyverse`
+
+```{r, eval=FALSE}
+if (!("googlesheets4" %in% installed.packages())) {
+    install.packages("googlesheets4", dependencies=TRUE)
+}
+library("googlesheets4")
+data_frame <- read_sheet("something_identifying_the_google_sheet")
+```
+
+## JSON Files {#sec-json-files}
+
+[JSON](https://www.json.org/json-en.html) stands for JavaScript Object Notation,
+and although it was borne out of interoperability concerns for JavaScript
+applications, it is a language-agnostic data format. Initially used to pass
+information in human readable form between applications over APIs (Application
+Programmer Interfaces), JSON has grown into a general-purpose format for
+text-based, structured information. It is the standard for communicating data on
+the web. The correct pronunciation of JSON is like the name “Jason”, but
+“JAY-sawn” has become common.
+
+In contrast to CSV, JSON is not based on rows of data but three basic data
+elements:
+
+-   **Value**: a string, number, reserved word, or one of the following:
+
+-   **Object**: a collection of name—value pairs similar to a key-value store.
+
+-   **Array**: An ordered list of values
+
+All modern programming languages support key—values and arrays, they might be
+calling it by different names (object, record, dictionary, struct, list,
+sequence, map, hash table, ...). This makes JSON documents highly
+interchangeable between programming languages---JSON documents are easy to parse
+(read) and write by computers. Any modern data processing system can read and
+write JSON data, making it a frequent choice to share data between systems and
+applications.
+
+A value in JSON can be a string in double quotes, a number, true, false, or
+null, an object or an array (@fig-data-json-structure). An array is an ordered
+collection of values. Objects are unordered collection of name—value pairs.
+Since values can contain objects and arrays, JSON allows highly nested data
+structures that do not fit the tabular row--column structure of CSV files.
+
+![Elements of a JSON document. Because values can contain objects and arrays,
+JSON documents can be highly structured and deeply
+nested.](../images/JSON_Structure.png){#fig-data-json-structure .lightbox
+fig-align="center" width="80%"}
+
+JSON documents are self-describing, the schema to make the data intelligible is
+built into the structures. It is also a highly flexible format that does not
+impose any structure on the data, except that it must comply with the JSON rules
+and data types.
+
+![A simple JSON document. The entire document is a name—value pair with name
+“menu”. The value is an object with names “id”, “value”, and “popup”. The value
+of “popup” is an object with name “menuitem” whose value is an array. The
+elements of the array are objects with names “value” and
+“onclick”.](../images/JSON_Example.png){fig-align="center" width="80%"}
+
+As a human-readable, non-binary format, JSON shares some of the advantages and
+disadvantages with CSV files. You do not want to pass sensitive information in
+JSON format without encryption. The level of human readability is lower for JSON
+files. The format is intended to make algorithms interoperable, not to make
+human interpretation simple.
+
+Since so much data is stored in JSON format, you need to get familiar and
+comfortable with working with JSON files. Data science projects are more likely
+consumers of JSON files rather than producer of files.
+
+<!---
+download.file("https://raw.githubusercontent.com/datacarpentry/r-socialsci/main/episodes/data/SAFI.json","data/SAFI.json", mode = "wb")
+--->
+
+There are multiple packages for working with JSON files in `R`, for example,
+`jsonlite` and `rjson`. Here we use the `jsonlite` package. The `toJSON` and
+`fromJSON` functions are used to convert `R` objects to/from JSON. `read_json`
+and `write_json` read and write JSON files. They are similar to `fromJSON` and
+`toJSON` but recognize a file path as input.
+
+The following example is taken from
+[Datacarpentry.org](https://datacarpentry.org/r-socialsci/07-json.html). SAFI
+(Studying African Farmer-Led Irrigation) is a study of farming and irrigation
+methods in Tanzania and Mozambique. The survey data was collected through
+interviews conducted between November 2016 and June 2017.
+
+If you use `read_json` with the default settings, the JSON document is converted
+into a list (`simplifyVector=FALSE`). To convert JSON format into vectors and
+data frames, use `simplifyVector=TRUE`.
+
+```{r readjson, warning=FALSE, message=FALSE}
+library(jsonlite)
+json_data <- read_json("../data/SAFI.json", simplifyVector=TRUE)
+```
+
+To take a look at the data frame created with `read_json` we use the `glimpse`
+function from `tidyverse`. It works a bit like the `str` function in base `R`
+but has a more compact display for this case and shows more data points.
+
+```{r glimpse, warning=FALSE, message=FALSE}
+library(tidyverse)
+glimpse(json_data)
+```
+
+Because of the deeply nested structure of JSON documents, flattening the data
+into a two-dimensional data frame can go only so far. Several of the columns are
+lists and some are lists of data frames.
+
+```{r}
+json_data %>%
+    select(where(is.list)) %>%
+    glimpse()
+```
+
+You access the data frames stored within the lists simply as any other list
+element in `R`.
+
+```{r}
+str(json_data$F_liv[[2]])
+json_data$F_liv[[2]]
+```
+
+## Parquet Files
+
+The [Apache Parquet](https://parquet.apache.org/) open-source file format is a
+binary format---data are not stored in plain text but in binary form. Originally
+conceived as a column-based file format in the Hadoop ecosystem, it has become
+popular as a general file format for analytical data inside and outside of
+Hadoop and its file system HDFS: for example, as an efficient analytic file
+format for data exported to data lakes or in data processing with Spark. Many
+organizations have switched to storing their data in Parquet files; loading
+Parquet files from AWS S3 buckets or from Google Cloud Storage or Microsoft
+Azure Blob storage has become a common access pattern.
+
+Working with Parquet files for large data is an order of magnitude faster than
+working with CSV files. The drawbacks of CSV files discussed previously all melt
+away with Parquet files.
+
+Parquet was designed from the ground up with complex data structures and
+read-heavy analytics in mind. It uses principally columnar storage but does it
+cleverly by storing chunks of columns in row groups rather than entire columns.
+
+This hybrid storage model is very efficient when queries select specific columns
+and filter rows at the same time; a common pattern in data science: compute the
+correlation between `homeValue` and `NumberOfRooms` for homes where
+`ZipCode = 24060`.
+
+Parquet stores metadata about the row chunks to speed access to rows, the
+metadata tells the reader which row chunks to skip. Also, a single write to the
+Parquet format can generate multiple `.parquet` files. The total data is divided
+into multiple files collected within a folder. Like NoSQL and NewSQL databases,
+data are partitioned, but since Parquet is a file format and not a database
+engine, the partitioning results in multiple files. This is advantageous for
+parallel processing frameworks like Spark that can work on multiple partitions
+(files) concurrently.
+
+Parquet uses several compression techniques to reduce the size of the files such
+as run-length encoding, dictionary encoding, Snappy, GZip, LZO, LZ4, ZSTD.
+Because of columnar storage, compression methods can be specified on a
+per-column basis; Parquet files compress much more than text-oriented CSV files.
+
+Because of its complex file structure, Parquet files are relatively slow to
+write. The file format is optimized for the WORM paradigm: write-once, read many
+times.
+
+|                             |        CSV        |     JSON      |    Parquet    |
+|-----------------------------|:-----------------:|:-------------:|:-------------:|
+| **Columnar**                |        No         |      No       |      Yes      |
+| **Compression**             |        Yes        |      Yes      |      Yes      |
+| **Human Readable**          |        Yes        |      Yes      |      No       |
+| **Nestable**                |        No         |      Yes      |      Yes      |
+| **Complex Data Structures** |        No         |      Yes      |      Yes      |
+| **Named Columns**           | Yes, if in header | Based on scan | Yes, metadata |
+| **Data Types**              |   Based on scan   | Based on scan | Yes, metadata |
+
+: Comparison of popular file formats in data science.
+
+To read a file in Parquet format into an `R` session, install and load the
+[`arrow`](https://arrow.apache.org/docs/r/) package. [Apache
+Arrow](https://arrow.apache.org/docs/index.html) is an open-source development
+platform for in-memory analytics that supports many programming environments,
+including R and Python. The arrow libraries support reading and writing of the
+important file formats in this ecosystem.
+
+```{r read_parquet, eval=FALSE}
+#install.packages("arrow")
+library(arrow)
+read_parquet("somefile.parquet")
+```
+
+## Working with a Database
+
+You interface with a database from `R` with the `DBI` package. It provides a
+common syntax and functions to connect to supported databases, and to send
+queries to the database. In addition to the `DBI` package you need the driver
+packages specific to the database you are working with (`RMySQL` for MySQL,
+`RSQLite` for SQLite, and so on).
+
+My favorite database for analytic work is DuckDB, a highly efficient, embedded
+database designed for processing data analytically. The file `ads.ddb`, contains
+the database tables used in this and other courses in DuckDB format. To add the
+DuckDB driver package to your system, use
+
+```{r, eval=FALSE}
+install.packages("duckdb")
+```
+
+### Reading a DuckDB Table
+
+To read a table from that database into an `R` data frame, follow the steps in
+the next code snippet:
+
+```{r, warning=FALSE, message=FALSE}
+library("duckdb")                                           # <1>
+con <- dbConnect(duckdb(),dbdir = "../ads.ddb",read_only=TRUE) # <2>
+#dbGetQuery(con,"SHOW TABLES;")
+fit <- dbGetQuery(con, "SELECT * FROM fitness")             # <3>
+dbDisconnect(con)                                           # <4>
+```
+
+1.  Load the `duckdb` library
+2.  Make a connection to DuckDB through the DBI interface, specifying the
+    database you want to work with, here `ads.ddb`. 
+    Choosing `read_only=TRUE` opens the connection in read-only mode. 
+    You cannot write to the database, but it can be shared in this mode by multiple `R` processes.
+3.  Send a `SELECT * FROM` query to read the contents of the target table and
+    assign the result to a dataframe in `R`
+4.  Close the connection to the database when you are done querying it.
+
+We can now work with the `fitness` data set as a dataframe in `R`:
+
+```{r}
+head(fit)
+summary(fit)
+```
+
+The connection to the database can be left open until you are done working with
+the database. If you use the database to import tables at the beginning of a
+statistical program, it is recommended to close the connection as soon as that
+step is complete.
+
+Because we are reading many tables from the `ads.ddb` database, you can write a
+function to wrap the database operations. The following function loads the
+`duckdb` library unless it is already loaded, and reads a table, possibly
+selecting rows with a WHERE filter, and returns the `R` dataframe.
+
+```{r, duckload}
+duckload <- function(tableName, whereClause=NULL, dbName="../ads.ddb") {
+    if (!is.null(tableName)) {
+        if (!("duckdb" %in% (.packages()))) {
+            suppressWarnings(library("duckdb"))
+            message("duckdb library was loaded to execute duckload().")
+
+        }
+        con <- dbConnect(duckdb(), dbdir=dbName, read_only=TRUE)
+        query_string <- paste("SELECT * from ", tableName)
+        if (!is.null(whereClause)) {
+            query_string <- paste(query_string, " WHERE ", whereClause)
+        }
+        df_ <- dbGetQuery(con, query_string)
+        dbDisconnect(con)
+        return (df_)
+    } else {
+        return (NULL)
+    }
+}
+```
+
+```{r}
+# Load the entire table
+fit <- duckload("fitness")
+
+# Load only the records where Age > 50
+fit2 <- duckload("fitness",whereClause="Age > 50")
+
+# Load only the records where Age = 40
+fit3 <- duckload("fitness","Age = 40")
+```
+
+You can modify the function to load a **projection** of columns from the
+database table by replacing the `*` in the SELECT query with the selected
+columns.
+
+### Creating an In-memory Database
+
+You can create and work with a purely in-memory database with DuckDB. The 
+database is instantiated in the `R` session and goes away when the `R` session
+terminates or when you close the connection.
+To specify an in-memory database, simply do not specify the `dbdir=`
+parameter when opening a connection, or specify `dbdir = ":memory:"`.
+
+Since the default for `read_only` is `read_only=FALSE`, the following statement
+opens a connection to an in-memory database that you can write to.
+
+```{r}
+con <- dbConnect(duckdb())
+```
+
+To write an `R` data frame to this (or any other) DuckDB database, 
+use the `dbWriteTable` function.
+
+```{r}
+set.seed(43)
+df <- data.frame(matrix(rnorm(100),nrow=20,ncol=5))
+
+dbWriteTable(con,"gauss_vars",df)
+dbWriteTable(con,"iris_data",iris)
+
+dbGetQuery(con,"SHOW TABLES;")
+```
+
+This closes the connection and because the database exists in memory, 
+releases the memory (and destroys the database).
+
+```{r}
+dbDisconnect(con)
+```
+
+
+## Saving and Loading `RData`
+
+`R` has its own format (binary or ASCII) to read and write `R` objects. This is
+convenient to save a data frame to disk and later load it back into an `R`
+session.
+
+To save any `R` object, use the `save` or `saveRDS` function, to load it into an
+`R` session use the `load` function. `save` can save one or more objects to a
+`.RData` file, while `saveRDS` creates an `.RDS` file from a single object.
+
+```{r}
+a <- matrix(rnorm(200),nrow=50,ncol=4)
+b <- crossprod(a)
+cor_mat <- cor(a)
+save(a,b,cor_mat,file="../data/matrixStuff.RData")
+```
+
+Before reloading the objects, let's clear them from the environment, so we
+can see how `load` brings them back into the environment:
+
+```{r}
+rm(list=c("a","b","cor_mat"))
+```
+
+
+```{r}
+load("../data/matrixStuff.RData")
+```
+
+When you load `R` objects from a `.RData` file, you do not assign the result of
+the function. The objects are created in the work environment with their
+original names.
+
+**Note**: The `load` operation will overwrite any `R` objects in your
+environment by the same name as those in the `RData` file.
+
+`.RData` files can contain many objects, for example, all the objects in your
+environment when it is saved upon closing an `R` session. If you load from an
+`.RDS` file, you can assign the result to an `R` object which helps avoid name
+collisions.
+
+In general, it is better coding practice to use `saveRDS` and `readRDS` with
+single objects. The code is cleaner and easier to follow if single objects are
+saved/loaded and these are explicitly named in the code.
+
+``` {r}
+saveRDS(a, file = "../data/stuff.RDS") 
+
+normal_rvs <- readRDS("../data/stuff.RDS")
+```
+

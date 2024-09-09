@@ -34,7 +34,7 @@ The current version of $\LaTeX$ is based on LaTeX2e, which brought together the 
 There is a ton of reference material on $\LaTeX$ on the internet. Every issue you are running into has likely already been asked and solved.
 The [Overleaf](https://www.overleaf.com/learn) documentation is a great resource as in Stack Exchange and stack overflow.
 
-## The Basic Document Structure
+## The Document Structure
 
 The basic structure of a $\LaTeX$ document consists of the **preamble** and the **document body**.
 The body is enclosed in a `\begin{document}` --- `\end{document}` block. The preamble specifies the type of document and parameters such as fonts and paper size in the `\documentclass[]{}` command, which packages to load to help typesetting the document (`\usepackage`), and optionally the title, author, and date of the document.
@@ -83,8 +83,11 @@ The `amsmath` package is pretty much table stakes for any document that has some
 ## Basic Formatting
 
 - `\text{foo}`: to write foo in text mode while in math mode, for example, $\alpha = \text{foo}/\beta$
+
 - `\textbf{foo}`: **bold** formatting
+
 - `\textit{foo}`: *italics* formatting
+
 - `\underline{foo}`: [underline]{.underline} formatting
 
 
@@ -101,7 +104,7 @@ Display math mode is enclosed in `$$ ... $$` or `\[ .... \]` delimiters or in a 
 Apparently, `\[ ... \]` or the `\begin{} ... \end{}` blocks are now the preferred way to write display math instead of the TeX primitive `$$`. 
 You can see from my $LaTeX$ files that I did not get that memo. For a discussion of the pros and cons for using `\[ ... \]` instead of `$$ ... $$`, see [here](https://tex.stackexchange.com/questions/503/why-is-preferable-to).
 
-### Writing Basic Math Expressions
+### Math Expressions
 
 #### Subscripts and superscripts
 

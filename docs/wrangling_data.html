@@ -369,7 +369,7 @@ window.Quarto = {
 <section id="introduction" class="level2" data-number="4.1">
 <h2 data-number="4.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">4.1</span> Introduction</h2>
 <p><strong>Wrangling</strong> data refers to the steps to organize the data in a structured format that is suitable for analytic processing. Typically, the result of data wrangling is data in a row-column layout where each analysis variable is in its own column and each observation is in its own row. Data often do not start out that way.</p>
-<p>We saw a bit of data wrangling in the previous chapter (@#sec-json-files) when a nested JSON structure was flattened into a row-column format.</p>
+<p>We saw a bit of data wrangling in the previous chapter (<a href="reading_data.html#sec-json-files" class="quarto-xref"><span>Section 3.3</span></a>) when a nested JSON structure was flattened into a row-column format.</p>
 <p>In addition to structuring the data, wrangling includes the following steps:</p>
 <ol type="1">
 <li><p><strong>Cleaning</strong> involves removing or correcting inaccurate data, handling duplicates, and addressing anomalies that could impact the reliability of analyses. The focus is on enhancing data accuracy and reliability for analytic processing.</p></li>
@@ -549,10 +549,16 @@ https://ohi-science.org/data-science-training/
 5112   Oceania    New Zealand     pop_2007  4115771</code></pre>
 </div>
 </div>
+<p>The resulting data frame has 5112 rows and 4 rows. How do the number of rows come about?</p>
+<ul>
+<li>The original data has 142 rows</li>
+<li>Three variables (<code>gdpPercap</code>, lifeExp<code>,</code>pop`) are measured for 12 years</li>
+<li>There are 142 combinations of <code>continent</code> and country<code>(the number of observations in</code>gap_wide`).</li>
+</ul>
 </section>
 <section id="separating-character-variables" class="level4">
 <h4 class="anchored" data-anchor-id="separating-character-variables">Separating character variables</h4>
-<p>The <code>gather</code> function turns all variables into key-value pairs; the key is the name of the variable. The column that contains the names of the variables after the gathering is called <code>vartype_year</code>. In the next step <code>dplyr::separate</code> is called to split the character column <code>vartype_year</code> into two columns, one for the variable type and one for the year. The <code>convert=TRUE</code> option attempts to convert the data type of the new columns from character to numeric data—this will fail for the <code>vartype</code> column but succeed for the <code>year</code> column.</p>
+<p>The <code>gather</code> function turns all variables into key-value pairs; the key is the name of the variable. The column that contains the names of the variables after the gathering is called <code>vartype_year</code>. In the next step <code>dplyr::separate</code> is called to split the character column <code>vartype_year</code> into two columns, one for the variable type and one for the year. The <code>convert=TRUE</code> option attempts to convert the data type of the new columns from character to numeric data—this fails for the <code>vartype</code> column but succeeds for the <code>year</code> column.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>gap_step2 <span class="ot">&lt;-</span> gap_wide <span class="sc">%&gt;%</span> </span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">gather</span>(<span class="at">key =</span>vartype_year,</span>
@@ -595,7 +601,7 @@ https://ohi-science.org/data-science-training/
 </section>
 <section id="spreading-rows-into-columns" class="level4">
 <h4 class="anchored" data-anchor-id="spreading-rows-into-columns">Spreading rows into columns</h4>
-<p>We are almost there, but not quite. We now have columns for continent, country, and year, but the <code>values</code> column contains values of different types: 1,704 observations for GDP, 1704 observations for life expectancy, and 1,704 observations for population. To create separate columns from the rows we can reverse the gather operation with the <code>spread</code> function—it splits key-value pairs across multiple columns. The entries in the <code>vartype</code> column are used by the spreading operation as the names of the new columns.</p>
+<p>We are almost there, but not quite. We now have columns for continent, country, and year, but the <code>values</code> column contains values of different types: 1,704 observations for GDP, 1,704 observations for life expectancy, and 1,704 observations for population. To create separate columns from the rows we can reverse the gather operation with the <code>spread</code> function—it splits key-value pairs across multiple columns. The entries in the <code>vartype</code> column are used by the spreading operation as the names of the new columns.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="ot">&lt;-</span> </span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    gap_wide <span class="sc">%&gt;%</span> </span>
@@ -629,13 +635,13 @@ https://ohi-science.org/data-science-training/
 1704   Oceania New Zealand 2007  25185.01  80.204 4115771</code></pre>
 </div>
 </div>
-<p>In summary, we used gather to create one key-value pair of the variable_year columns and values in step 1, separated out the year in step 2, and spread the remaining variable types back out into columns in step 3.</p>
+<p>In summary, we used gather to create one key-value pair of the <code>variable_year</code> columns and values in step 1, separated out the <code>year</code> in step 2, and spread the remaining variable types back out into columns in step 3.</p>
 </section>
 </section>
 </section>
 <section id="subsetting" class="level2" data-number="4.4">
 <h2 data-number="4.4" class="anchored" data-anchor-id="subsetting"><span class="header-section-number">4.4</span> Subsetting</h2>
-<p>A <em>subset</em> operation reduces the number of observations (rows) or variables (columns) of data set. While <code>filter</code> is the most important operation to subset rows, there are a number of other functions in <code>dplyr</code> that reduce the rows. On the other hand, to subset columns there is only one function, <code>dplyr::select</code>.</p>
+<p>A <em>subset</em> operation reduces the number of observations (rows) or variables (columns) of data set. While <code>filter</code> is the most important operation to subset rows, there are a number of other functions in <code>dplyr</code> that reduce the rows. On the other hand, to subset columns with <code>dplyr</code> there is only one function, <code>dplyr::select</code>.</p>
 <section id="subsetting-rows" class="level3">
 <h3 class="anchored" data-anchor-id="subsetting-rows">Subsetting Rows</h3>
 <p>The following statements create a data frame of dimension 100 x 2, containing two columns of integers randomly selected from 1–10 with replacement:</p>
@@ -719,7 +725,7 @@ $ y &lt;int&gt; 3, 5, 9, 8, 7, 10, 4, 1, 10, 6, 9, 6, 2, 9, 3, 8, 9, 7, 4, 3, 2,
 10  9</code></pre>
 </div>
 </div>
-<p>If you specify <code>.keep_all=TRUE</code>, all other variables in the data set are kept as well. If multiple combinations occur, the function retains the first occurence.</p>
+<p>If you specify <code>.keep_all=TRUE</code>, all other variables in the data set are kept as well. If multiple combinations occur, the function retains the first occurrence.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>dat <span class="sc">%&gt;%</span> <span class="fu">distinct</span>(x, <span class="at">.keep_all=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -738,13 +744,14 @@ $ y &lt;int&gt; 3, 5, 9, 8, 7, 10, 4, 1, 10, 6, 9, 6, 2, 9, 3, 8, 9, 7, 4, 3, 2,
 </div>
 <p>To remove all duplicates in a data frame, simply call distinct on the data frame.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>dat <span class="sc">%&gt;%</span> <span class="fu">distinct</span>() <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="at">count=</span><span class="fu">n</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>nuniq <span class="ot">&lt;-</span> dat <span class="sc">%&gt;%</span> <span class="fu">distinct</span>() <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="at">count=</span><span class="fu">n</span>())</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>nuniq</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  count
 1    65</code></pre>
 </div>
 </div>
-<p>There are 62 unique rows of data in the <code>dat</code> data frame.</p>
+<p>There are 65 unique rows of data in the <code>dat</code> data frame.</p>
 </section>
 <section id="other-subsetting-functions" class="level4">
 <h4 class="anchored" data-anchor-id="other-subsetting-functions">Other subsetting functions</h4>
@@ -755,8 +762,8 @@ $ y &lt;int&gt; 3, 5, 9, 8, 7, 10, 4, 1, 10, 6, 9, 6, 2, 9, 3, 8, 9, 7, 4, 3, 2,
 <li><code>dplyr::slice</code>: select rows by position, for example <code>slice(dat,4:10)</code> extracts rows 4–10</li>
 <li><code>dplyr::slice_head</code>: selects the first rows</li>
 <li><code>dplyr::slice_tail</code>: selects the last rows</li>
-<li><code>dplyr:slice_min</code>: select rows with the smallest values</li>
-<li><code>dplyr:slice_max</code>: select rows with the largest values</li>
+<li><code>dplyr::slice_min</code>: select rows with the smallest values</li>
+<li><code>dplyr::slice_max</code>: select rows with the largest values</li>
 </ol>
 <p>For example, the next statement selects the observation with the five largest values for the <code>Sepal.Width</code> variable in the <code>iris</code> data set.</p>
 <div class="cell">
@@ -1032,7 +1039,7 @@ Note
 <section id="bindings" class="level3">
 <h3 class="anchored" data-anchor-id="bindings">Bindings</h3>
 <p>For data scientists working with rectangular data frames in which observations have a natural order, merging data horizontally is a standard operation. Observations are matched by position and not according to the values in key columns. In the world of relational databases, such a merge is called a <strong>positional</strong> join and a somewhat unnatural operation because relational tables do not work from a natural ordering of the data, they are based on keys and indices.</p>
-<p>When working with statistical data sets merging by position is not uncommon as data sets do not have keys. The positional join—or column binding—matches data frames row-by-row such that rows from both tables appear at least once:</p>
+<p>When working with statistical data sets merging by position is common as data sets do not have keys. The positional join—or column binding—matches data frames row-by-row such that rows from both tables appear at least once:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">bind_cols</span>(capitals1,weather1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">

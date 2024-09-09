@@ -192,11 +192,13 @@ read_parquet("somefile.parquet")
 
 You interface with a database from `R` with the `DBI` package. It provides a common syntax and functions to connect to supported databases, and to send queries to the database. In addition to the `DBI` package you need the driver packages specific to the database you are working with (`RMySQL` for MySQL, `RSQLite` for SQLite, and so on). 
 
-My favorite database for analytic work is duckDB, a highly efficient, embedded database designed for processing data analytically. The file `ads.ddb`, contains the database tables used in this and other courses in duckDB format. To add the duckDB driver package to your system, use
+My favorite database for analytic work is DuckDB, a highly efficient, embedded database designed for processing data analytically. The file `ads.ddb`, contains the database tables used in this and other courses in DuckDB format. To add the DuckDB driver package to your system, use
 
 ```{r, eval=FALSE}
 install.packages("duckdb")
 ```
+
+### Reading a DuckDB Table
 
 To read a table from that database into an `R` data frame, follow the steps in the next code snippet:
 
@@ -207,7 +209,9 @@ fit <- dbGetQuery(con, "SELECT * FROM fitness")             # <3>
 dbDisconnect(con)                                           # <4>
 ```
 1. Load the `duckdb` library
-2. Make a connection to duckDB through the DBI interface, specifying the database you want to work with, here `ads.ddb`
+2. Make a connection to DuckDB through the DBI interface, specifying the database you want to work with, here `ads.ddb`. 
+Choosing `read_only=TRUE` opens the connection in read-only mode. You cannot write to the database, but it
+can be shared in this mode by multiple R processes.
 3. Send a `SELECT * FROM` query to read the contents of the target table and assign the result to a dataframe in `R`
 4. Close the connection to the database when you are done querying it.
 
@@ -258,6 +262,40 @@ fit3 <- duckload("fitness","Age = 40")
 
 You can modify the function to load a **projection** of columns from the database table by replacing the `*` in the SELECT query with the selected columns.
 
+### Creating an In-memory Data Base
+
+You can create and work with a purely in-memory database with DuckDB. The 
+database is instantiated in the `R` session and goes away when the `R` session
+terminates or when you close the connection.
+To specify an in-memory database, simply do not specify the `dbdir=`
+parameter when opening a connection, or specify `dbdir = ":memory:"`.
+
+Since the default for `read_only` is `read_only=FALSE`, the following statement
+opens a connection to an in-memory database that you can write to.
+
+```{r}
+con <- dbConnect(duckdb())
+```
+
+To write an `R` data frame to this (or any other) DuckDB database, 
+use the `dbWriteTable` function.
+
+```{r}
+set.seed(43)
+df <- data.frame(matrix(rnorm(100),nrow=20,ncol=5))
+dbWriteTable(con,"gauss_vars",df)
+dbWriteTable(con,"iris_data",iris)
+dbGetQuery(con,"SHOW TABLES;")
+```
+
+This closes the connection and because the database exists in memory, 
+releases the memory (and destroys the database).
+
+```{r}
+dbDisconnect(con)
+```
+
+
 ## Saving and Loading `RData`
 
 `R` has its own format (binary or ASCII) to read and write `R` objects. This is convenient to save a data frame to disk and later load it back into an `R` session. 
@@ -271,6 +309,14 @@ b <- crossprod(a)
 cor_mat <- cor(a)
 save(a,b,cor_mat,file="data/matrixStuff.RData")
 ```
+
+Before reloading the objects, let's clear them from the environment, so we
+can see how `load` brings them back into the environment:
+
+```{r}
+rm(list=c("a","b","cor_mat"))
+```
+
 
 ```{r}
 load("data/matrixStuff.RData")
@@ -286,10 +332,9 @@ The `load` operation will overwrite any `R` objects in your environment by the s
 
 In general, it is better coding practice to use `saveRDS` and `readRDS` with single objects. The code is cleaner and easier to follow if single objects are saved/loaded and these are explicitly named in the code.
 
-```{.default}
-a = rnorm(100)
-saveRDS(a, file = "stuff.RDS") 
+```{r}
+saveRDS(a, file = "data/stuff.RDS") 
 
-normal_rvs <- readRDS("stuff.RDS")
+normal_rvs <- readRDS("data/stuff.RDS")
 ```
 
