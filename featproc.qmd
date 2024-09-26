@@ -43,7 +43,11 @@ It is also used to encode categorical target variables for classification models
 
 ### Centering and Scaling
 
-Standardizing a variable $X$ comprises two steps, **centering** and **scaling**. Scaling does what it says, it replaces $x_i$ with $c\times x_i$ where $c$ is the scaling factor. Centering means shifting the variable so that it is centered at some specific value. The common parameters of standardization are centering at the mean $\overline{y}$ and scaling with the standard deviation $s_x$:
+Standardizing a variable $X$ comprises two steps, **centering** and **scaling**. 
+Scaling does what it says, it replaces $x_i$ with $c\times x_i$ where $c$ is the 
+scaling factor. Centering means shifting the variable so that it is centered at 
+some specific value. The common parameters of standardization are centering at 
+the mean $\overline{y}$ and scaling with the standard deviation $s_x$:
 $$
 z = \frac{x-\overline{x}}{s_x}
 $$
@@ -72,7 +76,7 @@ round(sd(x_scaled),4)
 
 par(mfrow=c(1,2))
 hist(x,main="Original")
-hist(x_scaled, main="Scaled")
+hist(x_scaled, main="Standardized")
 
 ```
 
@@ -92,9 +96,40 @@ sd(x_notcentered_but_scaled_with_sd)
 ```
 
 :::{.callout-caution title="Scaling called Standardization"}
-You will find references in the literature and in software documentation to "scaling the data". It is often understood as standardization of the data, that is, centering **and** scaling. 
+You will find references in the literature and in software documentation to 
+"scaling the data". It is often understood as standardization of the data, 
+that is, centering **and** scaling. 
 
-Be also aware of the default behavior of software packages. The `prcomp` function for principal component analysis in `R`, for example, centers the data by default but does not scale by default. The `loess` function in `R` normalizes the predictor variables, using scaling to a robust estimate of the standard deviation, but only if there is more than one predictor. The `glmnet::glmnet` function standardizes the inputs by default (`standardize=TRUE`) and reports the results on the original scale of the predictors.
+Be also aware of the default behavior of software packages. The `prcomp` function 
+for principal component analysis in `R`, for example, centers the data by default 
+but does not scale by default. The `loess` function in `R` normalizes the predictor 
+variables, using scaling to a robust estimate of the standard deviation, but 
+only if there is more than one predictor. The `glmnet::glmnet` function s
+tandardizes the inputs by default (`standardize=TRUE`) and reports the results 
+on the original scale of the predictors.
+:::
+
+:::{.callout-caution title="Standardization and Studentization"}
+Technically, standardization in the statistical sense means
+scaling with the population standard deviation, which is usually unknown. If
+random variable $Y$ has mean $\mu$ and variance $\sigma^2$, then the standardized
+form is
+$$
+\frac{Y-\mu}{\sigma}
+$$
+$\sigma$ is usually unknown and an estimate is calculated based on a sample
+of $Y$. When you divide with an estimate of the standard deviation, the process is called
+**studentization**. The studentized version of $Y$ is thus
+$$
+\frac{Y-\mu}{s}
+$$
+where $s$ is the sample standard deviation.
+The name stems from the (Student's) $t$-distribution that
+results if the sample mean in a random sample from a G($\mu,\sigma^2$) distribution is
+centered and divided by its standard deviation:
+$$
+\frac{\overline{Y}-\mu}{s/\sqrt{n}} \sim t_{n-1}
+$$
 :::
 
 ### Range Scaling
@@ -317,7 +352,7 @@ If we choose **one-hot encoding**, also called standard encoding or **dummy enco
 
 : One-hot encoding of $A$ and $B$. {#tbl-factor-onehot .striped}
 
-$A_1$ and $A_2$ are the first and second columns of the encoded 2-level factor $A$. So why does the order in which these columns enter a statistical model matter? Suppose our model is a linear model with inputs $X$, a numeric variable, and $A$ ($\textbf{x} = [x, A_1, A_3]$):
+$A_1$ and $A_2$ are the first and second columns of the encoded 2-level factor $A$. So why does the order in which these columns enter a statistical model matter? Suppose our model is a linear model with inputs $X$, a numeric variable, and $A$ ($\textbf{x} = [x, A_1, A_2]$):
 $$
 f(\textbf{x}) = \beta_0 + \beta_1x + \beta_2 A_1 + \beta_2 A_2
 $$

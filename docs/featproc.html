@@ -450,7 +450,7 @@ z = \frac{x-\overline{x}}{s_x}
 </div>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(x,<span class="at">main=</span><span class="st">"Original"</span>)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(x_scaled, <span class="at">main=</span><span class="st">"Scaled"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(x_scaled, <span class="at">main=</span><span class="st">"Standardized"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-gamma-standardized" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
@@ -490,7 +490,26 @@ Scaling called Standardization
 </div>
 <div class="callout-body-container callout-body">
 <p>You will find references in the literature and in software documentation to “scaling the data”. It is often understood as standardization of the data, that is, centering <strong>and</strong> scaling.</p>
-<p>Be also aware of the default behavior of software packages. The <code>prcomp</code> function for principal component analysis in <code>R</code>, for example, centers the data by default but does not scale by default. The <code>loess</code> function in <code>R</code> normalizes the predictor variables, using scaling to a robust estimate of the standard deviation, but only if there is more than one predictor. The <code>glmnet::glmnet</code> function standardizes the inputs by default (<code>standardize=TRUE</code>) and reports the results on the original scale of the predictors.</p>
+<p>Be also aware of the default behavior of software packages. The <code>prcomp</code> function for principal component analysis in <code>R</code>, for example, centers the data by default but does not scale by default. The <code>loess</code> function in <code>R</code> normalizes the predictor variables, using scaling to a robust estimate of the standard deviation, but only if there is more than one predictor. The <code>glmnet::glmnet</code> function s tandardizes the inputs by default (<code>standardize=TRUE</code>) and reports the results on the original scale of the predictors.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution callout-titled" title="Standardization and Studentization">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Standardization and Studentization
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Technically, standardization in the statistical sense means scaling with the population standard deviation, which is usually unknown. If random variable <span class="math inline">\(Y\)</span> has mean <span class="math inline">\(\mu\)</span> and variance <span class="math inline">\(\sigma^2\)</span>, then the standardized form is <span class="math display">\[
+\frac{Y-\mu}{\sigma}
+\]</span> <span class="math inline">\(\sigma\)</span> is usually unknown and an estimate is calculated based on a sample of <span class="math inline">\(Y\)</span>. When you divide with an estimate of the standard deviation, the process is called <strong>studentization</strong>. The studentized version of <span class="math inline">\(Y\)</span> is thus <span class="math display">\[
+\frac{Y-\mu}{s}
+\]</span> where <span class="math inline">\(s\)</span> is the sample standard deviation. The name stems from the (Student’s) <span class="math inline">\(t\)</span>-distribution that results if the sample mean in a random sample from a G(<span class="math inline">\(\mu,\sigma^2\)</span>) distribution is centered and divided by its standard deviation: <span class="math display">\[
+\frac{\overline{Y}-\mu}{s/\sqrt{n}} \sim t_{n-1}
+\]</span></p>
 </div>
 </div>
 </section>
@@ -855,7 +874,7 @@ Table&nbsp;5.3: One-hot encoding of <span class="math inline">\(A\)</span> and <
 </div>
 </figure>
 </div>
-<p><span class="math inline">\(A_1\)</span> and <span class="math inline">\(A_2\)</span> are the first and second columns of the encoded 2-level factor <span class="math inline">\(A\)</span>. So why does the order in which these columns enter a statistical model matter? Suppose our model is a linear model with inputs <span class="math inline">\(X\)</span>, a numeric variable, and <span class="math inline">\(A\)</span> (<span class="math inline">\(\textbf{x} = [x, A_1, A_3]\)</span>): <span class="math display">\[
+<p><span class="math inline">\(A_1\)</span> and <span class="math inline">\(A_2\)</span> are the first and second columns of the encoded 2-level factor <span class="math inline">\(A\)</span>. So why does the order in which these columns enter a statistical model matter? Suppose our model is a linear model with inputs <span class="math inline">\(X\)</span>, a numeric variable, and <span class="math inline">\(A\)</span> (<span class="math inline">\(\textbf{x} = [x, A_1, A_2]\)</span>): <span class="math display">\[
 f(\textbf{x}) = \beta_0 + \beta_1x + \beta_2 A_1 + \beta_2 A_2
 \]</span> For the six observations in <a href="#tbl-factor-data" class="quarto-xref">Table&nbsp;<span>5.2</span></a>, the <span class="math inline">\(\textbf{X}\)</span> matrix of the model is <span class="math display">\[
 \textbf{X} = \left [\begin{array}{rrrr}
@@ -1296,7 +1315,7 @@ y^\lambda &amp; \text{if } \lambda \ne 0 \\
 <div id="fig-boxcox-transforms" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-boxcox-transforms-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="featproc_files/figure-html/fig-boxcox-transforms-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="featproc_files/figure-html/fig-boxcox-transforms-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="featproc_files/figure-html/fig-boxcox-transforms-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="featproc_files/figure-html/fig-boxcox-transforms-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-boxcox-transforms-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;5.5: Box-Cox transformations for various values of <span class="math inline">\(\lambda\)</span>
@@ -1419,7 +1438,7 @@ Figure&nbsp;5.7: Quantile transformation to normality for Gamma(3,2) data.
 <div id="fig-bimodal-quantile" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-bimodal-quantile-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="featproc_files/figure-html/fig-bimodal-quantile-3.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2"><img src="featproc_files/figure-html/fig-bimodal-quantile-3.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="featproc_files/figure-html/fig-bimodal-quantile-3.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2"><img src="featproc_files/figure-html/fig-bimodal-quantile-3.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bimodal-quantile-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;5.8: Quantile transformation to normality for bimodal data from a mixture distribution.
@@ -2031,7 +2050,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","selector":".lightbox","loop":false,"openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","closeEffect":"zoom","selector":".lightbox","loop":false,"descPosition":"bottom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

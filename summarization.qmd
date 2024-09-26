@@ -8,25 +8,53 @@
 Definition: Data Summarization
 ::::
 ::::{.definition-container}
-Data **summarization** is the numerical, tabular, and graphical distillation of the essence of a data set and the relationships between its variables through aggregation. 
+Data **summarization** is the numerical, tabular, and graphical distillation of 
+the essence of a data set and the relationships between its variables through aggregation. 
 ::::
 :::
 
-A single statistic such as the sample standard deviation is a summary, as is a cross-tabulation of the levels of two categorical variables, as is a series of box plots. The purposes of data summarization are many:
+A single statistic such as the sample standard deviation is a summary, as is a 
+cross-tabulation of the levels of two categorical variables, as is a series of 
+box plots. The purposes of data summarization are many:
 
-- **Profiling**. @Borne_2021_profiling refers to it as “having that first date with your data.” We want to know what we are dealing with.
+- **Profiling**. @Borne_2021_profiling refers to it as “having that first date 
+with your data.” We want to know what we are dealing with.
 
-- **Description**. What are the central tendencies and the dispersion of the variables? For example, what does the comparison of statistics measuring the central tendency tell us about the distribution of the data, the presence of outliers? What distributional assumptions are reasonable for the data. Are transformations in a feature processing step called for?
+- **Description**. What are the central tendencies and the dispersion of the 
+variables? For example, what does the comparison of statistics measuring the 
+central tendency tell us about the distribution of the data, the presence of 
+outliers? What distributional assumptions are reasonable for the data. 
+Are transformations in a feature processing step called for?
 
-- **Aggregation**. Suppose you could not store the raw data but you need to retain information for future statistical processing. What kind of information would you compute and squirrel away? A **sufficient** statistic is a function of the data that contains all information toward estimating a parameter of the data distribution. For example, the sample mean $\frac{1}{n}\sum_{i=1}^n Y_i$ is sufficient to estimate the mean of a set of $n$ independent and identically distributed random variables. If $Y$ is uniform on $[0,\theta]$, then $\max\{Y_i\}$ is sufficient for $\theta$. The quantities we compute during summarization are frequently sufficient statistics; examples are sums, sums of squares, sums of crossproducts.
+- **Aggregation**. Suppose you could not store the raw data but you need to 
+retain information for future statistical processing. What kind of information 
+would you compute and squirrel away? A **sufficient** statistic is a function 
+of the data that contains all information toward estimating a parameter of the 
+data distribution. For example, the sample mean $\frac{1}{n}\sum_{i=1}^n Y_i$ is 
+sufficient to estimate the mean of a set of $n$ independent and identically 
+distributed random variables. If $Y$ is uniform on $[0,\theta]$, then 
+$\max\{Y_i\}$ is sufficient for $\theta$. The quantities we compute during 
+summarization are frequently sufficient statistics; examples are sums, sums of 
+squares, sums of crossproducts.
 
-- **Relationships**. Summarization is not only about individual variables, but also about their relationship. The correlation matrix of $p$ numerical variables is a frequent summary that describes the pairwise linear relationships in the data.
+- **Relationships**. Summarization is not only about individual variables, but 
+also about their relationship. The correlation matrix of $p$ numerical variables 
+is a frequent summary that describes the pairwise linear relationships in the data.
 
-- **Dimension Reduction**. In high-dimensional statistical problems the number of potential input variables is larger than what we can handle (on computational grounds) or should handle (on statistical grounds). Summarization can reduce a $p$-dimensional problem to an $m$-dimensional problem where $m \ll p$. Principal component analysis (PCA) relies on matrix factorization (eigenvalue or singular value decomposition) of a crossproduct matrix to find a set of $m$ linear combinations of the $p$ input variables that explain a substantial amount of variability in the data. The $m$ linear combinations summarize the essence of the relationships in the data.
+- **Dimension Reduction**. In high-dimensional statistical problems the number of 
+potential input variables is larger than what we can handle (on computational grounds) 
+or should handle (on statistical grounds). Summarization can reduce a $p$-dimensional 
+problem to an $m$-dimensional problem where $m \ll p$. Principal component 
+analysis (PCA) relies on matrix factorization (eigenvalue or singular value 
+decomposition) of a crossproduct matrix to find a set of $m$ linear combinations 
+of the $p$ input variables that explain a substantial amount of variability in 
+the data. The $m$ linear combinations summarize the essence of the relationships 
+in the data.
 
 ## Location and Dispersion Statistics
 
-Common location and dispersion measures for quantitative variables are shown in @tbl-loc-stats and @tbl-disp-stats.
+Common location and dispersion measures for quantitative variables are shown in 
+@tbl-loc-stats and @tbl-disp-stats.
 
 | Sample Statistic | Symbol   | Computation   | Notes |
 |----------|--------|:--------:|---------------------|
@@ -53,7 +81,9 @@ Common location and dispersion measures for quantitative variables are shown in 
 
 ### `stats` Package
 
-The following list of functions provides basic location and dispersion statistics in `R` (`stats` package). The `min` and `max` functions are provided by the `base` package.
+The following list of functions provides basic location and dispersion statistics 
+in `R` (`stats` package). The `min` and `max` functions are provided by the 
+`base` package.
 
 | Function | Description | Notes
 | ----- | -------- | --------|
@@ -72,13 +102,20 @@ The following list of functions provides basic location and dispersion statistic
 
 : `R` summarization functions in `stats`. {#tbl-R-summary-funcs .striped}
 
-The `summary` function in `R` is a generic function that produces summaries of an `R` object. The return value depends on the type of its argument. When `summary` is called on a data frame, it returns basic location statistics for the numeric variables and the counts-per-level for factors. Interestingly, it does not compute any measures of dispersion.
+The `summary` function in `R` is a generic function that produces summaries of 
+an `R` object. The return value depends on the type of its argument. When `summary` 
+is called on a data frame, it returns basic location statistics for the numeric 
+variables and the counts-per-level for factors. Interestingly, it does not 
+compute any measures of dispersion.
 
 ```{r}
 summary(iris)
 ```
 
-To compute some of the functions in @tbl-R-summary-funcs for multiple columns in a matrix or data frame, the `apply` function is very helpful. The following function call request the mean for the numeric columns (the first four columns) of the `iris` data set.
+To compute some of the functions in @tbl-R-summary-funcs for multiple columns 
+in a matrix or data frame, the `apply` function is very helpful. 
+The following function call request the mean for the numeric columns 
+(the first four columns) of the `iris` data set.
 
 ```{r}
 apply(iris[,-5],2,mean)
@@ -90,7 +127,10 @@ The next statement requests the standard deviations
 apply(iris[,-5],2,sd)
 ```
 
-The second argument specifies the margin over which the function will be applied: `1` implies calculations for rows, `2` implies calculations for columns. The following statements compute column and row sums for the 50 *I. setosa* observations in the `iris` data set
+The second argument specifies the margin over which the function will be applied: 
+`1` implies calculations for rows, `2` implies calculations for columns. 
+The following statements compute column and row sums for the 50 *I. setosa* 
+observations in the `iris` data set
 
 ```{r}
 col.sums <- apply(iris[iris$Species=="setosa",1:4], 2, sum)
@@ -102,11 +142,19 @@ row.sums
 
 ### `dplyr` Package
 
-The [`dplyr`](https://dplyr.tidyverse.org/) package is part of the [`tidyverse`](https://www.tidyverse.org/), an "opinionated" collection of `R` packages for data science. Packages in the `tidyverse` include `dplyr`, `ggplot2`, `tibble`, `tidyr`, `purr`, `stringr`, and `readr`. `dplyr`, `tidyr` and `ggplot2` are arguably the most important packages in the collection (that is my "opinionated" view). 
+The [`dplyr`](https://dplyr.tidyverse.org/) package is part of the 
+[`tidyverse`](https://www.tidyverse.org/), an "opinionated" collection of `R` 
+packages for data science. Packages in the `tidyverse` include `dplyr`, `ggplot2`, 
+`tibble`, `tidyr`, `purr`, `stringr`, and `readr`. `dplyr`, `tidyr` and `ggplot2` 
+are arguably the most important packages in the collection (that is my "opinionated" view). 
 
-The `tidyverse` packages share a common philosophy; that makes it easy to use code across multiple packages and to combine them. An example of this common philosophy is **piping**.
+The `tidyverse` packages share a common philosophy; that makes it easy to use 
+code across multiple packages and to combine them. An example of this common 
+philosophy is **piping**.
 
-Suppose we use `dplyr` to compute the mean and standard deviation for the petal width of *I. virginica* observations in the `iris` data set. You can put this together in a single function call to the `dplyr::summarize` function.
+Suppose we use `dplyr` to compute the mean and standard deviation for the petal 
+width of *I. virginica* observations in the `iris` data set. You can put 
+this together in a single function call to the `dplyr::summarize` function.
 
 ```{r, warning=FALSE, message=FALSE}
 library(dplyr)
@@ -116,7 +164,10 @@ summarize(filter(iris,Species=="virginica"),
           stdDev=sd(Petal.Width))
 ```
 
-A more elegant way of processing the data is with a series of steps, where the result of one step is passed automatically to the next step. In `tidyverse` syntax, such a step is called a **pipe** and indicated with `%>%`. Rewriting the previous `summarize` statement using pipes leads to
+A more elegant way of processing the data is with a series of steps, 
+where the result of one step is passed automatically to the next step. 
+In `tidyverse` syntax, such a step is called a **pipe** and indicated with 
+`%>%`. Rewriting the previous `summarize` statement using pipes leads to
 
 ```{r}
 iris %>% filter(Species=="virginica") %>%
@@ -125,9 +176,12 @@ iris %>% filter(Species=="virginica") %>%
               stdDev=sd(Petal.Width)) 
 ```
 
-The pipeline starts with the data frame `iris`. Since a pipe operation passes its input as the first argument to the next operation, the `filter` statement is really `filter(iris,Species=="virginica)`.
+The pipeline starts with the data frame `iris`. Since a pipe operation passes 
+its input as the first argument to the next operation, the `filter` statement 
+is really `filter(iris,Species=="virginica)`.
 
-If you want to save the result of this piping operation, simply assign it to an object:
+If you want to save the result of this piping operation, simply assign 
+it to an object:
 
 ```{r, eval=FALSE}
 virg_summ <- iris %>% filter(Species=="virginica") %>%
@@ -167,7 +221,14 @@ iris %>% filter(Species=="virginica") %>%
 
 ---
 
-In the previous examples we filtered and summarized on a single variable. If you want to calculate statistics for multiple variables you can either repeat the statements or indicate that the operation should apply across multiple columns. In the early release of `dplyr` the `summarize_each` function applied summary calculations for more than one column. This function has been deprecated in favor of `across`, which gathers multiple columns and can be applied to other `dplyr` statements as well (`filter`, `group_by`, etc.).
+In the previous examples we filtered and summarized on a single variable. 
+If you want to calculate statistics for multiple variables you can either 
+repeat the statements or indicate that the operation should apply across 
+multiple columns. In the early release of `dplyr` the `summarize_each` 
+function applied summary calculations for more than one column. 
+This function has been deprecated in favor of `across`, which gathers 
+multiple columns and can be applied to other `dplyr` statements as well 
+(`filter`, `group_by`, etc.).
 
 The following statement computes the mean for all numeric columns of the `iris` data set.
 
@@ -175,7 +236,8 @@ The following statement computes the mean for all numeric columns of the `iris` 
 iris %>% summarize(across(where(is.numeric), mean))
 ```
 
-The next form of `summarize(across())` computes sample mean and median for the variables whose name begins with `Sepal`.
+The next form of `summarize(across())` computes sample mean and median for 
+the variables whose name begins with `Sepal`.
 
 ```{r}
 iris %>% summarize(across(starts_with("Sepal"), 
@@ -184,27 +246,42 @@ iris %>% summarize(across(starts_with("Sepal"),
 
 ---
 
-The order in which the data manipulations occur matter greatly for the result. In the following statement, the observations are filtered for which the `Sepal.Length` exceeds the average `Sepal.Length` by 10\%.
+The order in which the data manipulations occur matter greatly for the result. 
+In the following statement, the observations are filtered for which the 
+`Sepal.Length` exceeds the average `Sepal.Length` by 10\%.
 
 ```{r}
 iris %>% filter(Sepal.Length > 1.1*mean(Sepal.Length))
 ```
-The average is computed across all 150 observations in the data set (50 observations for each species). By adding a `group_by` statement prior to the filter, the sepal lengths are being compared to the species-specific means. The presence of the `group_by` statement conditions the subsequent `filter` to be applied separately for each of the three species.
+
+The average is computed across all 150 observations in the data set 
+(50 observations for each species). By adding a `group_by` statement prior to 
+the filter, the sepal lengths are being compared to the species-specific means. 
+The presence of the `group_by` statement conditions the subsequent `filter` 
+to be applied separately for each of the three species.
 
 ```{r}
 iris %>% group_by(Species) %>% filter(Sepal.Length > 1.1*mean(Sepal.Length))
 
 ```
 
-None of the *I. setosa* observations exceeded the overall sepal length by 10\%. But three of the *I. setosa* observations exceeded the petal length of that species by 10\%.
+None of the *I. setosa* observations exceeded the overall sepal length by 10\%. 
+But three of the *I. setosa* observations exceeded the petal length of 
+that species by 10\%.
 
 ## Group-by Summarization
 
 ### Using `stats::aggregate`
 
-The preceding `dplyr` pipeline is an example of group-by processing: computing summaries separately for the levels of a qualitative variable (`Species`).
+The preceding `dplyr` pipeline is an example of group-by processing: computing 
+summaries separately for the levels of a qualitative variable (`Species`).
 
-Group-by summarization is also possible with functions in the `stats` package. The `aggregate` function allows the use of the formula syntax that is common in many `stats` function. In addition to the "model", you need to specify the aggregation function you wish to apply. For example, to compute the means for petal length by species and the standard deviations for petal length and petal width by species, use the following syntax:
+Group-by summarization is also possible with functions in the `stats` package. 
+The `aggregate` function allows the use of the formula syntax that is common 
+in many `stats` function. In addition to the "model", you need to specify the 
+aggregation function you wish to apply. For example, to compute the means for
+petal length by species and the standard deviations for petal length and petal 
+width by species, use the following syntax:
 
 ```{r}
 aggregate(Petal.Length ~ Species, data=iris, FUN="mean")
@@ -212,7 +289,8 @@ aggregate(Petal.Length ~ Species, data=iris, FUN="mean")
 aggregate(cbind(Petal.Length,Petal.Width) ~ Species, data=iris, FUN="sd")
 ```
 
-You can also use `aggregate` with functions that have more complex return arguments, `quantile` and `summary`, for example.
+You can also use `aggregate` with functions that have more complex return 
+arguments, `quantile` and `summary`, for example.
 ```{r}
 aggregate(Petal.Length ~ Species, data=iris, FUN="quantile")
 
@@ -221,7 +299,9 @@ aggregate(Petal.Length ~ Species, data=iris, FUN="summary")
 
 ### Using `dplyr::group_by`
 
-The `group_by` statement in `dplyr` is a simple technique to apply group-specific operations; it is thus one of the first statements you see in summarization after the data frame:
+The `group_by` statement in `dplyr` is a simple technique to apply 
+group-specific operations; it is thus one of the first statements you 
+see in summarization after the data frame:
 
 ```{r}
 starwars %>% group_by(gender) %>% 
@@ -230,7 +310,10 @@ starwars %>% group_by(gender) %>%
 ```
 
 
-You can combine group-by execution with summarization across multiple columns. The following pipeline computes the arithmetic mean of all numeric columns in the `iris` data set and arranges the result by descending value of the average sepal width:
+You can combine group-by execution with summarization across multiple columns. 
+The following pipeline computes the arithmetic mean of all numeric columns i
+n the `iris` data set and arranges the result by descending value of the average 
+sepal width:
 
 ```{r}
 iris %>% 
@@ -242,7 +325,11 @@ iris %>%
 
 ### Continuous Grouping Variable
 
-Group-by computations can also be used if the grouping variable is continuous. We first create bins of the continuous variable, assign observations to the bins, and then group the summaries by the bins. The following code assigns observations to four bins based on the quartiles of `Sepal.Length` an then computes the average `Sepal.Width` for each level of `Sepal.Length`.
+Group-by computations can also be used if the grouping variable is continuous. 
+We first create bins of the continuous variable, assign observations to the bins, 
+and then group the summaries by the bins. The following code assigns observations 
+to four bins based on the quartiles of `Sepal.Length` an then computes the 
+average `Sepal.Width` for each level of `Sepal.Length`.
 
 ```{r, warning=FALSE, message=FALSE}
 library(dplyr)
@@ -259,10 +346,15 @@ iris_data$sep.len.cut[which.min(iris$Sepal.Length)] <-
 iris_data %>% group_by(sep.len.cut) %>%
          summarize(count=n(), mean=mean(Sepal.Width))
 ```
-1. The `quantile` function computes the sample quantiles for the requested vector of probabilities. 0 and 1 are included to capture the minimum and maximum value.
-2. The `cut` function applies the computed quantiles as break points to bin the values of `Sepal.Length`.
 
-You can include the creation of the categories directly into the `group_by` statement if the cutpoints require no further processing.
+1. The `quantile` function computes the sample quantiles for the requested 
+vector of probabilities. 0 and 1 are included to capture the minimum and 
+maximum value.
+2. The `cut` function applies the computed quantiles as break points to bin 
+the values of `Sepal.Length`.
+
+You can include the creation of the categories directly into the `group_by` 
+statement if the cutpoints require no further processing.
 
 ```{r}
 mtcars %>%
@@ -270,4 +362,199 @@ mtcars %>%
     summarize(count=n(), mn_mpg=mean(mpg), mean_disp=mean(disp))
                
 ```
+
+## In-database Analytics
+
+The data processing mechanism encountered so far can be described as follows:
+
+* the data resides in a file or database external to the `R` session
+* the data are loaded from the file as a data frame into the `R` session
+* the data frame is summarized
+
+This seems obvious and you might wonder if there is any other way? If you
+start with a CSV file, how else could data be processed? That is correct for 
+CSV files as the file itself, or the operating system accessing it, does not have
+the ability to perform statistical calculations.
+
+This is different however, if the data are stored in an analytic database. 
+For example, check out [this](https://duckdb.org/docs/sql/functions/aggregates#statistical-aggregates)
+page of statistical aggregation functions available in DuckDB. 
+
+Suppose you want to calculate the 75^th^ percentile of a variable or the correlation
+between two variables. Instead of bringing the data from DuckDB into an `R` data frame and 
+calling `quantile()` and `cor()`, you could ask the database to compute the 
+quantile and the correlation. This is termed **in-database analytics**.
+
+As an example, the following code uses the `fitness` table in the `ads.ddb` database to 
+compute correlations between `Oxygen` and `Age`, `Weight`, and `RunTime`
+for study subjects 40 years or older.
+
+```{r, message=FALSE, warning=FALSE}
+library(duckdb)
+con <- dbConnect(duckdb(), 
+                 dbdir="ads.ddb",
+                 read_only=TRUE)
+query_string <- "select corr(Oxygen,Age) as cOxAge, 
+                 corr(Oxygen,Weight) as cOxWgt, 
+                 corr(Oxygen,RunTime) as cOxRT from fitness where age >= 40;"
+dbGetQuery(con, query_string)
+dbDisconnect(con)
+```
+We could have accomplished the same result in the traditional way, pulling
+the `fitness` table from the database into an `R` data frame and using the
+`cor` function in `R`:
+
+
+```{r}
+con <- dbConnect(duckdb(), dbdir="ads.ddb", read_only=TRUE)
+fit_df <- dbGetQuery(con, "select * from fitness;")
+dbDisconnect(con)
+
+set <- fit_df$Age >= 40
+cor(fit_df[set,c("Age","Weight","RunTime")],fit_df$Oxygen[set])
+```
+In the second code chunk the entire `fitness` table is loaded into the `R` 
+session, consuming memory. For a data set with 31 observations and 7 variables
+that is not a big deal. For a data set with 31 million observations and 700
+variables that can be a deal breaker.
+
+The filter is applied to the correlation operation because we loaded all the data.
+Another calculation might apply a different filter, so we need to have access
+to all observations. In the in-database approach the filter is applied to 
+the query and no data are moved. 
+
+What are the advantages and disadvantages of this approach? 
+
+### Advantages
+
+In-database analytics is one example of pushing analytical calculations down
+to the data provider, rather than extracting rows of data into an analytical
+engine such as `R`. Hadoop and Spark are other examples where computations are
+pushed into the data provider itself. Google's BigQuery cloud data warehouse
+is an example where even complex machine learning algorithms can be pushed 
+into a distributed data framework. The advantages listed below apply to all
+forms of push-down analytics.
+
+* Analytic databases such as DuckDB are designed for analytical work, that is,
+deep scans of tables that process a limited number of columns, filter data, 
+and compute aggregations. 
+
+* Analytic databases are optimized for these calculations and their performance
+is typically excellent; they take advantage of parallel processing where possible.
+
+* The data is not being moved from the database into the `R` session. Only the 
+results are being moved between the two. This is a very important attribute of 
+in-database analytics. You will find that many organizations resist moving 
+data out of an operational system and making data copies on other devices. It
+presents a major data governance and security challenge. With in-database
+analytics, the rows of data remains in the database, only aggregations are sent
+to the calling session.
+
+* The same functionality can be accessed from multiple compute clients, as long as
+the clients are able to send SQL queries to the database.
+
+* Very large volumes of data can be processed since the data are already held
+in the database and do not need to be moved to a laptop or PC that would not
+have sufficient memory to hold the data frame. You do not need two copies of
+the data before making any calculations.
+
+### Disadvantages
+
+There are a few downsides when you rely on the data provider to perform the 
+statistical computations.
+
+* Limited support for statistical functionality. In most cases you are limited
+to simple aggregations and summarization. More complex statistical analysis,
+for example, fitting models, simulations, and optimizations are beyond the scope
+of most data engines.
+
+* You have to express the analytics using the language or interface of the data
+provider. In most cases that is some form of SQL. You have to figure out the 
+syntax and it can be more cumbersome than the `R` or Python functions you are
+used to.
+
+* Statistical calculations require memory and CPU/GPU resources. Database
+administrators (DBAs) might frown upon using resources for statistical work when 
+the primary reason for the database is different---for example, reporting
+company metrics on dashboards. Even if the database could perform more advanced
+statistical computing such as modeling, optimizations, and simulations, DBAs 
+do not want an operational database to be hammered by those.
+
+### Example
+
+Below is an example of an `R` function that performs summarization of
+data stored in a DuckDB database using in-database analytics. The SELECT
+statement computes several statistics for a single column of the database,
+specified in the `columnName` argument. The function supports a WHERE clause
+and a single GROUP BY variable. As an exercise, you can enhance the function 
+to accept a list of GROUP BY variables.
+
+```{r, ducksummary}
+ducksummary <- function(tableName, 
+                        columnName,
+                        whereClause=NULL, 
+                        groupBy=NULL,
+                        dbName="ads.ddb") {
+    if (!is.null(tableName) & !is.null(columnName)) {
+        if (!("duckdb" %in% (.packages()))) {
+            suppressWarnings(library("duckdb"))
+            message("duckdb library was loaded to execute duckload().")
+
+        }
+        con <- dbConnect(duckdb(), dbdir=dbName, read_only=TRUE)
+        if (!is.null(groupBy)) {
+            query_string <- paste("SELECT ",groupBy,",")
+        } else {
+            query_string <- paste("SELECT ")
+        }
+        query_string <- paste(query_string, 
+                              "count("        , columnName,") as N,"       ,
+                              "min("          , columnName,") as Min,"     ,
+                              "quantile_cont(", columnName, ",0.25) as Q1,",
+                              "avg("          , columnName,") as Mean,"    ,
+                              "median("       , columnName,") as Median,"  ,
+                              "quantile_cont(", columnName,",0.75) as Q3," ,
+                              "max("          , columnName,") as Max,"     ,
+                              "stddev_samp("  , columnName, ") as StdDev"  ,
+                             " from ", tableName)
+        if (!is.null(whereClause)) {
+            query_string <- paste(query_string, " WHERE ", whereClause)
+        }
+        if (!is.null(groupBy)) {
+            query_string <- paste(query_string, " GROUP BY ", groupBy)
+        }
+        # Adding the semicolon at the end is correct syntax, but
+        # not necessary if you submit with dbGetQuery. It will
+        # add a missing semicolon.
+        query_string <- paste(query_string,";")
+        #print(query_string)
+        df_ <- dbGetQuery(con, query_string)
+        dbDisconnect(con)
+        return (df_)
+    } else {
+        return (NULL)
+    }
+}
+```
+
+The next statement requests a summary of the `Oxygen` variable in the `fitness`
+table for records where `Age` is at least 40.
+
+```{r}
+ducksummary("fitness","Oxygen","Age >= 40")
+```
+
+The next statement analyzes `Ripeness` of the bananas in the training data set
+by banana quality.
+
+```{r}
+ducksummary("banana_train","Ripeness",groupBy="Quality")
+```
+
+Note that the only data frames created in this approach are the data frames
+to hold the analysis results. The data remains where it is at---in the database.
+
+
+
+
 

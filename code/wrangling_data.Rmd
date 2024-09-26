@@ -69,7 +69,8 @@ compute the average petal width of the plants with sepal length greater than 6:
 
 ```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
-iris %>% 
+
+iris %>%
     filter(Sepal.Length > 6) %>%
     summarize(average=mean(Petal.Width))
 ```
@@ -134,7 +135,7 @@ head(dat)
 ### Gapminder Data
 
 In general, the structure of a non-tabular format is not known to `R` and must
-be wrangled by the user. Consider the famous Gapminder dataset. The [Gapminder
+be wrangled by the user. Consider the famous Gapminder data set. The [Gapminder
 Foundation](https://en.wikipedia.org/wiki/Gapminder_Foundation) is a Swedish
 non-profit that promotes the United Nations sustainability goals through use of
 statistics. The Gapminder data set tracks economic and social indicators like
@@ -185,29 +186,30 @@ gap_step1 <- gap_wide %>%
     gather(key=vartype_year,
           value=values,
           -c(continent, country))
+
 head(gap_step1)
 tail(gap_step1)
 ```
 
-The resulting data frame has `{r} dim(gap_step1)[1]` rows and `{r} dim(gap_step1)[2]`
-rows. How do the number of rows come about?
+The resulting data frame has 5,112 rows and 4 columns. How do the number of rows
+come about?
 
-* The original data has `{r} dim(gap_wide)[1]` rows
-* Three variables (`gdpPercap`, lifeExp`, `pop`) are measured for 12 years
-* There are 142 combinations of `continent` and country` (the number
-of observations in `gap_wide`).
+-   The original data has 142 rows, the 142 combinations of `continent` and
+    country
+-   Three variables (`gdpPercap`, lifeExp`,`pop\`) are measured for 12 years
+-   142 \* 12 \* 3 = 5,112
 
 #### Separating character variables
 
 The `gather` function turns all variables into key-value pairs; the key is the
 name of the variable. The column that contains the names of the variables after
-the gathering is called `vartype_year`. 
+the gathering is called `vartype_year`.
 
-In the next step `dplyr::separate` is
-called to split the character column `vartype_year` into two columns, one for
-the variable type and one for the year. The `convert=TRUE` option attempts to
-convert the data type of the new columns from character to numeric data---this
-fails for the `vartype` column but succeeds for the `year` column.
+In the next step `dplyr::separate` is called to split the character column
+`vartype_year` into two columns, one for the variable type and one for the year.
+The `convert=TRUE` option attempts to convert the data type of the new columns
+from character to numeric data---this fails for the `vartype` column but
+succeeds for the `year` column.
 
 ```{r}
 gap_step2 <- gap_wide %>% 
@@ -223,8 +225,8 @@ head(gap_step2)
 tail(gap_step2)
 ```
 
-The `vartype_year` created in the `gather` step has been separated into a `vartype`
-and a `year` variable.
+The `vartype_year` created in the `gather` step has been separated into a
+`vartype` and a `year` variable.
 
 #### Spreading rows into columns
 
@@ -261,7 +263,8 @@ remaining variable types back out into columns in step 3.
 A *subset* operation reduces the number of observations (rows) or variables
 (columns) of data set. While `filter` is the most important operation to subset
 rows, there are a number of other functions in `dplyr` that reduce the rows. On
-the other hand, to subset columns with `dplyr` there is only one function, `dplyr::select`.
+the other hand, to subset columns with `dplyr` there is only one function,
+`dplyr::select`.
 
 ### Subsetting Rows
 
@@ -306,7 +309,7 @@ combinations of their unique values in the data.
 #### `distinct`
 
 ```{r}
-dat %>% distinct(x)
+dat %>% distinct()
 ```
 
 If you specify `.keep_all=TRUE`, all other variables in the data set are kept as
@@ -593,9 +596,9 @@ columns. In the world of relational databases, such a merge is called a
 do not work from a natural ordering of the data, they are based on keys and
 indices.
 
-When working with statistical data sets merging by position is common as
-data sets do not have keys. The positional join---or column binding---matches
-data frames row-by-row such that rows from both tables appear at least once:
+When working with statistical data sets merging by position is common as data
+sets do not have keys. The positional join---or column binding---matches data
+frames row-by-row such that rows from both tables appear at least once:
 
 ```{r}
 dplyr::bind_cols(capitals1,weather1)

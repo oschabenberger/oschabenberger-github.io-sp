@@ -218,10 +218,11 @@ Since so much data is stored in JSON format, you need to get familiar and
 comfortable with working with JSON files. Data science projects are more likely
 consumers of JSON files rather than producer of files.
 
+```{=html}
 <!---
 download.file("https://raw.githubusercontent.com/datacarpentry/r-socialsci/main/episodes/data/SAFI.json","data/SAFI.json", mode = "wb")
 --->
-
+```
 There are multiple packages for working with JSON files in `R`, for example,
 `jsonlite` and `rjson`. Here we use the `jsonlite` package. The `toJSON` and
 `fromJSON` functions are used to convert `R` objects to/from JSON. `read_json`
@@ -363,16 +364,16 @@ the next code snippet:
 ```{r, warning=FALSE, message=FALSE}
 library("duckdb")                                           # <1>
 con <- dbConnect(duckdb(),dbdir = "../ads.ddb",read_only=TRUE) # <2>
-#dbGetQuery(con,"SHOW TABLES;")
+dbGetQuery(con,"SHOW TABLES;")
 fit <- dbGetQuery(con, "SELECT * FROM fitness")             # <3>
 dbDisconnect(con)                                           # <4>
 ```
 
 1.  Load the `duckdb` library
 2.  Make a connection to DuckDB through the DBI interface, specifying the
-    database you want to work with, here `ads.ddb`. 
-    Choosing `read_only=TRUE` opens the connection in read-only mode. 
-    You cannot write to the database, but it can be shared in this mode by multiple `R` processes.
+    database you want to work with, here `ads.ddb`. Choosing `read_only=TRUE`
+    opens the connection in read-only mode. You cannot write to the database,
+    but it can be shared in this mode by multiple `R` processes.
 3.  Send a `SELECT * FROM` query to read the contents of the target table and
     assign the result to a dataframe in `R`
 4.  Close the connection to the database when you are done querying it.
@@ -422,9 +423,10 @@ fit <- duckload("fitness")
 
 # Load only the records where Age > 50
 fit2 <- duckload("fitness",whereClause="Age > 50")
-
+fit2
 # Load only the records where Age = 40
 fit3 <- duckload("fitness","Age = 40")
+fit3
 ```
 
 You can modify the function to load a **projection** of columns from the
@@ -433,11 +435,11 @@ columns.
 
 ### Creating an In-memory Database
 
-You can create and work with a purely in-memory database with DuckDB. The 
+You can create and work with a purely in-memory database with DuckDB. The
 database is instantiated in the `R` session and goes away when the `R` session
-terminates or when you close the connection.
-To specify an in-memory database, simply do not specify the `dbdir=`
-parameter when opening a connection, or specify `dbdir = ":memory:"`.
+terminates or when you close the connection. To specify an in-memory database,
+simply do not specify the `dbdir=` parameter when opening a connection, or
+specify `dbdir = ":memory:"`.
 
 Since the default for `read_only` is `read_only=FALSE`, the following statement
 opens a connection to an in-memory database that you can write to.
@@ -446,8 +448,8 @@ opens a connection to an in-memory database that you can write to.
 con <- dbConnect(duckdb())
 ```
 
-To write an `R` data frame to this (or any other) DuckDB database, 
-use the `dbWriteTable` function.
+To write an `R` data frame to this (or any other) DuckDB database, use the
+`dbWriteTable` function.
 
 ```{r}
 set.seed(43)
@@ -459,13 +461,12 @@ dbWriteTable(con,"iris_data",iris)
 dbGetQuery(con,"SHOW TABLES;")
 ```
 
-This closes the connection and because the database exists in memory, 
-releases the memory (and destroys the database).
+This closes the connection and because the database exists in memory, releases
+the memory (and destroys the database).
 
 ```{r}
 dbDisconnect(con)
 ```
-
 
 ## Saving and Loading `RData`
 
@@ -481,16 +482,16 @@ To save any `R` object, use the `save` or `saveRDS` function, to load it into an
 a <- matrix(rnorm(200),nrow=50,ncol=4)
 b <- crossprod(a)
 cor_mat <- cor(a)
+cor_mat
 save(a,b,cor_mat,file="../data/matrixStuff.RData")
 ```
 
-Before reloading the objects, let's clear them from the environment, so we
-can see how `load` brings them back into the environment:
+Before reloading the objects, let's clear them from the environment, so we can
+see how `load` brings them back into the environment:
 
 ```{r}
 rm(list=c("a","b","cor_mat"))
 ```
-
 
 ```{r}
 load("../data/matrixStuff.RData")
@@ -512,9 +513,8 @@ In general, it is better coding practice to use `saveRDS` and `readRDS` with
 single objects. The code is cleaner and easier to follow if single objects are
 saved/loaded and these are explicitly named in the code.
 
-``` {r}
+```{r}
 saveRDS(a, file = "../data/stuff.RDS") 
 
 normal_rvs <- readRDS("../data/stuff.RDS")
 ```
-

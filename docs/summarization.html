@@ -318,6 +318,12 @@ window.Quarto = {
   <li><a href="#using-dplyrgroup_by" id="toc-using-dplyrgroup_by" class="nav-link" data-scroll-target="#using-dplyrgroup_by">Using <code>dplyr::group_by</code></a></li>
   <li><a href="#continuous-grouping-variable" id="toc-continuous-grouping-variable" class="nav-link" data-scroll-target="#continuous-grouping-variable">Continuous Grouping Variable</a></li>
   </ul></li>
+  <li><a href="#in-database-analytics" id="toc-in-database-analytics" class="nav-link" data-scroll-target="#in-database-analytics"><span class="header-section-number">6.4</span> In-database Analytics</a>
+  <ul>
+  <li><a href="#advantages" id="toc-advantages" class="nav-link" data-scroll-target="#advantages">Advantages</a></li>
+  <li><a href="#disadvantages" id="toc-disadvantages" class="nav-link" data-scroll-target="#disadvantages">Disadvantages</a></li>
+  <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example">Example</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -932,7 +938,7 @@ Table&nbsp;6.4: Summarization functions in <code>dplyr</code>.
 3 &lt;NA&gt;          1</code></pre>
 </div>
 </div>
-<p>You can combine group-by execution with summarization across multiple columns. The following pipeline computes the arithmetic mean of all numeric columns in the <code>iris</code> data set and arranges the result by descending value of the average sepal width:</p>
+<p>You can combine group-by execution with summarization across multiple columns. The following pipeline computes the arithmetic mean of all numeric columns i n the <code>iris</code> data set and arranges the result by descending value of the average sepal width:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>iris <span class="sc">%&gt;%</span> </span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(Species) <span class="sc">%&gt;%</span> </span>
@@ -1003,6 +1009,144 @@ Table&nbsp;6.4: Summarization functions in <code>dplyr</code>.
 3 (241,335]      4   14.6      340.</code></pre>
 </div>
 </div>
+</section>
+</section>
+<section id="in-database-analytics" class="level2" data-number="6.4">
+<h2 data-number="6.4" class="anchored" data-anchor-id="in-database-analytics"><span class="header-section-number">6.4</span> In-database Analytics</h2>
+<p>The data processing mechanism encountered so far can be described as follows:</p>
+<ul>
+<li>the data resides in a file or database external to the <code>R</code> session</li>
+<li>the data are loaded from the file as a data frame into the <code>R</code> session</li>
+<li>the data frame is summarized</li>
+</ul>
+<p>This seems obvious and you might wonder if there is any other way? If you start with a CSV file, how else could data be processed? That is correct for CSV files as the file itself, or the operating system accessing it, does not have the ability to perform statistical calculations.</p>
+<p>This is different however, if the data are stored in an analytic database. For example, check out <a href="https://duckdb.org/docs/sql/functions/aggregates#statistical-aggregates">this</a> page of statistical aggregation functions available in DuckDB.</p>
+<p>Suppose you want to calculate the 75<sup>th</sup> percentile of a variable or the correlation between two variables. Instead of bringing the data from DuckDB into an <code>R</code> data frame and calling <code>quantile()</code> and <code>cor()</code>, you could ask the database to compute the quantile and the correlation. This is termed <strong>in-database analytics</strong>.</p>
+<p>As an example, the following code uses the <code>fitness</code> table in the <code>ads.ddb</code> database to compute correlations between <code>Oxygen</code> and <code>Age</code>, <code>Weight</code>, and <code>RunTime</code> for study subjects 40 years or older.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckdb)</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(), </span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">dbdir=</span><span class="st">"ads.ddb"</span>,</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">read_only=</span><span class="cn">TRUE</span>)</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>query_string <span class="ot">&lt;-</span> <span class="st">"select corr(Oxygen,Age) as cOxAge, </span></span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a><span class="st">                 corr(Oxygen,Weight) as cOxWgt, </span></span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a><span class="st">                 corr(Oxygen,RunTime) as cOxRT from fitness where age &gt;= 40;"</span></span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a><span class="fu">dbGetQuery</span>(con, query_string)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    cOxAge     cOxWgt      cOxRT
+1 -0.14995 -0.2721521 -0.8623353</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We could have accomplished the same result in the traditional way, pulling the <code>fitness</code> table from the database into an <code>R</code> data frame and using the <code>cor</code> function in <code>R</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(), <span class="at">dbdir=</span><span class="st">"ads.ddb"</span>, <span class="at">read_only=</span><span class="cn">TRUE</span>)</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>fit_df <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, <span class="st">"select * from fitness;"</span>)</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con)</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>set <span class="ot">&lt;-</span> fit_df<span class="sc">$</span>Age <span class="sc">&gt;=</span> <span class="dv">40</span></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(fit_df[set,<span class="fu">c</span>(<span class="st">"Age"</span>,<span class="st">"Weight"</span>,<span class="st">"RunTime"</span>)],fit_df<span class="sc">$</span>Oxygen[set])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              [,1]
+Age     -0.1499500
+Weight  -0.2721521
+RunTime -0.8623353</code></pre>
+</div>
+</div>
+<p>In the second code chunk the entire <code>fitness</code> table is loaded into the <code>R</code> session, consuming memory. For a data set with 31 observations and 7 variables that is not a big deal. For a data set with 31 million observations and 700 variables that can be a deal breaker.</p>
+<p>The filter is applied to the correlation operation because we loaded all the data. Another calculation might apply a different filter, so we need to have access to all observations. In the in-database approach the filter is applied to the query and no data are moved.</p>
+<p>What are the advantages and disadvantages of this approach?</p>
+<section id="advantages" class="level3">
+<h3 class="anchored" data-anchor-id="advantages">Advantages</h3>
+<p>In-database analytics is one example of pushing analytical calculations down to the data provider, rather than extracting rows of data into an analytical engine such as <code>R</code>. Hadoop and Spark are other examples where computations are pushed into the data provider itself. Google’s BigQuery cloud data warehouse is an example where even complex machine learning algorithms can be pushed into a distributed data framework. The advantages listed below apply to all forms of push-down analytics.</p>
+<ul>
+<li><p>Analytic databases such as DuckDB are designed for analytical work, that is, deep scans of tables that process a limited number of columns, filter data, and compute aggregations.</p></li>
+<li><p>Analytic databases are optimized for these calculations and their performance is typically excellent; they take advantage of parallel processing where possible.</p></li>
+<li><p>The data is not being moved from the database into the <code>R</code> session. Only the results are being moved between the two. This is a very important attribute of in-database analytics. You will find that many organizations resist moving data out of an operational system and making data copies on other devices. It presents a major data governance and security challenge. With in-database analytics, the rows of data remains in the database, only aggregations are sent to the calling session.</p></li>
+<li><p>The same functionality can be accessed from multiple compute clients, as long as the clients are able to send SQL queries to the database.</p></li>
+<li><p>Very large volumes of data can be processed since the data are already held in the database and do not need to be moved to a laptop or PC that would not have sufficient memory to hold the data frame. You do not need two copies of the data before making any calculations.</p></li>
+</ul>
+</section>
+<section id="disadvantages" class="level3">
+<h3 class="anchored" data-anchor-id="disadvantages">Disadvantages</h3>
+<p>There are a few downsides when you rely on the data provider to perform the statistical computations.</p>
+<ul>
+<li><p>Limited support for statistical functionality. In most cases you are limited to simple aggregations and summarization. More complex statistical analysis, for example, fitting models, simulations, and optimizations are beyond the scope of most data engines.</p></li>
+<li><p>You have to express the analytics using the language or interface of the data provider. In most cases that is some form of SQL. You have to figure out the syntax and it can be more cumbersome than the <code>R</code> or Python functions you are used to.</p></li>
+<li><p>Statistical calculations require memory and CPU/GPU resources. Database administrators (DBAs) might frown upon using resources for statistical work when the primary reason for the database is different—for example, reporting company metrics on dashboards. Even if the database could perform more advanced statistical computing such as modeling, optimizations, and simulations, DBAs do not want an operational database to be hammered by those.</p></li>
+</ul>
+</section>
+<section id="example" class="level3">
+<h3 class="anchored" data-anchor-id="example">Example</h3>
+<p>Below is an example of an <code>R</code> function that performs summarization of data stored in a DuckDB database using in-database analytics. The SELECT statement computes several statistics for a single column of the database, specified in the <code>columnName</code> argument. The function supports a WHERE clause and a single GROUP BY variable. As an exercise, you can enhance the function to accept a list of GROUP BY variables.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>ducksummary <span class="ot">&lt;-</span> <span class="cf">function</span>(tableName, </span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>                        columnName,</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">whereClause=</span><span class="cn">NULL</span>, </span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>                        <span class="at">groupBy=</span><span class="cn">NULL</span>,</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>                        <span class="at">dbName=</span><span class="st">"ads.ddb"</span>) {</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(tableName) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.null</span>(columnName)) {</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (<span class="sc">!</span>(<span class="st">"duckdb"</span> <span class="sc">%in%</span> (<span class="fu">.packages</span>()))) {</span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>            <span class="fu">suppressWarnings</span>(<span class="fu">library</span>(<span class="st">"duckdb"</span>))</span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>            <span class="fu">message</span>(<span class="st">"duckdb library was loaded to execute duckload()."</span>)</span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a>        con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(), <span class="at">dbdir=</span>dbName, <span class="at">read_only=</span><span class="cn">TRUE</span>)</span>
+<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(groupBy)) {</span>
+<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a>            query_string <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">"SELECT "</span>,groupBy,<span class="st">","</span>)</span>
+<span id="cb46-15"><a href="#cb46-15" aria-hidden="true" tabindex="-1"></a>        } <span class="cf">else</span> {</span>
+<span id="cb46-16"><a href="#cb46-16" aria-hidden="true" tabindex="-1"></a>            query_string <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">"SELECT "</span>)</span>
+<span id="cb46-17"><a href="#cb46-17" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb46-18"><a href="#cb46-18" aria-hidden="true" tabindex="-1"></a>        query_string <span class="ot">&lt;-</span> <span class="fu">paste</span>(query_string, </span>
+<span id="cb46-19"><a href="#cb46-19" aria-hidden="true" tabindex="-1"></a>                              <span class="st">"count("</span>        , columnName,<span class="st">") as N,"</span>       ,</span>
+<span id="cb46-20"><a href="#cb46-20" aria-hidden="true" tabindex="-1"></a>                              <span class="st">"min("</span>          , columnName,<span class="st">") as Min,"</span>     ,</span>
+<span id="cb46-21"><a href="#cb46-21" aria-hidden="true" tabindex="-1"></a>                              <span class="st">"quantile_cont("</span>, columnName, <span class="st">",0.25) as Q1,"</span>,</span>
+<span id="cb46-22"><a href="#cb46-22" aria-hidden="true" tabindex="-1"></a>                              <span class="st">"avg("</span>          , columnName,<span class="st">") as Mean,"</span>    ,</span>
+<span id="cb46-23"><a href="#cb46-23" aria-hidden="true" tabindex="-1"></a>                              <span class="st">"median("</span>       , columnName,<span class="st">") as Median,"</span>  ,</span>
+<span id="cb46-24"><a href="#cb46-24" aria-hidden="true" tabindex="-1"></a>                              <span class="st">"quantile_cont("</span>, columnName,<span class="st">",0.75) as Q3,"</span> ,</span>
+<span id="cb46-25"><a href="#cb46-25" aria-hidden="true" tabindex="-1"></a>                              <span class="st">"max("</span>          , columnName,<span class="st">") as Max,"</span>     ,</span>
+<span id="cb46-26"><a href="#cb46-26" aria-hidden="true" tabindex="-1"></a>                              <span class="st">"stddev_samp("</span>  , columnName, <span class="st">") as StdDev"</span>  ,</span>
+<span id="cb46-27"><a href="#cb46-27" aria-hidden="true" tabindex="-1"></a>                             <span class="st">" from "</span>, tableName)</span>
+<span id="cb46-28"><a href="#cb46-28" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(whereClause)) {</span>
+<span id="cb46-29"><a href="#cb46-29" aria-hidden="true" tabindex="-1"></a>            query_string <span class="ot">&lt;-</span> <span class="fu">paste</span>(query_string, <span class="st">" WHERE "</span>, whereClause)</span>
+<span id="cb46-30"><a href="#cb46-30" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb46-31"><a href="#cb46-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(groupBy)) {</span>
+<span id="cb46-32"><a href="#cb46-32" aria-hidden="true" tabindex="-1"></a>            query_string <span class="ot">&lt;-</span> <span class="fu">paste</span>(query_string, <span class="st">" GROUP BY "</span>, groupBy)</span>
+<span id="cb46-33"><a href="#cb46-33" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb46-34"><a href="#cb46-34" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Adding the semicolon at the end is correct syntax, but</span></span>
+<span id="cb46-35"><a href="#cb46-35" aria-hidden="true" tabindex="-1"></a>        <span class="co"># not necessary if you submit with dbGetQuery. It will</span></span>
+<span id="cb46-36"><a href="#cb46-36" aria-hidden="true" tabindex="-1"></a>        <span class="co"># add a missing semicolon.</span></span>
+<span id="cb46-37"><a href="#cb46-37" aria-hidden="true" tabindex="-1"></a>        query_string <span class="ot">&lt;-</span> <span class="fu">paste</span>(query_string,<span class="st">";"</span>)</span>
+<span id="cb46-38"><a href="#cb46-38" aria-hidden="true" tabindex="-1"></a>        <span class="co">#print(query_string)</span></span>
+<span id="cb46-39"><a href="#cb46-39" aria-hidden="true" tabindex="-1"></a>        df_ <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, query_string)</span>
+<span id="cb46-40"><a href="#cb46-40" aria-hidden="true" tabindex="-1"></a>        <span class="fu">dbDisconnect</span>(con)</span>
+<span id="cb46-41"><a href="#cb46-41" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span> (df_)</span>
+<span id="cb46-42"><a href="#cb46-42" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb46-43"><a href="#cb46-43" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span> (<span class="cn">NULL</span>)</span>
+<span id="cb46-44"><a href="#cb46-44" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb46-45"><a href="#cb46-45" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The next statement requests a summary of the <code>Oxygen</code> variable in the <code>fitness</code> table for records where <code>Age</code> is at least 40.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ducksummary</span>(<span class="st">"fitness"</span>,<span class="st">"Oxygen"</span>,<span class="st">"Age &gt;= 40"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   N    Min     Q1     Mean Median     Q3    Max  StdDev
+1 29 37.388 44.811 46.85245 46.672 49.156 59.571 4.91512</code></pre>
+</div>
+</div>
+<p>The next statement analyzes <code>Ripeness</code> of the bananas in the training data set by banana quality.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ducksummary</span>(<span class="st">"banana_train"</span>,<span class="st">"Ripeness"</span>,<span class="at">groupBy=</span><span class="st">"Quality"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Quality    N       Min         Q1       Mean    Median       Q3      Max
+1    Good 2000 -4.239602  0.4206124 1.52396766 1.4982581 2.641176 7.249034
+2     Bad 2000 -7.423155 -1.6555529 0.06011369 0.1125737 1.734655 5.911077
+    StdDev
+1 1.644378
+2 2.276053</code></pre>
+</div>
+</div>
+<p>Note that the only data frames created in this approach are the data frames to hold the analysis results. The data remains where it is at—in the database.</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
