@@ -214,5 +214,21 @@ year={2021},
 url={https://bookdown.org/yihui/rmarkdown-cookbook/}
 }
 
+@article{YeoJohnson2000,
+    author = {Yeo, In‐Kwon and Johnson, Richard A.},
+    title = "{A new family of power transformations to improve normality or symmetry}",
+    journal = {Biometrika},
+    volume = {87},
+    number = {4},
+    pages = {954-959},
+    year = {2000},
+    month = {12},
+    issn = {0006-3444},
+    doi = {10.1093/biomet/87.4.954},
+    url = {https://doi.org/10.1093/biomet/87.4.954},
+    eprint = {https://academic.oup.com/biomet/article-pdf/87/4/954/633221/870954.pdf},
+}
+
+
 :::
 

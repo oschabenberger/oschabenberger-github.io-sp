@@ -377,7 +377,7 @@ TL;DR What you Need
 <div id="fig-rstudio-ide" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-rstudio-ide-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/RStudio.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="images/RStudio.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+<a href="images/RStudio.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="images/RStudio.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rstudio-ide-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;2.1: RStudio IDE
@@ -412,7 +412,7 @@ Figure&nbsp;2.1: RStudio IDE
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">.libPaths</span>()[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "/Users/olivers/Library/R/arm64/4.3/library"</code></pre>
+<pre><code>[1] "/Users/olivers/Library/R/arm64/4.4/library"</code></pre>
 </div>
 </div>
 <p>If you wish to install a package in a different location, provide the location in the <code>lib=""</code> argument of <code>install.packages()</code>. Note that if you use a non-default location for the package install you need to specify that location when you load the library with the <code>library</code> command.</p>
@@ -471,9 +471,6 @@ Figure&nbsp;2.1: RStudio IDE
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>libs_to_install <span class="ot">&lt;-</span> libs_to_load[<span class="sc">!</span>libs_to_load <span class="sc">%in%</span> <span class="fu">installed.packages</span>()]</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (lib <span class="cf">in</span> libs_to_install) <span class="fu">install.packages</span>(lib, <span class="at">dependencies=</span><span class="cn">TRUE</span>)</span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(libs_to_load, library, <span class="at">character=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package 'ggplot2' was built under R version 4.3.1</code></pre>
-</div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$dplyr
  [1] "Rfast"        "RcppParallel" "RcppZiggurat" "Rcpp"         "dplyr"       
@@ -508,7 +505,7 @@ $ggplot2
 <p>The easiest way to unload the libraries you loaded in an <code>R</code> session is to restart the session. 😊</p>
 <p>To unload a library from an <code>R</code> session you can use the <code>detach</code> function with the <code>unload=TRUE</code> option. For example, to remove the <code>randomForest</code> library without restarting the session:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">detach</span>(<span class="st">"package:randomForest"</span>,<span class="at">unload=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">detach</span>(<span class="st">"package:randomForest"</span>,<span class="at">unload=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
@@ -517,16 +514,16 @@ $ggplot2
 <p>It is a good practice to add at the end of <code>R</code> programs a listing of the environment in which the program executed. This will show others what packages were loaded and their version. If you use the <code>RNG=TRUE</code> option, the random number generators are also reported, more on this in <a href="random.html" class="quarto-xref"><span>Chapter 9</span></a>.</p>
 <p>For this session, the info is as follows:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>sinfo <span class="ot">&lt;-</span> <span class="fu">sessionInfo</span>()</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(sinfo,<span class="at">RNG=</span>T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>sinfo <span class="ot">&lt;-</span> <span class="fu">sessionInfo</span>()</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(sinfo,<span class="at">RNG=</span>T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>R version 4.3.0 (2023-04-21)
-Platform: aarch64-apple-darwin20 (64-bit)
-Running under: macOS 14.2.1
+<pre><code>R version 4.4.1 (2024-06-14)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sonoma 14.2.1
 
 Matrix products: default
-BLAS:   /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRblas.0.dylib 
-LAPACK: /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.11.0
+BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.0
 
 Random number generation:
  RNG:     Mersenne-Twister 
@@ -543,30 +540,30 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] ggplot2_3.4.4      reshape2_1.4.4     magrittr_2.0.3     readr_2.1.4       
-[5] Rfast_2.1.0        RcppParallel_5.1.7 RcppZiggurat_0.1.6 Rcpp_1.0.11       
+[1] ggplot2_3.5.1      reshape2_1.4.4     magrittr_2.0.3     readr_2.1.5       
+[5] Rfast_2.1.0        RcppParallel_5.1.9 RcppZiggurat_0.1.6 Rcpp_1.0.13       
 [9] dplyr_1.1.4       
 
 loaded via a namespace (and not attached):
- [1] gtable_0.3.4      jsonlite_1.8.8    compiler_4.3.0    tidyselect_1.2.1 
- [5] stringr_1.5.0     parallel_4.3.0    scales_1.3.0      fastmap_1.1.1    
- [9] R6_2.5.1          plyr_1.8.9        generics_0.1.3    knitr_1.45       
-[13] htmlwidgets_1.6.2 tibble_3.2.1      munsell_0.5.0     pillar_1.9.0     
-[17] tzdb_0.4.0        rlang_1.1.3       utf8_1.2.4        stringi_1.7.12   
-[21] xfun_0.39         cli_3.6.2         withr_2.5.2       digest_0.6.33    
-[25] grid_4.3.0        hms_1.1.3         lifecycle_1.0.4   vctrs_0.6.5      
-[29] evaluate_0.22     glue_1.7.0        fansi_1.0.6       colorspace_2.1-0 
-[33] rmarkdown_2.25    tools_4.3.0       pkgconfig_2.0.3   htmltools_0.5.5  </code></pre>
+ [1] gtable_0.3.5      jsonlite_1.8.9    compiler_4.4.1    tidyselect_1.2.1 
+ [5] stringr_1.5.1     parallel_4.4.1    scales_1.3.0      fastmap_1.2.0    
+ [9] R6_2.5.1          plyr_1.8.9        generics_0.1.3    knitr_1.48       
+[13] htmlwidgets_1.6.4 tibble_3.2.1      munsell_0.5.1     pillar_1.9.0     
+[17] tzdb_0.4.0        rlang_1.1.4       utf8_1.2.4        stringi_1.8.4    
+[21] xfun_0.47         cli_3.6.3         withr_3.0.1       digest_0.6.37    
+[25] grid_4.4.1        hms_1.1.3         lifecycle_1.0.4   vctrs_0.6.5      
+[29] evaluate_1.0.0    glue_1.7.0        fansi_1.0.6       colorspace_2.1-1 
+[33] rmarkdown_2.28    tools_4.4.1       pkgconfig_2.0.3   htmltools_0.5.8.1</code></pre>
 </div>
 </div>
 <p>You can drill down into the details of the information, for example,</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>sinfo<span class="sc">$</span>loadedOnly<span class="sc">$</span>rmarkdown</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>sinfo<span class="sc">$</span>loadedOnly<span class="sc">$</span>rmarkdown</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Type: Package
 Package: rmarkdown
 Title: Dynamic Documents for R
-Version: 2.25
+Version: 2.28
 Authors@R: c( person("JJ", "Allaire", , "jj@posit.co", role = "aut"),
         person("Yihui", "Xie", , "xie@yihui.name", role = c("aut",
         "cre"), comment = c(ORCID = "0000-0003-0645-5666")),
@@ -634,18 +631,19 @@ BugReports: https://github.com/rstudio/rmarkdown/issues
 Depends: R (&gt;= 3.0)
 Imports: bslib (&gt;= 0.2.5.1), evaluate (&gt;= 0.13), fontawesome (&gt;=
         0.5.0), htmltools (&gt;= 0.5.1), jquerylib, jsonlite, knitr (&gt;=
-        1.22), methods, stringr (&gt;= 1.2.0), tinytex (&gt;= 0.31), tools,
-        utils, xfun (&gt;= 0.36), yaml (&gt;= 2.1.19)
+        1.43), methods, tinytex (&gt;= 0.31), tools, utils, xfun (&gt;=
+        0.36), yaml (&gt;= 2.1.19)
 Suggests: digest, dygraphs, fs, rsconnect, downlit (&gt;= 0.4.0), katex
         (&gt;= 1.4.0), sass (&gt;= 0.4.0), shiny (&gt;= 1.6.0), testthat (&gt;=
-        3.0.3), tibble, vctrs, cleanrmd, withr (&gt;= 2.4.2)
+        3.0.3), tibble, vctrs, cleanrmd, withr (&gt;= 2.4.2), xml2
 VignetteBuilder: knitr
 Config/Needs/website: rstudio/quillt, pkgdown
+Config/testthat/edition: 3
 Encoding: UTF-8
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 SystemRequirements: pandoc (&gt;= 1.14) - http://pandoc.org
 NeedsCompilation: no
-Packaged: 2023-09-15 16:52:22 UTC; yihui
+Packaged: 2024-08-16 14:12:22 UTC; yihui
 Author: JJ Allaire [aut], Yihui Xie [aut, cre]
         (&lt;https://orcid.org/0000-0003-0645-5666&gt;), Christophe Dervieux
         [aut] (&lt;https://orcid.org/0000-0003-4474-2498&gt;), Jonathan
@@ -679,10 +677,10 @@ Author: JJ Allaire [aut], Yihui Xie [aut, cre]
         Philip Jonsson [ctb, cph] (pagebreak Lua filter), Albert
         Krewinkel [ctb, cph] (pagebreak Lua filter)
 Repository: CRAN
-Date/Publication: 2023-09-18 09:30:02 UTC
-Built: R 4.3.1; ; 2023-09-18 12:03:34 UTC; unix
+Date/Publication: 2024-08-17 04:50:13 UTC
+Built: R 4.4.0; ; 2024-08-17 08:03:57 UTC; unix
 
--- File: /Users/olivers/Library/R/arm64/4.3/library/rmarkdown/Meta/package.rds </code></pre>
+-- File: /Users/olivers/Library/R/arm64/4.4/library/rmarkdown/Meta/package.rds </code></pre>
 </div>
 </div>
 </section>
@@ -691,10 +689,10 @@ Built: R 4.3.1; ; 2023-09-18 12:03:34 UTC; unix
 <p><span class="math inline">\(\LaTeX\)</span> (pronounced “LAY-tek” or “LAH-tek”) is a high-quality typesetting system; it includes features designed for the production of technical and scientific documents. <span class="math inline">\(\LaTeX\)</span> is the de facto standard for the communication and publication of scientific documents and is available for free from <a href="http://latex-project.org">here</a>.</p>
 <p>If you are working in mathematics or statistics, you will be producing <span class="math inline">\(\LaTeX\)</span> documents. You can write equations with other authoring tools as well—even the Microsoft Equation Editor has improved greatly over the years, in part because it now accepts <span class="math inline">\(\LaTeX\)</span> syntax! <span class="math inline">\(\LaTeX\)</span> is not a WYSIWYG—what you see is what you get—environment. Instead, you write a plain text file where text is interspersed with <span class="math inline">\(\LaTeX\)</span> commands. The document is processed (“compiled”) into an output file (usually pdf) by running it through a TeX engine. In other words, you focus on writing the contents of the document with <span class="math inline">\(\LaTeX\)</span> commands and let the Tex engine take care of typesetting the commands into a professional document.</p>
 <p>RStudio, Rmarkdown, and Quarto support <span class="math inline">\(\LaTeX\)</span> natively and this makes it very easy to combine text, code, and formulas. For example, to show the probability density function of a G(0,1) random variable in this Quarto document, I typed the <span class="math inline">\(\LaTeX\)</span> instructions</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>f(y) = \frac{1}{\sqrt{2\pi\sigma^{2}}} \exp </span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>       \left\{ - \frac{1}{2\sigma^{2}}(y - \mu)^{2} \right\}</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>$$</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>f(y) = \frac{1}{\sqrt{2\pi\sigma^{2}}} \exp </span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>       \left\{ - \frac{1}{2\sigma^{2}}(y - \mu)^{2} \right\}</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>$$</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>in the editor. When the document is rendered, these instructions produce <span class="math display">\[
 f(y) = \frac{1}{\sqrt{2\pi\sigma^{2}}}\exp\left\{ - \frac{1}{2\sigma^{2}}(y - \mu)^{2} \right\}
 \]</span></p>
@@ -706,13 +704,13 @@ f(y) = \frac{1}{\sqrt{2\pi\sigma^{2}}}\exp\left\{ - \frac{1}{2\sigma^{2}}(y - \m
 <li><p><a href="https://www.tug.org/texlive/">Tex Live</a>: A basic Tex distribution for Windows, Linux, and MacOS.</p></li>
 <li><p><a href="https://yihui.org/tinytex/">TinyTex</a>: A small <span class="math inline">\(\LaTeX\)</span> distribution based on Tex Live that works well with <code>R</code>. The <code>R</code> package <code>tinytex</code> provides helper functions to work with TinyTex from <code>R</code>/RStudio. If you want to use TinyTex in <code>R</code>, first install the <code>tinytex</code> package</p></li>
 </ul>
-<div class="sourceCode" id="cb24"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>install.packages("tinytex")</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>install.packages("tinytex")</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>and then download and install TinyTex with</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>tinytex::install_tinytex()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>tinytex::install_tinytex()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>By default, <code>install_tinytex()</code> will fail the install if another <span class="math inline">\(\LaTeX\)</span> distribution is detected (you can overwrite this behavior with the <code>force=</code> argument of the function).</p>
 <p>You can check if RStudio/R uses tinytex by executing this command at the prompt:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>tinytex<span class="sc">::</span><span class="fu">is_tinytex</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>tinytex<span class="sc">::</span><span class="fu">is_tinytex</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] FALSE</code></pre>
 </div>
@@ -752,9 +750,9 @@ Tip
 <h3 class="anchored" data-anchor-id="pyenv-version-management"><code>pyenv</code> Version Management</h3>
 <p><a href="https://github.com/pyenv/pyenv">pyenv</a> is a version management tool for Python. It makes it particularly easy to work with multiple Python versions on the same system. The Python ecosystem moves very quickly and you will find yourself in a situation where a particular library requires a different version of Python from the one installed. Running different Python kernels for different projects is an unfortunate reality for many Python developers. With <code>pyenv</code> you can install/uninstall Python versions, you can switch versions globally, per shell or locally (in certain directories), and create virtual environments.</p>
 <p>The instructions to install pyenv on your system are <a href="https://github.com/pyenv/pyenv?tab=readme-ov-file#installation">here</a>. Pay attention to also update shell configurations when you install pyenv. For example, my system uses <code>zsh</code> and my <code>.zshrc</code> file contains the lines (straight from the GitHub documentation)</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>export PYENV_ROOT="$HOME/.pyenv"</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>command -v pyenv &gt;/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"</span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>eval "$(pyenv init -)"</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>export PYENV_ROOT="$HOME/.pyenv"</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>command -v pyenv &gt;/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>eval "$(pyenv init -)"</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The most common pyenv commands I use are</p>
 <ul>
 <li><p><code>pyenv install</code> to install a Python version on the system. For example, <code>pyenv install 3.11.4</code> will install Python 3.11.4.</p></li>
@@ -768,12 +766,12 @@ Tip
 <h3 class="anchored" data-anchor-id="package-management-1">Package Management</h3>
 <p>The most common management tools used with Python are <code>conda</code> and <code>pip</code>. The two are often seen as equivalent, but they serve different purposes. <code>pip</code> is a Python package manager, you use it to add/update/remove packages from your Python installation. <code>conda</code> is a <strong>system</strong> package manager that handles much more than Python libraries. You can manage entire development stacks with <code>conda</code>, but not with <code>pip</code>.</p>
 <p>For example, to add <code>jupyter</code> to your system with <code>conda</code> use</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>conda install jupyter</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>conda install jupyter</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>and with <code>pip</code> use</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>pip install jupyter</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>pip install jupyter</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>There is a misconception that <code>conda</code> and <code>pip</code> cannot be used together on the same system. You can use them together, in fact a great way to manage your environment is to first install and set up <code>conda</code> for your project and to install the packages you need from <code>conda</code> channels. With <code>conda</code> activated, you can use the version of <code>pip</code> that is included with <code>conda</code> to install any required <code>pip</code> dependencies. The important point is that once <code>conda</code> is activated, you use <strong>its</strong> version of <code>pip</code>.</p>
 <p>Check</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>which pip</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>which pip</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>to see which version of <code>pip</code> will be called.</p>
 <p>I personally use <code>pip</code> to manage Python packages, but it is not without issues. Managing the dependencies between Python libraries is a special kind of suffering. You install a new package A that happens to have a dependency on an earlier version of package B, which it downgrades upon installation to the earlier version. This can break code that depends on the newer version of package B. Once you realize this you upgrade B to the newer version, making A fail.</p>
 
@@ -1364,7 +1362,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","selector":".lightbox","openEffect":"zoom","loop":false,"descPosition":"bottom"});
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","closeEffect":"zoom","descPosition":"bottom","selector":".lightbox","loop":false});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

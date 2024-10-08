@@ -333,6 +333,7 @@ window.Quarto = {
   <li><a href="#nonlinear-transformations" id="toc-nonlinear-transformations" class="nav-link" data-scroll-target="#nonlinear-transformations">Nonlinear Transformations</a>
   <ul class="collapse">
   <li><a href="#box-cox-family" id="toc-box-cox-family" class="nav-link" data-scroll-target="#box-cox-family">Box-Cox family</a></li>
+  <li><a href="#yeo-johnson-transformation" id="toc-yeo-johnson-transformation" class="nav-link" data-scroll-target="#yeo-johnson-transformation">Yeo-Johnson transformation</a></li>
   <li><a href="#quantile-transformation" id="toc-quantile-transformation" class="nav-link" data-scroll-target="#quantile-transformation">Quantile transformation</a></li>
   <li><a href="#to-transform-or-not-to-transform" id="toc-to-transform-or-not-to-transform" class="nav-link" data-scroll-target="#to-transform-or-not-to-transform">To Transform or not to Transform</a></li>
   </ul></li>
@@ -1138,26 +1139,27 @@ X2               1.0    2.12132 0.4714045 0.6695150</code></pre>
 <span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>modB_ave_eff <span class="ot">&lt;-</span> <span class="fu">lm</span>(df<span class="sc">$</span>y <span class="sc">~</span> X)</span>
 <span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(<span class="fu">summary</span>(modB_ave_eff))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">coef</span>(<span class="fu">summary</span>(modB_ave_eff)),<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>                 Estimate Std. Error       t value   Pr(&gt;|t|)
-(Intercept)  3.500000e+00  0.8660254  4.041452e+00 0.02726185
-X1          -1.000000e+00  1.2247449 -8.164966e-01 0.47402139
-X2          -2.110977e-16  1.2247449 -1.723605e-16 1.00000000</code></pre>
+<pre><code>            Estimate Std. Error  t value Pr(&gt;|t|)
+(Intercept)      3.5    0.86603  4.04145  0.02726
+X1              -1.0    1.22474 -0.81650  0.47402
+X2               0.0    1.22474  0.00000  1.00000</code></pre>
 </div>
 </div>
-<p>We see from the initial analysis that the average effect of <span class="math inline">\(B\)</span> is <span class="math inline">\(1/3 \times (2.5+3.5+4.5) = 3.5\)</span>. The <code>(Intercept)</code> estimate represents this average in the average effect encoding. <code>X1</code> and <code>X2</code> represent the differences of <span class="math inline">\(B=1\)</span> and <span class="math inline">\(B=2\)</span> from the average. If we place the <span class="math inline">\(-1\)</span> row at level <span class="math inline">\(B=2\)</span>, then <code>X1</code> and <code>X2</code> are the differences of <span class="math inline">\(B=1\)</span> and <span class="math inline">\(B=3\)</span> from the average effect of <span class="math inline">\(B\)</span>:</p>
+<p>We see from the initial analysis that the average effect of <span class="math inline">\(B\)</span> is <span class="math inline">\(1/3 \times (2.5+3.5+4.5) = 3.5\)</span>. The <code>(Intercept)</code> estimate represents this average in the average effect encoding. <code>X1</code> and <code>X2</code> on the output represent the differences of <span class="math inline">\(B=1\)</span> and <span class="math inline">\(B=2\)</span> from the average.</p>
+<p>If we place the <span class="math inline">\(-1\)</span> row at level <span class="math inline">\(B=2\)</span>, making <span class="math inline">\(B=2\)</span> the reference level, then <code>X21</code> and <code>X22</code> on the following output represent the differences of <span class="math inline">\(B=1\)</span> and <span class="math inline">\(B=3\)</span> from the average effect of <span class="math inline">\(B\)</span>:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>X2 <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>),<span class="at">nrow=</span><span class="dv">6</span>,<span class="at">ncol=</span><span class="dv">2</span>)</span>
 <span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>modB_ave_eff <span class="ot">&lt;-</span> <span class="fu">lm</span>(df<span class="sc">$</span>y <span class="sc">~</span> X2)</span>
 <span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(<span class="fu">summary</span>(modB_ave_eff))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">coef</span>(<span class="fu">summary</span>(modB_ave_eff)),<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>            Estimate Std. Error    t value   Pr(&gt;|t|)
-(Intercept)      3.5  0.8660254  4.0414519 0.02726185
-X21             -1.0  1.2247449 -0.8164966 0.47402139
-X22              1.0  1.2247449  0.8164966 0.47402139</code></pre>
+<pre><code>            Estimate Std. Error  t value Pr(&gt;|t|)
+(Intercept)      3.5    0.86603  4.04145  0.02726
+X21             -1.0    1.22474 -0.81650  0.47402
+X22              1.0    1.22474  0.81650  0.47402</code></pre>
 </div>
 </div>
 </div>
@@ -1293,7 +1295,8 @@ y^{(\lambda)} = \left \{
 \log y &amp; \text{if } \lambda = 0
 \end{array}\right.
 \tag{5.2}\]</span></span></p>
-<p>This transformation applies if <span class="math inline">\(y &gt; 0\)</span>. For the more general case, <span class="math inline">\(y &gt; -c\)</span>, the two-parameter Box-Cox transformation can be used <span class="math display">\[
+<p>This transformation applies if <span class="math inline">\(y &gt; 0\)</span>. For the more general case, <span class="math inline">\(y &gt; -c\)</span>, the two-parameter Box-Cox transformation can be used</p>
+<p><span class="math display">\[
 y^{(\lambda)} = \left \{
 \begin{array}{ll}
 \frac{(y+c)^\lambda - 1}{\lambda} &amp; \text{if } \lambda \ne 0 \\
@@ -1315,7 +1318,7 @@ y^\lambda &amp; \text{if } \lambda \ne 0 \\
 <div id="fig-boxcox-transforms" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-boxcox-transforms-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="featproc_files/figure-html/fig-boxcox-transforms-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="featproc_files/figure-html/fig-boxcox-transforms-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="featproc_files/figure-html/fig-boxcox-transforms-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="featproc_files/figure-html/fig-boxcox-transforms-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-boxcox-transforms-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;5.5: Box-Cox transformations for various values of <span class="math inline">\(\lambda\)</span>
@@ -1324,7 +1327,7 @@ Figure&nbsp;5.5: Box-Cox transformations for various values of <span class="math
 </div>
 </div>
 </div>
-<p>How do we find <span class="math inline">\(\lambda\)</span>? If the assumption is that for some value <span class="math inline">\(\widehat{\lambda}\)</span> the distribution of <span class="math inline">\(y^{(\widehat{\lambda})}\)</span> is Gaussian, then <span class="math inline">\(\lambda\)</span> can be estimated by maximum likelihood assuming a Gaussian distribution–after all, we are looking for the value of <span class="math inline">\(\lambda\)</span> for which the Gaussian likelihood of the transformed data is highest.</p>
+<p>How do we find <span class="math inline">\(\lambda\)</span>? If the assumption is that for some value <span class="math inline">\(\widehat{\lambda}\)</span> the distribution of <span class="math inline">\(y^{(\widehat{\lambda})}\)</span> is Gaussian, then <span class="math inline">\(\lambda\)</span> can be estimated by maximum likelihood assuming a Gaussian distribution—after all, we are looking for the value of <span class="math inline">\(\lambda\)</span> for which the Gaussian likelihood of the transformed data is highest.</p>
 <p>The following code applies the Box-Cox transformation to a random sample from a Gamma(3,2) distribution</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">6465</span>)</span>
@@ -1362,6 +1365,47 @@ Figure&nbsp;5.6: Original and Box-Cox-transformed data drawn from a Gamma(3,2) d
 </div>
 </div>
 </section>
+<section id="yeo-johnson-transformation" class="level4">
+<h4 class="anchored" data-anchor-id="yeo-johnson-transformation">Yeo-Johnson transformation</h4>
+<p><span class="citation" data-cites="YeoJohnson2000">Yeo and Johnson (<a href="references.html#ref-YeoJohnson2000" role="doc-biblioref">2000</a>)</span> proposed an improvement of the Box-Cox transformation to permit negative values. While the two-parameter Box-Cox transformation shown above, which introduces the lower bound parameter <span class="math inline">\(c\)</span> allows for <span class="math inline">\(y \ge -c\)</span>, this still imposes a lower bound on the value of <span class="math inline">\(y\)</span>. The Yeo-Johnson transformation does not require a lower bound. Their power transformation is <span class="math display">\[
+y^{(\lambda)} = \left \{
+\begin{array}{ll}
+\{(y+1)^\lambda-1\}/\lambda &amp; \text{if } y \ge 0; \lambda \ne 0 \\
+\log (y+1)    &amp; \text{if } y \ge 0; \lambda = 0 \\
+-\{(-y +1)^{2-\lambda}-1\}/(2-\lambda) &amp; y &lt; 0; \lambda \ne 2\\
+-\log(-y + 1) &amp; y &lt; 0; \lambda = 2
+\end{array}\right.
+\]</span></p>
+<p>The transformation is constructed to have a continuous second derivative at <span class="math inline">\(y = 0\)</span>, forcing a smooth transition at zero. The parameter <span class="math inline">\(\lambda\)</span> can be estimated by maximum likelihood, as for the Box-Cox transformation.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>df_yj <span class="ot">&lt;-</span> caret<span class="sc">::</span><span class="fu">preProcess</span>(df,<span class="at">method=</span><span class="st">"YeoJohnson"</span>)</span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>df_yj</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Created from 1000 samples and 1 variables
+
+Pre-processing:
+  - ignored (0)
+  - Yeo-Johnson transformation (1)
+
+Lambda estimates for Yeo-Johnson transformation:
+-0.22</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>df_yj_data <span class="ot">&lt;-</span> <span class="fu">predict</span>(df_yj,df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(df<span class="sc">$</span>x,<span class="at">main=</span><span class="st">"Original"</span>,<span class="at">xlab=</span><span class="st">""</span>)</span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(df_yj_data<span class="sc">$</span>x, <span class="at">main=</span><span class="st">"YeoJohnson(-0.22)"</span>,<span class="at">xlab=</span><span class="st">""</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="featproc_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" style="width:90.0%"></p>
+<figcaption>Original and Yeo-Johnson-transformed data drawn from a Gamma(3,2) distribution.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
 <section id="quantile-transformation" class="level4">
 <h4 class="anchored" data-anchor-id="quantile-transformation">Quantile transformation</h4>
 <p>The Box-Cox transformation does a good job to transform the data closer to a Gaussian distribution in the previous examples. It is not fail safe, however. Data that appear uniform or data with multiple modes do not transform to normality easily with the Box-Cox family.</p>
@@ -1369,10 +1413,10 @@ Figure&nbsp;5.6: Original and Box-Cox-transformed data drawn from a Gamma(3,2) d
 <p>If <span class="math inline">\(Y\)</span> is a random variable with c.d.f. <span class="math inline">\(F(y) = \Pr(Y \le y)\)</span>, then the quantile function <span class="math inline">\(Q(p)\)</span> is the inverse of the cumulative distribution function; for a given probability <span class="math inline">\(p\)</span>, it returns the value <span class="math inline">\(y\)</span> for which <span class="math inline">\(F(y) = p\)</span>.</p>
 <p>Now here is a possibly surprising result: if <span class="math inline">\(Y\)</span> has c.d.f. <span class="math inline">\(F(y)\)</span>, then we can think of the c.d.f as a transformation of <span class="math inline">\(Y\)</span>. What would its distribution look like? The following code draws 1,000 samples from a G(<span class="math inline">\(2,1.5^2\)</span>) distribution and plots the histogram of the c.d.f. values <span class="math inline">\(F(y)\)</span>.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">45</span>)</span>
-<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>yn <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1000</span>,<span class="at">mean=</span><span class="dv">2</span>,<span class="at">sd=</span><span class="fl">1.5</span>)</span>
-<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a>F_yn <span class="ot">&lt;-</span> <span class="fu">pnorm</span>(yn,<span class="at">mean=</span><span class="dv">2</span>,<span class="at">sd=</span><span class="fl">1.5</span>)    </span>
-<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(F_yn,<span class="at">main=</span><span class="st">""</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">45</span>)</span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>yn <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1000</span>,<span class="at">mean=</span><span class="dv">2</span>,<span class="at">sd=</span><span class="fl">1.5</span>)</span>
+<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a>F_yn <span class="ot">&lt;-</span> <span class="fu">pnorm</span>(yn,<span class="at">mean=</span><span class="dv">2</span>,<span class="at">sd=</span><span class="fl">1.5</span>)    </span>
+<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(F_yn,<span class="at">main=</span><span class="st">""</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -1384,12 +1428,12 @@ Figure&nbsp;5.6: Original and Box-Cox-transformed data drawn from a Gamma(3,2) d
 <p>The distribution of <span class="math inline">\(F(y)\)</span> is <strong>uniform</strong> on (0,1)—this is true for any distribution, not just the Gaussian.</p>
 <p>We can combine this result with the following, possibly also surprising, result: If <span class="math inline">\(U\)</span> is a uniform random variable, and <span class="math inline">\(Q(p)\)</span> is the quantile function of <span class="math inline">\(Y\)</span>, then <span class="math inline">\(Q(u)\)</span> has the same distribution as <span class="math inline">\(Y\)</span>. This is how you can generate random numbers from any distribution if you have a generator of uniform random numbers: plug the uniform random numbers into the quantile function.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>norm_rv <span class="ot">&lt;-</span> <span class="fu">qnorm</span>(<span class="fu">runif</span>(<span class="dv">1000</span>),<span class="at">mean=</span><span class="dv">2</span>,<span class="at">sd=</span><span class="fl">1.5</span>)</span>
-<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(norm_rv)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>norm_rv <span class="ot">&lt;-</span> <span class="fu">qnorm</span>(<span class="fu">runif</span>(<span class="dv">1000</span>),<span class="at">mean=</span><span class="dv">2</span>,<span class="at">sd=</span><span class="fl">1.5</span>)</span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(norm_rv)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="featproc_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></p>
+<p><img src="featproc_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></p>
 </figure>
 </div>
 </div>
@@ -1397,25 +1441,25 @@ Figure&nbsp;5.6: Original and Box-Cox-transformed data drawn from a Gamma(3,2) d
 <p>These are the key results behind <strong>quantile transformation</strong>, mapping one distribution to another based on quantiles.</p>
 <p>The <code>QuantileTransformer</code> in <code>sklearn.preprocessing</code> can transform data based on quantiles to a uniform (default) or a Gaussian distribution. The results of transformation to normality for the Gamma(3,2) data are shown in <a href="#fig-gamma-quantile" class="quarto-xref">Figure&nbsp;<span>5.7</span></a>. These are not very different from the results of the Box-Cox transformation. However, the quantile transformation method always works, even in cases where the Box-Cox family of transformation fails to get close to normality.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn <span class="im">import</span> preprocessing</span>
-<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb74-5"><a href="#cb74-5" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">234</span>)</span>
-<span id="cb74-6"><a href="#cb74-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb74-7"><a href="#cb74-7" aria-hidden="true" tabindex="-1"></a>x1 <span class="op">=</span> np.random.gamma(shape<span class="op">=</span><span class="dv">3</span>,scale<span class="op">=</span><span class="dv">2</span>,size<span class="op">=</span><span class="dv">1000</span>)</span>
-<span id="cb74-8"><a href="#cb74-8" aria-hidden="true" tabindex="-1"></a>x1 <span class="op">=</span> np.reshape(x1,(<span class="op">-</span><span class="dv">1</span>,<span class="dv">1</span>))</span>
-<span id="cb74-9"><a href="#cb74-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb74-10"><a href="#cb74-10" aria-hidden="true" tabindex="-1"></a>quantizer <span class="op">=</span> preprocessing.QuantileTransformer(</span>
-<span id="cb74-11"><a href="#cb74-11" aria-hidden="true" tabindex="-1"></a>    output_distribution<span class="op">=</span><span class="st">'normal'</span>)</span>
-<span id="cb74-12"><a href="#cb74-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb74-13"><a href="#cb74-13" aria-hidden="true" tabindex="-1"></a>x1_trans <span class="op">=</span> quantizer.fit_transform(x1)</span>
-<span id="cb74-14"><a href="#cb74-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb74-15"><a href="#cb74-15" aria-hidden="true" tabindex="-1"></a>plt.figure()</span>
-<span id="cb74-16"><a href="#cb74-16" aria-hidden="true" tabindex="-1"></a>plt.hist(x1,bins<span class="op">=</span><span class="dv">20</span>,color<span class="op">=</span><span class="st">'0.7'</span>,alpha<span class="op">=</span><span class="fl">0.7</span>,label<span class="op">=</span><span class="st">'Original'</span>)</span>
-<span id="cb74-17"><a href="#cb74-17" aria-hidden="true" tabindex="-1"></a>plt.hist(x1_trans,color<span class="op">=</span><span class="st">'magenta'</span>,alpha<span class="op">=</span><span class="fl">0.5</span>,label<span class="op">=</span><span class="st">'Quantile transformed'</span>)</span>
-<span id="cb74-18"><a href="#cb74-18" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
-<span id="cb74-19"><a href="#cb74-19" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn <span class="im">import</span> preprocessing</span>
+<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb78-5"><a href="#cb78-5" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">234</span>)</span>
+<span id="cb78-6"><a href="#cb78-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb78-7"><a href="#cb78-7" aria-hidden="true" tabindex="-1"></a>x1 <span class="op">=</span> np.random.gamma(shape<span class="op">=</span><span class="dv">3</span>,scale<span class="op">=</span><span class="dv">2</span>,size<span class="op">=</span><span class="dv">1000</span>)</span>
+<span id="cb78-8"><a href="#cb78-8" aria-hidden="true" tabindex="-1"></a>x1 <span class="op">=</span> np.reshape(x1,(<span class="op">-</span><span class="dv">1</span>,<span class="dv">1</span>))</span>
+<span id="cb78-9"><a href="#cb78-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb78-10"><a href="#cb78-10" aria-hidden="true" tabindex="-1"></a>quantizer <span class="op">=</span> preprocessing.QuantileTransformer(</span>
+<span id="cb78-11"><a href="#cb78-11" aria-hidden="true" tabindex="-1"></a>    output_distribution<span class="op">=</span><span class="st">'normal'</span>)</span>
+<span id="cb78-12"><a href="#cb78-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb78-13"><a href="#cb78-13" aria-hidden="true" tabindex="-1"></a>x1_trans <span class="op">=</span> quantizer.fit_transform(x1)</span>
+<span id="cb78-14"><a href="#cb78-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb78-15"><a href="#cb78-15" aria-hidden="true" tabindex="-1"></a>plt.figure()</span>
+<span id="cb78-16"><a href="#cb78-16" aria-hidden="true" tabindex="-1"></a>plt.hist(x1,bins<span class="op">=</span><span class="dv">20</span>,color<span class="op">=</span><span class="st">'0.7'</span>,alpha<span class="op">=</span><span class="fl">0.7</span>,label<span class="op">=</span><span class="st">'Original'</span>)</span>
+<span id="cb78-17"><a href="#cb78-17" aria-hidden="true" tabindex="-1"></a>plt.hist(x1_trans,color<span class="op">=</span><span class="st">'magenta'</span>,alpha<span class="op">=</span><span class="fl">0.5</span>,label<span class="op">=</span><span class="st">'Quantile transformed'</span>)</span>
+<span id="cb78-18"><a href="#cb78-18" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb78-19"><a href="#cb78-19" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-gamma-quantile" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
@@ -1438,7 +1482,7 @@ Figure&nbsp;5.7: Quantile transformation to normality for Gamma(3,2) data.
 <div id="fig-bimodal-quantile" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-bimodal-quantile-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="featproc_files/figure-html/fig-bimodal-quantile-3.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2"><img src="featproc_files/figure-html/fig-bimodal-quantile-3.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="featproc_files/figure-html/fig-bimodal-quantile-3.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2"><img src="featproc_files/figure-html/fig-bimodal-quantile-3.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bimodal-quantile-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;5.8: Quantile transformation to normality for bimodal data from a mixture distribution.
@@ -1464,6 +1508,9 @@ Figure&nbsp;5.8: Quantile transformation to normality for bimodal data from a mi
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
 <div id="ref-BoxCox1964" class="csl-entry" role="listitem">
 Box, G. E. P., and D. R. Cox. 1964. <span>“An Analysis of Transformations.”</span> <em>Journal of the Royal Statistical Society. Series B (Methodological)</em> 26 (2): 211–52. <a href="http://www.jstor.org/stable/2984418">http://www.jstor.org/stable/2984418</a>.
+</div>
+<div id="ref-YeoJohnson2000" class="csl-entry" role="listitem">
+Yeo, In‐Kwon, and Richard A. Johnson. 2000. <span>“<span class="nocase">A new family of power transformations to improve normality or symmetry</span>.”</span> <em>Biometrika</em> 87 (4): 954–59. <a href="https://doi.org/10.1093/biomet/87.4.954">https://doi.org/10.1093/biomet/87.4.954</a>.
 </div>
 </div>
 </section>
@@ -2050,7 +2097,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","closeEffect":"zoom","selector":".lightbox","loop":false,"descPosition":"bottom"});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","selector":".lightbox","descPosition":"bottom","openEffect":"zoom","loop":false});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

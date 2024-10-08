@@ -1,0 +1,373 @@
+---
+title: "STAT 5014, Fall 2024, Summarization"
+author: "Oliver Schabenberger"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document: default
+  html_document:
+    df_print: paged
+editor_options: 
+  markdown: 
+    wrap: 80
+---
+
+```{r setup, include=FALSE}
+library(caret)
+options(width=80)
+knitr::opts_chunk$set(echo=TRUE, warning=F, message=F, fig.asp=0.7, cache=FALSE)
+```
+
+# Summarization
+
+## Introduction
+
+**Definition: Data Summarization**
+
+Data **summarization** is the numerical, tabular, and graphical distillation of 
+the essence of a data set and the relationships between its variables through aggregation. 
+
+A single statistic such as the sample standard deviation is a summary, as is a 
+cross-tabulation of the levels of two categorical variables, as is a series of 
+box plots. The purposes of data summarization are many:
+
+- **Profiling**. “having that first date with your data.” 
+
+- **Description**. What are the central tendencies and the dispersion of the 
+variables? For example, what does the comparison of statistics measuring the 
+central tendency tell us about the distribution of the data, the presence of 
+outliers? What distributional assumptions are reasonable for the data. 
+Are transformations in a feature processing step called for?
+
+- **Aggregation**. Suppose you could not store the raw data but you need to 
+retain information for future statistical processing. What kind of information 
+would you compute and squirrel away? A **sufficient** statistic is a function 
+of the data that contains all information toward estimating a parameter of the 
+data distribution. For example, the sample mean $\frac{1}{n}\sum_{i=1}^n Y_i$ is 
+sufficient to estimate the mean of a set of $n$ independent and identically 
+distributed random variables. If $Y$ is uniform on $[0,\theta]$, then 
+$\max\{Y_i\}$ is sufficient for $\theta$. The quantities we compute during 
+summarization are frequently sufficient statistics; examples are sums, sums of 
+squares, sums of cross-roducts.
+
+- **Relationships**. Summarization is not only about individual variables, but 
+also about their relationship. The correlation matrix of $p$ numerical variables 
+is a frequent summary that describes the pairwise linear relationships in the data.
+
+- **Dimension Reduction**. In high-dimensional statistical problems the number of 
+potential input variables is larger than what we can handle (on computational grounds) 
+or should handle (on statistical grounds). Summarization can reduce a $p$-dimensional 
+problem to an $m$-dimensional problem where $m \ll p$. Principal component 
+analysis (PCA) relies on matrix factorization (eigenvalue or singular value 
+decomposition) of a crossproduct matrix to find a set of $m$ linear combinations 
+of the $p$ input variables that explain a substantial amount of variability in 
+the data. The $m$ linear combinations summarize the essence of the relationships 
+in the data.
+
+## Location and Dispersion Statistics
+
+Common location and dispersion measures for quantitative variables are shown in 
+the following tables.
+
+| Sample Statistic | Symbol   | Computation   | Notes |
+|----------|--------|:--------:|---------------------|
+| Min              |                | $Y^*[1]$   | The smallest non-missing value   |
+| Max              |                | $Y^*[n]$   | The largest value                |
+| Mean             | $\overline{Y}$ | $\frac{1}{n}\sum_{i=1}^n Y_i$ | Most important location measure, but can be affected by outliers                 |
+| Median           | Med            | $$\left \{    \begin{array}{cc}       Y^* \left[ \frac{n+1}{2} \right ] & n \text{ is even} \\        \frac{1}{2} \left( Y^* \left[\frac{n}{2} \right] + Y^* \left[\frac{n}{2}+1\right] \right) & n\text{ is odd} \end{array}\right .$$ | Half of the observations are smaller than the median; robust against outliers    |
+| Mode             | Mode           |       | The most frequent value; not useful when real numbers are unique                 |
+| 1st Quartile     |                | $Y^*\left[\frac{1}{4}(n+1) \right]$     | 25% of the observations are smaller than $Q_1$   |
+| 2nd Quartile     |                | See Median |                           50% of the observations are smaller than $Q_2$. This is the median |
+| 3rd Quartile     |                | $Y^*\left[\frac{3}{4}(n+1) \right]$   | 75% of the observations are smaller than $Q_3$    |
+| X% Percentile    |                | $Y^*\left[\frac{X}{100}(n+1) \right]$ | For example, 5% of the observations are larger than $P_{95}$, the 95% percentile |
+
+: Important statistics measuring location attributes of a variable in a sample of size $n$. Sample mean, sample median, and sample mode are measures of the central tendency of a variable. $Y^*$ denotes the ordered sequence of observations and $Y^*[k]$ the value at the $k$th position in the ordered sequence. The min is defined as the smallest non-missing value because NaNs often sort as the smallest values in software packages.
+
+| Sample Statistic | Symbol   | Computation   | Notes |
+|----------|--------|:--------:|---------------------|
+| Range                | $R$    | $Y^*[n] - Y^*[1]$                                                    | Simply largest minus smallest value                                                        |
+| Inter-quartile Range | IQR    | $Q_3 - Q_1$                                                          | Used in constructing box plots; covers the central 50% of the data                         |
+| Standard Deviation   | $S$    | $\sqrt{\frac{1}{n-1}\sum_{i=1}^n\left( Y_i - \overline{Y}\right)^2}$ | Most important dispersion measure; in the same units as the sample mean (the units of $Y$) |
+| Variance             | $S^2$  | $\frac{1}{n-1}\sum_{i=1}^n \left( Y_i - \overline{Y} \right)^2$      | Important statistical measure of dispersion; in squared units of $Y$                       |
+
+: Important statistics measuring dispersion (variability) of a variable in a sample of size $n$.
+
+### `stats` Package
+
+The following list of functions provides basic location and dispersion statistics 
+in `R` (`stats` package). The `min` and `max` functions are provided by the 
+`base` package.
+
+| Function | Description | Notes
+| ----- | -------- | --------|
+|`mean`     | Sample (arithmetic) mean | can be trimmed (`trim=`)|
+| `median`  | Sample median | |
+| `sd`      | Standard deviation  | uses $n-1$ as denominator |
+| `var`     | Sample variance     | uses $n-1$ as denominator. Also can calculate variance-covariance matrix of vectors|
+| `range`   | Minimum and maximum | returns a vector with two values |
+| `IQR`     | Interquartile range | |
+| `mad`     | Median absolute deviation | default metric for center is the median
+| `quantile`| Sample quantiles | give list of probabilities in `probs=` argument; default is minimum, maximum, $Q_1$, $Q_2$, and $Q_3$ |
+|`fivenum`  | Tukey's five number summary  | Min, lower hinge, median, upper hinge, maximum |
+|`boxplot.stats` | Statistics to construct box plot | `stats` value contains extreme of lower whisker, lower hinge, median, upper hinge, extreme of upper whisker |
+| `cov`     | Sample covariance | Single statistic or covariance matrix |
+| `cor`     | Sample correlation | Single statistic or correlation matrix |
+
+: `R` summarization functions in `stats`.
+
+The `summary` function in `R` is a generic function that produces summaries of 
+an `R` object. The return value depends on the type of its argument. When `summary` 
+is called on a data frame, it returns basic location statistics for the numeric 
+variables and the counts-per-level for factors. Interestingly, it does not 
+compute any measures of dispersion.
+
+```{r}
+summary(iris)
+```
+
+To compute some of the summary statistics for multiple columns 
+in a matrix or data frame, the `apply` function is very helpful. 
+The following function call request the mean for the numeric columns 
+(the first four columns) of the `iris` data set.
+
+```{r}
+apply(iris[,-5],2,mean)
+```
+
+The next statement requests the standard deviations
+
+```{r}
+apply(iris[,-5],2,sd)
+```
+
+The second argument specifies the margin over which the function will be applied: 
+`1` implies calculations for rows, `2` implies calculations for columns. 
+The following statements compute column and row sums for the 50 *I. setosa* 
+observations in the `iris` data set
+
+```{r}
+col.sums <- apply(iris[iris$Species=="setosa",1:4], 2, sum)
+col.sums
+
+row.sums <- apply(iris[iris$Species=="setosa",1:4], 1, sum)
+row.sums
+```
+
+### `dplyr` Package
+
+The [`dplyr`](https://dplyr.tidyverse.org/) package is part of the 
+[`tidyverse`](https://www.tidyverse.org/), an "opinionated" collection of `R` 
+packages for data science. The `tidyverse` packages share a common philosophy; 
+that makes it easy to use code across multiple packages and to combine them. 
+An example of this common philosophy is **piping**.
+
+Suppose we use `dplyr` to compute the mean and standard deviation for the petal 
+width of *I. virginica* observations in the `iris` data set. You can put 
+this together in a single function call to the `dplyr::summarize` function.
+
+```{r, warning=FALSE, message=FALSE}
+library(dplyr)
+summarize(filter(iris,Species=="virginica"), 
+          count=n(),
+          mean=mean(Petal.Width), 
+          stdDev=sd(Petal.Width))
+```
+
+A more elegant way of processing the data is with a series of steps, 
+where the result of one step is passed automatically to the next step. 
+In `tidyverse` syntax, such a step is called a **pipe** and indicated with 
+`%>%`. Rewriting the previous `summarize` statement using pipes leads to
+
+```{r}
+iris %>% filter(Species=="virginica") %>%
+    summarize(count =n(),
+              mean  =mean(Petal.Width),
+              stdDev=sd(Petal.Width)) 
+```
+
+The pipeline starts with the data frame `iris`. Since a pipe operation passes 
+its input as the first argument to the next operation, the `filter` statement 
+is really `filter(iris,Species=="virginica)`.
+
+If you want to save the result of this piping operation, simply assign 
+it to an object:
+
+```{r, eval=FALSE}
+virg_summ <- iris %>% filter(Species=="virginica") %>%
+                  summarize(count =n(),
+                            mean  =mean(Petal.Width),
+                            stdDev=sd(Petal.Width)) 
+```
+
+Or, you can keep going, piping the result into other `tidyverse` functions, for example
+
+```{r}
+iris %>% filter(Species=="virginica") %>%
+    summarize(count =n(),
+              mean  =mean(Petal.Width),
+              stdDev=sd(Petal.Width)) %>%
+    glimpse()
+```
+
+The next table lists summarization functions in `dplyr`.
+
+| Function | Description | Notes
+| ----- | -------- | --------|
+|`mean`     | Sample (arithmetic) mean | |
+| `median`  | Sample median | |
+| `sd`      | Standard deviation  | uses $n-1$ as denominator |
+| `var`     | Sample variance     | uses $n-1$ as denominator |
+| `min`     | Minimum | |
+| `max`     | Maximum | |
+| `IQR`     | Interquartile range | |
+| `first`   | First value of a vector | | 
+| `last`    | Last value of a vector | | 
+| `nth`     | $n$^th^ value of a vector | |
+| `n`       | Number of values in a vector | |
+`n_distinct`| Number of distinct (unique) values in a vector | |
+
+: Summarization functions in `dplyr`.
+
+---
+
+In the previous examples we filtered and summarized on a single variable. 
+If you want to calculate statistics for multiple variables you can either 
+repeat the statements or indicate that the operation should apply across 
+multiple columns. In the early release of `dplyr` the `summarize_each` 
+function applied summary calculations for more than one column. 
+This function has been deprecated in favor of `across`, which gathers 
+multiple columns and can be applied to other `dplyr` statements as well 
+(`filter`, `group_by`, etc.).
+
+The following statement computes the mean for all numeric columns of the `iris` data set.
+
+```{r}
+iris %>% summarize(across(where(is.numeric), mean))
+```
+
+The next form of `summarize(across())` computes sample mean and median for 
+the variables whose name begins with `Sepal`.
+
+```{r}
+iris %>% summarize(across(starts_with("Sepal"), 
+                          list(mn=mean, md=median)))
+```
+
+---
+
+The order in which the data manipulations occur matter greatly for the result. 
+In the following statement, the observations are filtered for which the 
+`Sepal.Length` exceeds the average `Sepal.Length` by 10\%.
+
+```{r}
+iris %>% filter(Sepal.Length > 1.1*mean(Sepal.Length))
+```
+
+The average is computed across all 150 observations in the data set 
+(50 observations for each species). By adding a `group_by` statement prior to 
+the filter, the sepal lengths are being compared to the species-specific means. 
+The presence of the `group_by` statement conditions the subsequent `filter` 
+to be applied separately for each of the three species.
+
+```{r}
+iris %>% group_by(Species) %>% filter(Sepal.Length > 1.1*mean(Sepal.Length))
+
+```
+
+None of the *I. setosa* observations exceeded the overall sepal length by 10\%. 
+But three of the *I. setosa* observations exceeded the petal length of 
+that species by 10\%.
+
+## Group-by Summarization
+
+### Using `stats::aggregate`
+
+The preceding `dplyr` pipeline is an example of group-by processing: computing 
+summaries separately for the levels of a qualitative variable (`Species`).
+
+Group-by summarization is also possible with functions in the `stats` package. 
+The `aggregate` function allows the use of the formula syntax that is common 
+in many `stats` function. In addition to the "model", you need to specify the 
+aggregation function you wish to apply. For example, to compute the means for
+petal length by species and the standard deviations for petal length and petal 
+width by species, use the following syntax:
+
+```{r}
+aggregate(Petal.Length ~ Species, data=iris, FUN="mean")
+
+aggregate(cbind(Petal.Length,Petal.Width) ~ Species, data=iris, FUN="sd")
+```
+
+You can also use `aggregate` with functions that have more complex return 
+arguments, `quantile` and `summary`, for example.
+```{r}
+aggregate(Petal.Length ~ Species, data=iris, FUN="quantile")
+
+aggregate(Petal.Length ~ Species, data=iris, FUN="summary")
+```
+
+### Using `dplyr::group_by`
+
+The `group_by` statement in `dplyr` is a simple technique to apply 
+group-specific operations; it is thus one of the first statements you 
+see in summarization after the data frame:
+
+```{r}
+starwars %>% 
+    group_by(gender) %>% 
+    filter(mass > median(mass,na.rm=TRUE)) %>%
+    summarize(count=n())
+```
+
+
+You can combine group-by execution with summarization across multiple columns. 
+The following pipeline computes the arithmetic mean of all numeric columns i
+n the `iris` data set and arranges the result by descending value of the average 
+sepal width:
+
+```{r}
+iris %>% 
+    group_by(Species) %>% 
+    summarize(across(where(is.numeric), mean)) %>%
+    arrange(desc(Sepal.Width))
+```
+
+
+### Continuous Grouping Variable
+
+Group-by computations can also be used if the grouping variable is continuous. 
+We first create bins of the continuous variable, assign observations to the bins, 
+and then group the summaries by the bins. The following code assigns observations 
+to four bins based on the quartiles of `Sepal.Length` an then computes the 
+average `Sepal.Width` for each level of `Sepal.Length`.
+
+```{r, warning=FALSE, message=FALSE}
+library(dplyr)
+
+iris_data <- iris
+qs <- quantile(iris$Sepal.Length, probs=c(0, 0.25, 0.5, 0.75, 1))         # <1>
+qs
+iris_data$sep.len.cut <- cut(x=iris$Sepal.Length, breaks = qs)            # <2>
+
+# Fix the assignment of the minimum value to the first category
+iris_data$sep.len.cut[which.min(iris$Sepal.Length)] <- 
+    attr(iris_data$sep.len.cut,"levels")[1]
+
+iris_data %>% group_by(sep.len.cut) %>%
+         summarize(count=n(), mean=mean(Sepal.Width))
+```
+
+1. The `quantile` function computes the sample quantiles for the requested 
+vector of probabilities. 0 and 1 are included to capture the minimum and 
+maximum value.
+2. The `cut` function applies the computed quantiles as break points to bin 
+the values of `Sepal.Length`.
+
+You can include the creation of the categories directly into the `group_by` 
+statement if the cutpoints require no further processing.
+
+```{r}
+mtcars %>%
+    group_by(hp_cut = cut(hp, 3)) %>%
+    summarize(count=n(), mn_mpg=mean(mpg), mean_disp=mean(disp))
+               
+```

@@ -312,11 +312,15 @@ window.Quarto = {
   <li><a href="#pseudo-random-number-generation" id="toc-pseudo-random-number-generation" class="nav-link active" data-scroll-target="#pseudo-random-number-generation"><span class="header-section-number">9.1</span> Pseudo Random Number Generation</a></li>
   <li><a href="#how-to-generate-random-numbers" id="toc-how-to-generate-random-numbers" class="nav-link" data-scroll-target="#how-to-generate-random-numbers"><span class="header-section-number">9.2</span> How to Generate Random Numbers</a>
   <ul>
-  <li><a href="#quantile-functions" id="toc-quantile-functions" class="nav-link" data-scroll-target="#quantile-functions">Quantile Functions</a></li>
-  <li><a href="#transformations" id="toc-transformations" class="nav-link" data-scroll-target="#transformations">Transformations</a></li>
+  <li><a href="#transformations" id="toc-transformations" class="nav-link" data-scroll-target="#transformations">Transformations</a>
+  <ul class="collapse">
+  <li><a href="#box-muller-method-for-gaussians" id="toc-box-muller-method-for-gaussians" class="nav-link" data-scroll-target="#box-muller-method-for-gaussians">Box-Muller method for Gaussians</a></li>
+  <li><a href="#functions-of-bernoullis" id="toc-functions-of-bernoullis" class="nav-link" data-scroll-target="#functions-of-bernoullis">Functions of Bernoullis</a></li>
+  </ul></li>
+  <li><a href="#sec-random-quantilefunc" id="toc-sec-random-quantilefunc" class="nav-link" data-scroll-target="#sec-random-quantilefunc">Quantile Functions</a></li>
   <li><a href="#acceptance-rejection-method" id="toc-acceptance-rejection-method" class="nav-link" data-scroll-target="#acceptance-rejection-method">Acceptance-Rejection Method</a></li>
   </ul></li>
-  <li><a href="#random-numbers-in-r" id="toc-random-numbers-in-r" class="nav-link" data-scroll-target="#random-numbers-in-r"><span class="header-section-number">9.3</span> Random Numbers in <code>R</code></a></li>
+  <li><a href="#sec-random-numbers-R" id="toc-sec-random-numbers-R" class="nav-link" data-scroll-target="#sec-random-numbers-R"><span class="header-section-number">9.3</span> Random Numbers in <code>R</code></a></li>
   <li><a href="#seed-values" id="toc-seed-values" class="nav-link" data-scroll-target="#seed-values"><span class="header-section-number">9.4</span> Seed Values</a></li>
   </ul>
 </nav>
@@ -349,10 +353,20 @@ Y = f(x) + \epsilon \qquad \epsilon \sim \textit{ iid }  G(0,\sigma^2)
 <p>To generate data from this process requires access to Gaussian random variables. In a time series process, future observations are recursively related to current observations. For example, the <strong>auto-regressive process of first order</strong> (AR(1)) is defined as <span class="math display">\[
 Y(t) = \rho Y(t-1) + \epsilon(t)
 \]</span></p>
-<p>Here, <span class="math inline">\(Y(t)\)</span> is the observation of the time series at time <span class="math inline">\(t\)</span>, <span class="math inline">\(\rho\)</span> is a parameter of the process, and the <span class="math inline">\(\epsilon(t)\)</span> are independent random errors, also called the <strong>random shocks</strong> or <strong>innovations</strong> of the process. How do you generate a time series in the computer that is a realization of this process?</p>
+<p>Here, <span class="math inline">\(Y(t)\)</span> is the observation of the time series at time <span class="math inline">\(t\)</span>, <span class="math inline">\(\rho\)</span> is a parameter of the process, and the <span class="math inline">\(\epsilon(t)\)</span> are independent random errors, also called the <strong>random shocks</strong> or <strong>innovations</strong> of the process. To<br>
+generate a realization of this time series process in the computer we need to generate realizations of the random shocks—this requires a process to generate random numbers.</p>
+<p>Generating realizations of random processes is called <strong>simulation</strong> and is obviously important to study the properties of these processes via computing. Random numbers come into play in other applications of statistical programming and data analysis. Here are some of them:</p>
+<ul>
+<li><p><strong>Random sampling</strong>. Selecting a random subset <span class="math inline">\(n\)</span> from a data frame of size <span class="math inline">\(N\)</span>.</p></li>
+<li><p><strong>Random assignment</strong>. In an experimental design, treatments are assigned at random to experiemental units.</p></li>
+<li><p><strong>Data partitioning</strong>. Partitioning data randomly into subsets for model training, testing, and validation. Partitioning data into <span class="math inline">\(k\)</span> random subsets of (approximately) equal size for <span class="math inline">\(k\)</span>-fold cross-validation.</p></li>
+<li><p><strong>Bootstrapping</strong>. Drawing repeated samples with replacement from a data set of size <span class="math inline">\(n\)</span> to build the empirical distribution of statistical quantities.</p></li>
+<li><p><strong>Starting values</strong>. Estimation of parameters in nonlinear models requires starting values from which to commence the iterations. In neural networks these starting values are typically selected at random. In <span class="math inline">\(k\)</span>-means clustering the initial configuration also involves a random element: either observations are assigned randomly to <span class="math inline">\(k\)</span> clusters or <span class="math inline">\(k\)</span> observations are randomly chosen as cluster centroids.</p></li>
+<li><p><strong>Monte Carlo experiments</strong>. Simulate a range of scenarios for evaluation in complex systems. For example, a common method of evaluating the value at risk in a financial portfolio is to compute the distribution of portfolio values from simulated future market states.</p></li>
+</ul>
 <section id="pseudo-random-number-generation" class="level2" data-number="9.1">
 <h2 data-number="9.1" class="anchored" data-anchor-id="pseudo-random-number-generation"><span class="header-section-number">9.1</span> Pseudo Random Number Generation</h2>
-<p>Most random number generators (RNGs) are not generating true random numbers in the sense that the sequence of numbers is impossible to foresee. They are <strong>pseudo</strong> random number generators (PRNGs); they produce predetermined streams of numbers that appear random.</p>
+<p>Most random number generators (RNGs) are not generating true random numbers in the sense that the sequence of numbers is impossible to foresee. They are <strong>pseudo</strong> random number generators (PRNGs), producing predetermined streams of numbers that <strong>appear</strong> random. If you were to fully comprehend the algorithm by which a PRNG generates the next value based on its current state, the sequence of numbers it produces from this point on would be completely predictable. There would be nothing random about it at all.</p>
 <p>An example of a true random number generator, and probably a surprising one, is the wall of lava lamps in the lobby of the San Francisco office of internet infrastructure company Cloudflare.</p>
 <div class="example">
 <div class="example-header">
@@ -381,9 +395,42 @@ Figure&nbsp;9.1: Lava lamps in the lobby of the headquarters of Cloudflare. <a h
 </section>
 <section id="how-to-generate-random-numbers" class="level2" data-number="9.2">
 <h2 data-number="9.2" class="anchored" data-anchor-id="how-to-generate-random-numbers"><span class="header-section-number">9.2</span> How to Generate Random Numbers</h2>
-<section id="quantile-functions" class="level3">
-<h3 class="anchored" data-anchor-id="quantile-functions">Quantile Functions</h3>
-<p>Can you generate random numbers for one distribution from random numbers for another distribution? If the answer is “Yes” this could make it easier to write random number generators, a basic generator could be used to transform random numbers from one distribution into those of another. Fortunately, the answer is indeed “Yes” and the results leading there are very cool properties of cumulative distribution (c.d.f.) and quantile functions.</p>
+<p>Let us assume that we have a method to generate (pseudo-) random numbers from a basic distribution, for example, a continuous uniform distribution on <span class="math inline">\((0,1)\)</span>. How <em>that</em> is accomplished is discussed in <a href="#sec-random-numbers-R" class="quarto-xref"><span>Section 9.3</span></a>.</p>
+<p>We can use the <span class="math inline">\(U(0,1)\)</span> pseudo random numbers to create pseudo random numbers from other distributions by applying simple techniques:</p>
+<ul>
+<li>transformations</li>
+<li>quantile functions</li>
+<li>acceptance sampling</li>
+</ul>
+<section id="transformations" class="level3">
+<h3 class="anchored" data-anchor-id="transformations">Transformations</h3>
+<p>This approach to generating random numbers based on uniform numbers applies transformations that lead to known distributions.</p>
+<section id="box-muller-method-for-gaussians" class="level4">
+<h4 class="anchored" data-anchor-id="box-muller-method-for-gaussians">Box-Muller method for Gaussians</h4>
+<p>For example, the Box-Muller method <span class="citation" data-cites="BoxMuller1958">(<a href="references.html#ref-BoxMuller1958" role="doc-biblioref">Box and Muller 1958</a>)</span> generates pairs of independent standard Gaussian random variables from pairs of independent uniform random variables. If <span class="math inline">\(U_1\)</span> and <span class="math inline">\(U_2\)</span> are independent draws from a uniform distribution on [0,1], then <span class="math display">\[
+\begin{align*}
+Z_1 &amp;= \sqrt{-2\log U_1} \cos(2\pi U_2) \\
+Z_2 &amp;= \sqrt{-2\log U_1} \sin(2\pi U_2)
+\end{align*}
+\]</span> are independent random variables with G(0,1) distribution. The Box-Muller random number generator is an example of transforming uniform variables into normal variables without going through the quantile function (<a href="#sec-random-quantilefunc" class="quarto-xref"><span>Section 9.2.2</span></a>).</p>
+</section>
+<section id="functions-of-bernoullis" class="level4">
+<h4 class="anchored" data-anchor-id="functions-of-bernoullis">Functions of Bernoullis</h4>
+<p>Many discrete distributions can be expressed as functions of Bernoulli(<span class="math inline">\(\pi\)</span>) random variables. The Binomial(<span class="math inline">\(n,\pi\)</span>) random variable is the sum of <span class="math inline">\(n\)</span> independent Bernoulli(<span class="math inline">\(\pi\)</span>) r.v.s. A geometric random variable is the number of non-events until the first event occurs in a sequence of independent Bernoulli(<span class="math inline">\(\pi\)</span>) experiments. The negative binomial is the number of non-events until the <span class="math inline">\(k\)</span>th event occurs.</p>
+<p>A Bernoulli(<span class="math inline">\(\pi\)</span>) random number is generated from a <span class="math inline">\(U(0,1)\)</span> random number simply by labeling as events all draws where <span class="math inline">\(u \le \pi\)</span>. The following code draws a random number from a Binomial(10,0.3) distribution by summing the results of 10 Bernoulli(0.3) draws which in turn are based on <span class="math inline">\(U(0,1)\)</span> draws.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">534</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>binom <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">runif</span>(<span class="dv">10</span>) <span class="sc">&lt;=</span> <span class="fl">0.3</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>binom</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-random-quantilefunc" class="level3">
+<h3 class="anchored" data-anchor-id="sec-random-quantilefunc">Quantile Functions</h3>
+<p>Can you generally generate random numbers for one distribution from random numbers for another distribution? If the answer is “Yes” this could make it easier to write random number generators, a basic generator could be used to transform random numbers from one distribution into those of another. Fortunately, the answer is indeed “Yes” and the results leading there are very cool properties of cumulative distribution (c.d.f.) and quantile functions.</p>
 <div class="definition">
 <div class="definition-header">
 <p>Definition: Quantile Function</p>
@@ -395,13 +442,13 @@ Q(p) = F^{-1}(p)
 </div>
 </div>
 <p>So, if <span class="math inline">\(F\)</span> maps <span class="math inline">\(F:\mathbb{R} \rightarrow [0,1]\)</span>, the quantile function maps <span class="math inline">\(Q:[0,1] \rightarrow \mathbb{R}\)</span>.</p>
-<p>Here is a possibly surprising result: if <span class="math inline">\(Y\)</span> has c.d.f. <span class="math inline">\(F(y)\)</span>, then we can think of the c.d.f as a transformation of <span class="math inline">\(Y\)</span>. What would its distribution look like? The following <code>R</code> code draws 1,000 samples from a G(<span class="math inline">\(2,1.5^2\)</span>) distribution and plots the histogram of the c.d.f. values <span class="math inline">\(F(y)\)</span>.</p>
+<p>Here is a possibly surprising result: if <span class="math inline">\(Y\)</span> has c.d.f. <span class="math inline">\(F(y)\)</span>, then we can think of the c.d.f as a transformation of <span class="math inline">\(Y\)</span>. What would its distribution look like? The following <code>R</code> code draws 10,000 samples from a G(<span class="math inline">\(2,1.5^2\)</span>) distribution and plots the histogram of the c.d.f. values <span class="math inline">\(F(y)\)</span>.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># See section below on setting random number seed values</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">455675</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>yn <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1000</span>,<span class="at">mean=</span><span class="dv">2</span>,<span class="at">sd=</span><span class="fl">1.5</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>F_yn <span class="ot">&lt;-</span> <span class="fu">pnorm</span>(yn,<span class="at">mean=</span><span class="dv">2</span>,<span class="at">sd=</span><span class="fl">1.5</span>)    </span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(F_yn,<span class="at">main=</span><span class="st">""</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># See section below on setting random number seed values</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">455675</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>yn <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">10000</span>,<span class="at">mean=</span><span class="dv">2</span>,<span class="at">sd=</span><span class="fl">1.5</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>F_yn <span class="ot">&lt;-</span> <span class="fu">pnorm</span>(yn,<span class="at">mean=</span><span class="dv">2</span>,<span class="at">sd=</span><span class="fl">1.5</span>)    </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(F_yn,<span class="at">main=</span><span class="st">""</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -411,10 +458,12 @@ Q(p) = F^{-1}(p)
 </div>
 </div>
 <p>The distribution of <span class="math inline">\(F(y)\)</span> is <strong>uniform</strong> on (0,1)—this is true for <em>any</em> distribution, not just the Gaussian.</p>
-<p>We can combine this result with the following, possibly also surprising, result: If <span class="math inline">\(U\)</span> is a uniform random variable, and <span class="math inline">\(Q(p)\)</span> is the quantile function of <span class="math inline">\(Y\)</span>, then <span class="math inline">\(Q(u)\)</span> has the same distribution as <span class="math inline">\(Y\)</span>. This suggests a method to generate random numbers from any distribution if you have a generator of uniform random numbers: plug the uniform random numbers into the quantile function. <a href="#fig-random-quant-normal" class="quarto-xref">Figure&nbsp;<span>9.2</span></a> shows this for G(2,1.5^2) random numbers and <a href="#fig-random-quant-beta" class="quarto-xref">Figure&nbsp;<span>9.3</span></a> for Beta(1.5,3) random numbers.</p>
+<p>We can combine this result with the following, possibly also surprising, result:</p>
+<p>If <span class="math inline">\(U\)</span> is a uniform random variable, and <span class="math inline">\(Q(p)\)</span> is the quantile function of <span class="math inline">\(Y\)</span>, then <span class="math inline">\(Q(u)\)</span> has the same distribution as <span class="math inline">\(Y\)</span>.</p>
+<p>This suggests a method to generate random numbers from any distribution if you have a generator of <span class="math inline">\(U(0,1)\)</span> random numbers: plug the uniform random numbers into the quantile function. <a href="#fig-random-quant-normal" class="quarto-xref">Figure&nbsp;<span>9.2</span></a> shows this for G(<span class="math inline">\(2,1.5^2\)</span>) random numbers and <a href="#fig-random-quant-beta" class="quarto-xref">Figure&nbsp;<span>9.3</span></a> for Beta(1.5,3) random numbers.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>norm_rv <span class="ot">&lt;-</span> <span class="fu">qnorm</span>(<span class="fu">runif</span>(<span class="dv">1000</span>),<span class="at">mean=</span><span class="dv">2</span>,<span class="at">sd=</span><span class="fl">1.5</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(norm_rv,<span class="at">main=</span><span class="st">""</span>,<span class="at">xlab=</span><span class="st">"Y"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>norm_rv <span class="ot">&lt;-</span> <span class="fu">qnorm</span>(<span class="fu">runif</span>(<span class="dv">1000</span>),<span class="at">mean=</span><span class="dv">2</span>,<span class="at">sd=</span><span class="fl">1.5</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(norm_rv,<span class="at">main=</span><span class="st">""</span>,<span class="at">xlab=</span><span class="st">"Y"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-random-quant-normal" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
@@ -429,8 +478,8 @@ Figure&nbsp;9.2: G(2,1.5^2) random variables via quantile transform of U(0,1) ra
 </div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>beta_rv <span class="ot">&lt;-</span> <span class="fu">qbeta</span>(<span class="fu">runif</span>(<span class="dv">1000</span>),<span class="at">shape1=</span><span class="fl">1.5</span>,<span class="at">shape2=</span><span class="dv">3</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(beta_rv,<span class="at">main=</span><span class="st">""</span>,<span class="at">xlab=</span><span class="st">"Y"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>beta_rv <span class="ot">&lt;-</span> <span class="fu">qbeta</span>(<span class="fu">runif</span>(<span class="dv">1000</span>),<span class="at">shape1=</span><span class="fl">1.5</span>,<span class="at">shape2=</span><span class="dv">3</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(beta_rv,<span class="at">main=</span><span class="st">""</span>,<span class="at">xlab=</span><span class="st">"Y"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-random-quant-beta" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
@@ -445,20 +494,17 @@ Figure&nbsp;9.3: Beta(1.5,3) random variables via quantile transform of U(0,1) r
 </div>
 </div>
 <p>Because the quantile function is the inverse c.d.f., this method of generating random numbers is also known as the <strong>inversion</strong> method.</p>
-</section>
-<section id="transformations" class="level3">
-<h3 class="anchored" data-anchor-id="transformations">Transformations</h3>
-<p>Another approach to generate random numbers based on uniform numbers applies known transformations. The Box-Muller method <span class="citation" data-cites="BoxMuller1958">(<a href="references.html#ref-BoxMuller1958" role="doc-biblioref">Box and Muller 1958</a>)</span>, for example, generates pairs of independent standard Gaussian random variables from pairs of independent uniform random variables. If <span class="math inline">\(U_1\)</span> and <span class="math inline">\(U_2\)</span> are independent draws from a uniform distribution on [0,1], then <span class="math display">\[
-\begin{align*}
-Z_1 &amp;= \sqrt{-2\log U_1} \cos(2\pi U_2) \\
-Z_2 &amp;= \sqrt{-2\log U_1} \sin(2\pi U_2)
-\end{align*}
-\]</span> are independent random variables with G(0,1) distribution. The Box-Muller random number generator is an example of transforming uniform variables into normal variables without going through the quantile function.</p>
-<p>A general, and very intuitive, method to create random numbers from any distribution is based on acceptance-rejection sampling.</p>
+<p>Now that we have seen that it works, here is a simple proof of why this works. We formally define the quantile function as <span class="math inline">\(Q(p) = F^{-1}(p) = \inf\{y | f(y) \ge p\}\)</span>, <span class="math inline">\(0 &lt; p &lt; 1\)</span>.</p>
+<p><span class="math display">\[
+\Pr(Q(U) \le y) = \Pr(U \le F(y)) = F(y)
+\]</span></p>
+<p>The first equality follows from <span class="math inline">\(Q^{-1}(Q(U)) = U\)</span> and <span class="math inline">\(Q^{-1}(y) = F(y)\)</span>. The second equality follows because for a <span class="math inline">\(U(0,1)\)</span> random variable, <span class="math inline">\(\Pr(U \le x) = x\)</span>.</p>
 </section>
 <section id="acceptance-rejection-method" class="level3">
 <h3 class="anchored" data-anchor-id="acceptance-rejection-method">Acceptance-Rejection Method</h3>
-<p>What if we do not know the quantile function <span class="math inline">\(Q(p)\)</span>, and all we have is the density or mass function <span class="math inline">\(p(y)\)</span> of the variable whose random numbers we wish to generate? Such a situation might arise when we observe an empirical distribution function and now want to generate a sequence of random numbers from the particular distribution. Again, we can use uniform random numbers and “transform” them in such a way that the long-run frequency distribution of the transform matches the target distribution. <a href="#fig-rej-sampling" class="quarto-xref">Figure&nbsp;<span>9.4</span></a> depicts the idea graphically.</p>
+<p>A general, and very intuitive, method to create random numbers from any distribution is based on acceptance-rejection sampling.</p>
+<p>Suppose that we do not know the quantile function <span class="math inline">\(Q(p)\)</span>, and all we have is the density or mass function <span class="math inline">\(p(y)\)</span> of the variable whose random numbers we wish to generate? Such a situation might arise when we observe an empirical distribution function and now want to generate a sequence of random numbers from the particular distribution. Or maybe the quantile function is so difficult to compute that other methods of generating random numbers are more efficient.</p>
+<p>Again, we can use uniform random numbers and “transform” them in such a way that the long-run frequency distribution of the transform matches the target distribution. <a href="#fig-rej-sampling" class="quarto-xref">Figure&nbsp;<span>9.4</span></a> depicts the idea graphically.</p>
 <p>The target distribution we wish to draw random numbers from is <span class="math inline">\(p(y)\)</span>. We know the density to the extent that we can evaluate whether a pair of points <span class="math inline">\((y,U(y))\)</span> falls above or below <span class="math inline">\(p(y)\)</span>. This allows us to transform a sequence of uniform random numbers drawn between <span class="math inline">\([\min(y),\max(y)]\)</span> into a sequence of random numbers from <span class="math inline">\(p(y)\)</span>.</p>
 <div id="fig-rej-sampling" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig.algin="center">
 <figure class="quarto-float quarto-float-fig figure">
@@ -474,7 +520,7 @@ Figure&nbsp;9.4: Random numbers via acceptance-rejection sampling.
 <ol type="1">
 <li>Draw a random number <span class="math inline">\(X \sim U(\min\{y\}, \max\{y\})\)</span></li>
 <li>Draw a random number <span class="math inline">\(Y \sim U(\min\{p(y)\}, \max\{p(y)\})\)</span></li>
-<li>If <span class="math inline">\(Y \le p(X)\)</span>, accept <span class="math inline">\(X\)</span> as a draw from <span class="math inline">\(p(y)\)</span>. Otherwise, reject <span class="math inline">\(X\)</span> and return to 1.</li>
+<li>If <span class="math inline">\(Y \le p(X)\)</span>, accept <span class="math inline">\(X\)</span> as a draw from <span class="math inline">\(p(y)\)</span>. Otherwise, reject <span class="math inline">\(X\)</span> and return to step 1.</li>
 </ol>
 <div id="fig-rej-algo" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig.algin="center">
 <figure class="quarto-float quarto-float-fig figure">
@@ -497,26 +543,26 @@ f(y) = \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)}\, y^{\alpha-1}\,
 \]</span></p>
 <p>In <code>R</code> we can calculate this with the <code>dbeta(y,alpha,beta)</code> function. The following code uses a simple <code>while</code> loop to fill the pre-allocated vector <code>rbet</code> with Beta(1.5,3) random variables. The maximum density of a Beta(1.5,3) is about <span class="math inline">\(\max\{p(y)\} = 1.87\)</span>; this value is used in generating the random number for the vertical axis.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>rbet <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">1000</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>numacc <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>ntries <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> (numacc <span class="sc">&lt;</span> <span class="fu">length</span>(rbet)) {</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Draw independent random numbers for abscissa and ordinate</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    x <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>   )</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    y <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="fl">1.87</span>)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Check whether to accept or reject X depending on </span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># whether Y is below or above the target density</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (y <span class="sc">&lt;=</span> <span class="fu">dbeta</span>(x,<span class="fl">1.5</span>,<span class="dv">3</span>)) {</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        numacc <span class="ot">&lt;-</span> numacc<span class="sc">+</span><span class="dv">1</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        rbet[numacc] <span class="ot">&lt;-</span> x</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    ntries <span class="ot">&lt;-</span> ntries <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>ntries</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>rbet <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">1000</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>numacc <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>ntries <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> (numacc <span class="sc">&lt;</span> <span class="fu">length</span>(rbet)) {</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Draw independent random numbers for abscissa and ordinate</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    x <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>   )</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    y <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="fl">1.87</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Check whether to accept or reject X depending on </span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># whether Y is below or above the target density</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (y <span class="sc">&lt;=</span> <span class="fu">dbeta</span>(x,<span class="fl">1.5</span>,<span class="dv">3</span>)) {</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        numacc <span class="ot">&lt;-</span> numacc<span class="sc">+</span><span class="dv">1</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        rbet[numacc] <span class="ot">&lt;-</span> x</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    ntries <span class="ot">&lt;-</span> ntries <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>ntries</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 1848</code></pre>
+<pre><code>[1] 1851</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(rbet,<span class="at">main=</span><span class="st">""</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(rbet,<span class="at">main=</span><span class="st">""</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-beta-rejection" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
@@ -530,7 +576,7 @@ Figure&nbsp;9.6: Beta(1.5,3) random variables by acceptance-rejection sampling.
 </div>
 </div>
 </div>
-<p>The distribution of the random numbers generated via quantile transform (<a href="#fig-random-quant-beta" class="quarto-xref">Figure&nbsp;<span>9.3</span></a>) and via acceptance-rejection (<a href="#fig-beta-rejection" class="quarto-xref">Figure&nbsp;<span>9.6</span></a>) are very similar. Note that the acceptance method performs 1848 attempts, each requires two uniform random numbers. In total, the method uses 3696 uniform random numbers and 1848 evaluations of the Beta density function to create the random sequence of 1,000 Beta(1.5,3) draws. The U(0,1) is a special case of the Beta distributions with <span class="math inline">\(\alpha = \beta = 1\)</span>. The target distribution in this example is not that different from the sampled distribution. When the two distributions are more distinct, you will reject more samples along the way.</p>
+<p>The distribution of the random numbers generated via quantile transform (<a href="#fig-random-quant-beta" class="quarto-xref">Figure&nbsp;<span>9.3</span></a>) and via acceptance-rejection (<a href="#fig-beta-rejection" class="quarto-xref">Figure&nbsp;<span>9.6</span></a>) are very similar. Note that the acceptance method performs 1851 attempts, each requires two uniform random numbers. In total, the method uses 3702 uniform random numbers and 1851 evaluations of the Beta density function to create the random sequence of 1,000 Beta(1.5,3) draws. The U(0,1) is a special case of the Beta distributions with <span class="math inline">\(\alpha = \beta = 1\)</span>. The target distribution in this example is not that different from the sampled distribution. When the two distributions are more distinct, you will reject more samples along the way.</p>
 </div>
 </div>
 <p>If you were to use acceptance-rejection sampling to generate data from a Beta(1,1) distribution, what would be the proportion of accepted samples?</p>
@@ -571,7 +617,7 @@ hist(rbet,main="")
 ```
 
 ::: {.cell-output-display}
-![](random_files/figure-html/unnamed-chunk-3-1.png){width=672}
+![](random_files/figure-html/unnamed-chunk-4-1.png){width=672}
 :::
 :::
 
@@ -581,20 +627,20 @@ https://www.youtube.com/watch?v=PSYUu2sLAeI
 --->
 </section>
 </section>
-<section id="random-numbers-in-r" class="level2" data-number="9.3">
-<h2 data-number="9.3" class="anchored" data-anchor-id="random-numbers-in-r"><span class="header-section-number">9.3</span> Random Numbers in <code>R</code></h2>
-<p>One of the most commonly used random number generators for uniform random variables is the Mersenne Twister (MT) algorithm of <span class="citation" data-cites="Matsumoto1998">Matsumoto and Nishimura (<a href="references.html#ref-Matsumoto1998" role="doc-biblioref">1998</a>)</span>. The MT algorithm is the default RNG in many commercial and open source packages, for example, in <code>R</code>, SAS, SPSS, Stata.</p>
+<section id="sec-random-numbers-R" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="sec-random-numbers-R"><span class="header-section-number">9.3</span> Random Numbers in <code>R</code></h2>
+<p>One of the most commonly used random number generators for uniform random variables is the <strong>Mersenne Twister</strong> (MT) algorithm of <span class="citation" data-cites="Matsumoto1998">Matsumoto and Nishimura (<a href="references.html#ref-Matsumoto1998" role="doc-biblioref">1998</a>)</span>. The MT algorithm is the default RNG in many commercial and open source packages, for example, in <code>R</code>, SAS, SPSS, Stata.</p>
 <p>The <strong>period</strong> of the Mersenne Twister algorithm is based on a Mersenne prime, from which it derives its name. The period of a PRNG is the sequence length after which the generated numbers repeat themselves. The period of the MT algorithm is very long, <span class="math inline">\(2^{19937}-1\)</span>. Obviously, you want the period to be very large, but that in itself does not guarantee a high quality random number generator. The algorithms also need to pass statistical tests that analyze the distribution of the generated sequences, for example the battery of <a href="https://en.wikipedia.org/wiki/Diehard_tests">“Diehard Tests”</a>.</p>
 <p>One such test examines whether successive pairs of observations drawn from U(0,1) evenly fill the unit square (<a href="#fig-uniform-square" class="quarto-xref">Figure&nbsp;<span>9.7</span></a>).</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>m <span class="ot">=</span> <span class="dv">40000</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) {</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    u <span class="ot">=</span> <span class="fu">runif</span>(m);  </span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plot</span>(u[<span class="dv">1</span><span class="sc">:</span>(m<span class="dv">-1</span>)], u[<span class="dv">2</span><span class="sc">:</span>m], <span class="at">pch=</span><span class="st">"."</span>,</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">xlab=</span><span class="st">"Value"</span>,</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">ylab=</span><span class="st">"Next value"</span>)</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>m <span class="ot">=</span> <span class="dv">40000</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) {</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    u <span class="ot">=</span> <span class="fu">runif</span>(m);  </span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plot</span>(u[<span class="dv">1</span><span class="sc">:</span>(m<span class="dv">-1</span>)], u[<span class="dv">2</span><span class="sc">:</span>m], <span class="at">pch=</span><span class="st">"."</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">xlab=</span><span class="st">"Value"</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">ylab=</span><span class="st">"Next value"</span>)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-uniform-square" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
@@ -616,47 +662,47 @@ Figure&nbsp;9.7: Two sets of succesive pairs of 40,000 U(0,1) random numbers plo
 <li>the algorithm used to create random numbers from a discrete uniform distribution</li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">RNGkind</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">RNGkind</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "Mersenne-Twister" "Inversion"        "Rejection"       </code></pre>
 </div>
 </div>
-<p>In this setting, uniform random numbers are generated with the Mersenne Twister algorithm, Gaussian variates are generated by quantile inversion, and discrete uniform random numbers are produced with an acceptance-rejection algorithm.</p>
+<p>In this setting, uniform random numbers are generated with the Mersenne Twister algorithm, Gaussian variates are generated by quantile inversion, and discrete niform random numbers are produced with an acceptance-rejection algorithm.</p>
 <p>The <code>RNGkind()</code> function is also used to change the RNGs. For example, to use the Box-Muller algorithm instead of inversion for Gaussian random variables, specify</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">RNGkind</span>(<span class="at">normal.kind=</span><span class="st">"Box-Muller"</span>)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">RNGkind</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">RNGkind</span>(<span class="at">normal.kind=</span><span class="st">"Box-Muller"</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">RNGkind</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "Mersenne-Twister" "Box-Muller"       "Rejection"       </code></pre>
 </div>
 </div>
 <p>To reset the assignment to the default, use</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">RNGkind</span>(<span class="at">normal.kind=</span><span class="st">"default"</span>)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">RNGkind</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">RNGkind</span>(<span class="at">normal.kind=</span><span class="st">"default"</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">RNGkind</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "Mersenne-Twister" "Inversion"        "Rejection"       </code></pre>
 </div>
 </div>
 <p>The state of a pseudo RNG is represented by a series of numbers, for the MT algorithm this is a vector of 624 integers. Once the state has been initialized, random numbers are generated according to the algorithm. Each time a random number is drawn, the state of the generator advances.</p>
-<p>The state of the RNG can be seen with the <code>.Random.seed</code> variable, a vector of integers. The first value is an encoding of the three elements of <code>RNGkind()</code>. For the MT, <code>.Random.seed[3:626]</code> is the 624-dimensional integer vector of the RNG’s state. It is not recommended to make direct assignments to <code>.Random.seed</code>. Instead, you should initialize the RNG to a particular state through the seed value.</p>
+<p>The state of the RNG can be seen with the <code>.Random.seed</code> variable, a vector of integers. The first value is an encoding of the three elements of <code>RNGkind()</code>. For the MT, <code>.Random.seed[3:626]</code> is the 624-dimensional integer vector of the RNG’s state. It is not recommended to make direct assignments to <code>.Random.seed</code>. Instead, you should initialize the RNG to a particular state through the <strong>seed value</strong>.</p>
 </section>
 <section id="seed-values" class="level2" data-number="9.4">
 <h2 data-number="9.4" class="anchored" data-anchor-id="seed-values"><span class="header-section-number">9.4</span> Seed Values</h2>
 <p>The random number <strong>seed</strong> is an integer that initializes the random number generator. What that initialization looks like depends on the RNG. The goal is the same, however: to place the RNG in a known state that generates a known sequence of random numbers. This makes statistical programs that depend on random numbers reproducible in the sense that the exact same results are generated each time the program runs. This might be necessary for auditing, to verify what the program does, and to lock the results for a production environment.</p>
 <p>The <code>set.seed</code> function in <code>R</code> accomplishes that. Once the seed is set to a given value, the same random number sequence results.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">runif</span>(<span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">runif</span>(<span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.2875775 0.7883051 0.4089769 0.8830174</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">runif</span>(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">runif</span>(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.9404673 0.0455565</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">runif</span>(<span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">runif</span>(<span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.2875775 0.7883051 0.4089769 0.8830174 0.9404673 0.0455565</code></pre>
 </div>
@@ -671,12 +717,12 @@ Figure&nbsp;9.7: Two sets of succesive pairs of 40,000 U(0,1) random numbers plo
 <li><p>Do not use the same seed over and over. A best practice is to choose the seed itself based on a (true) random number generator. An acceptable method is to use the default initialization of the RNG and use one of the state variables as the seed; for example:</p></li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="cn">NULL</span>)</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>.Random.seed[<span class="dv">10</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="cn">NULL</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>.Random.seed[<span class="dv">10</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 2147096684</code></pre>
+<pre><code>[1] -1898392610</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(.Random.seed[<span class="dv">10</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(.Random.seed[<span class="dv">10</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>You need to keep track of the chosen seed value outside of the program, otherwise the results are not reproducible.</p>
 <ol start="5" type="1">
