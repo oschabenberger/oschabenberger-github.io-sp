@@ -271,26 +271,32 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./parallel.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Parallel Computing in <code>R</code></span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./reproducibility.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Reproducible Research and Data Analysis</span></span></a>
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Reproducible Research and Data Analysis</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./irls_literate.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Iteratively Reweighted Least Squares</span></span></a>
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Iteratively Reweighted Least Squares</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./latex_basics.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title"><span class="math inline">\(\LaTeX\)</span> Basics</span></span></a>
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title"><span class="math inline">\(\LaTeX\)</span> Basics</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sql_basics.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">SQL Basics</span></span></a>
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">SQL Basics</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -363,6 +369,8 @@ generate a realization of this time series process in the computer we need to ge
 <li><p><strong>Bootstrapping</strong>. Drawing repeated samples with replacement from a data set of size <span class="math inline">\(n\)</span> to build the empirical distribution of statistical quantities.</p></li>
 <li><p><strong>Starting values</strong>. Estimation of parameters in nonlinear models requires starting values from which to commence the iterations. In neural networks these starting values are typically selected at random. In <span class="math inline">\(k\)</span>-means clustering the initial configuration also involves a random element: either observations are assigned randomly to <span class="math inline">\(k\)</span> clusters or <span class="math inline">\(k\)</span> observations are randomly chosen as cluster centroids.</p></li>
 <li><p><strong>Monte Carlo experiments</strong>. Simulate a range of scenarios for evaluation in complex systems. For example, a common method of evaluating the value at risk in a financial portfolio is to compute the distribution of portfolio values from simulated future market states.</p></li>
+<li><p><strong>Permutation-based analysis</strong>. A whole series of analytic methods rely on calculating metrics on randomly permuted observations. For example, the importance of a variable in a model can be ascertained by permuting the values of the variable and measuring how a model performance metric such as the mean-squared error changes. If the metric does not change much when the variable’s values are permuted, then it is not an important driver of the model.</p></li>
+<li><p><strong>Jittering</strong>. To avoid overlaying symbols on graphics, their location is sometimes slightly perturbed, a process called jittering. Some local methods for model explainability perturb the values of the predictor variables in a small neighborhood to examine how the model predictions react.</p></li>
 </ul>
 <section id="pseudo-random-number-generation" class="level2" data-number="9.1">
 <h2 data-number="9.1" class="anchored" data-anchor-id="pseudo-random-number-generation"><span class="header-section-number">9.1</span> Pseudo Random Number Generation</h2>
@@ -494,7 +502,7 @@ Figure&nbsp;9.3: Beta(1.5,3) random variables via quantile transform of U(0,1) r
 </div>
 </div>
 <p>Because the quantile function is the inverse c.d.f., this method of generating random numbers is also known as the <strong>inversion</strong> method.</p>
-<p>Now that we have seen that it works, here is a simple proof of why this works. We formally define the quantile function as <span class="math inline">\(Q(p) = F^{-1}(p) = \inf\{y | f(y) \ge p\}\)</span>, <span class="math inline">\(0 &lt; p &lt; 1\)</span>.</p>
+<p>Now that we have seen that it works, here is a simple proof of why this works. We formally define the quantile function as <span class="math inline">\(Q(p) = F^{-1}(p) = \inf\{y | F(y) \ge p\}\)</span>, <span class="math inline">\(0 &lt; p &lt; 1\)</span>.</p>
 <p><span class="math display">\[
 \Pr(Q(U) \le y) = \Pr(U \le F(y)) = F(y)
 \]</span></p>
@@ -720,7 +728,7 @@ Figure&nbsp;9.7: Two sets of succesive pairs of 40,000 U(0,1) random numbers plo
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="cn">NULL</span>)</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>.Random.seed[<span class="dv">10</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] -1898392610</code></pre>
+<pre><code>[1] 104098171</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(.Random.seed[<span class="dv">10</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -1330,7 +1338,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"loop":false,"selector":".lightbox","descPosition":"bottom","openEffect":"zoom","closeEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"descPosition":"bottom","selector":".lightbox","openEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Statistical Programming - 14&nbsp; SQL Basics</title>
+<title>Statistical Programming - 15&nbsp; SQL Basics</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -147,7 +147,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sql_basics.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">SQL Basics</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sql_basics.html"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">SQL Basics</span></a></li></ol></nav>
         <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -248,26 +248,32 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./parallel.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Parallel Computing in <code>R</code></span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./reproducibility.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Reproducible Research and Data Analysis</span></span></a>
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Reproducible Research and Data Analysis</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./irls_literate.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Iteratively Reweighted Least Squares</span></span></a>
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Iteratively Reweighted Least Squares</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./latex_basics.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title"><span class="math inline">\(\LaTeX\)</span> Basics</span></span></a>
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title"><span class="math inline">\(\LaTeX\)</span> Basics</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sql_basics.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">SQL Basics</span></span></a>
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">SQL Basics</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -286,17 +292,17 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">14.1</span> Introduction</a></li>
-  <li><a href="#types-of-sql-commands" id="toc-types-of-sql-commands" class="nav-link" data-scroll-target="#types-of-sql-commands"><span class="header-section-number">14.2</span> Types of SQL Commands</a></li>
-  <li><a href="#most-common-sql-commands" id="toc-most-common-sql-commands" class="nav-link" data-scroll-target="#most-common-sql-commands"><span class="header-section-number">14.3</span> Most Common SQL Commands</a>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">15.1</span> Introduction</a></li>
+  <li><a href="#types-of-sql-commands" id="toc-types-of-sql-commands" class="nav-link" data-scroll-target="#types-of-sql-commands"><span class="header-section-number">15.2</span> Types of SQL Commands</a></li>
+  <li><a href="#most-common-sql-commands" id="toc-most-common-sql-commands" class="nav-link" data-scroll-target="#most-common-sql-commands"><span class="header-section-number">15.3</span> Most Common SQL Commands</a>
   <ul>
   <li><a href="#creating-and-modifying-a-table" id="toc-creating-and-modifying-a-table" class="nav-link" data-scroll-target="#creating-and-modifying-a-table">Creating and Modifying a Table</a></li>
   <li><a href="#pivoting-a-table" id="toc-pivoting-a-table" class="nav-link" data-scroll-target="#pivoting-a-table">Pivoting a Table</a></li>
   <li><a href="#dropping-a-table" id="toc-dropping-a-table" class="nav-link" data-scroll-target="#dropping-a-table">Dropping a Table</a></li>
   </ul></li>
-  <li><a href="#select-statement" id="toc-select-statement" class="nav-link" data-scroll-target="#select-statement"><span class="header-section-number">14.4</span> SELECT Statement</a></li>
-  <li><a href="#subqueries" id="toc-subqueries" class="nav-link" data-scroll-target="#subqueries"><span class="header-section-number">14.5</span> Subqueries</a></li>
-  <li><a href="#combining-tables-with-sql" id="toc-combining-tables-with-sql" class="nav-link" data-scroll-target="#combining-tables-with-sql"><span class="header-section-number">14.6</span> Combining Tables with SQL</a>
+  <li><a href="#select-statement" id="toc-select-statement" class="nav-link" data-scroll-target="#select-statement"><span class="header-section-number">15.4</span> SELECT Statement</a></li>
+  <li><a href="#subqueries" id="toc-subqueries" class="nav-link" data-scroll-target="#subqueries"><span class="header-section-number">15.5</span> Subqueries</a></li>
+  <li><a href="#combining-tables-with-sql" id="toc-combining-tables-with-sql" class="nav-link" data-scroll-target="#combining-tables-with-sql"><span class="header-section-number">15.6</span> Combining Tables with SQL</a>
   <ul>
   <li><a href="#set-operations" id="toc-set-operations" class="nav-link" data-scroll-target="#set-operations">Set Operations</a></li>
   <li><a href="#joins" id="toc-joins" class="nav-link" data-scroll-target="#joins">Joins</a></li>
@@ -309,7 +315,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span id="sec-sql-basics" class="quarto-section-identifier"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">SQL Basics</span></span></h1>
+<h1 class="title"><span id="sec-sql-basics" class="quarto-section-identifier"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">SQL Basics</span></span></h1>
 </div>
 
 
@@ -326,8 +332,8 @@ window.Quarto = {
 </header>
 
 
-<section id="introduction" class="level2" data-number="14.1">
-<h2 data-number="14.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">14.1</span> Introduction</h2>
+<section id="introduction" class="level2" data-number="15.1">
+<h2 data-number="15.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">15.1</span> Introduction</h2>
 <p>SQL is a declarative programming language, you express through programming statements what you want to happen, not how to control the flow of the program. Other examples of declarative languages are CSS, HTML, XML, and Prolog. To support writing scripts, functions, and procedures, database vendors have added flow-control statements (if-then, loops, switches, etc.), but these are extensions of the database and not of the SQL language.</p>
 <p>Is it pronounced “S-Q-L” or “sequel”? Both are acceptable but if you want to give a nod to its origin, then you would pronounce it ”sequel” like SEQUEL; the name given to the project by its inventors at IBM in the 1970s. The description as structured query language and the acronym SQL came later.</p>
 <p>The concept of a <em>query</em> in SQL is very general: any interaction with a (relational) database. A query in the narrow sense asks questions about the data in the database or retrieves data. Commands that create tables, alter databases, update or delete records, and so on, are also considered queries.</p>
@@ -395,8 +401,8 @@ Note
 <span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>│            4 │</span>
 <span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>└──────────────┘ </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="types-of-sql-commands" class="level2" data-number="14.2">
-<h2 data-number="14.2" class="anchored" data-anchor-id="types-of-sql-commands"><span class="header-section-number">14.2</span> Types of SQL Commands</h2>
+<section id="types-of-sql-commands" class="level2" data-number="15.2">
+<h2 data-number="15.2" class="anchored" data-anchor-id="types-of-sql-commands"><span class="header-section-number">15.2</span> Types of SQL Commands</h2>
 <p>SQL commands are arranged in logical groups. The most important group for the data scientist is the Data Manipulation Language (DML) group, it consists of statements that change the data stored within a database table and traditionally also includes the most important SQL statement, SELECT. The second most important group of SQL commands is the Data Definition Language (DDL), it provides syntax to create and modify database objects.</p>
 <ul>
 <li><p><strong>Data Definition Language</strong> (DDL): syntax to create and modify database objects. The commands are about the objects themselves, not the data they contain. For example, the CREATE TABLE statement defines the schema of a table and creates it, but it does not populate the table with data. Commands in this group include CREATE, DROP, ALTER.</p></li>
@@ -407,8 +413,8 @@ Note
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>DENY UPDATE ON table_foo TO user1;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Not all databases support DCL. SQLite and DuckDB do not.</p>
 </section>
-<section id="most-common-sql-commands" class="level2" data-number="14.3">
-<h2 data-number="14.3" class="anchored" data-anchor-id="most-common-sql-commands"><span class="header-section-number">14.3</span> Most Common SQL Commands</h2>
+<section id="most-common-sql-commands" class="level2" data-number="15.3">
+<h2 data-number="15.3" class="anchored" data-anchor-id="most-common-sql-commands"><span class="header-section-number">15.3</span> Most Common SQL Commands</h2>
 <p>The most important SQL commands for a data scientist are the following:</p>
 <ul>
 <li><p>CREATE TABLE</p></li>
@@ -546,8 +552,8 @@ Note
 <div class="sourceCode" id="cb21"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>DROP TABLE WorldCities;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 </section>
-<section id="select-statement" class="level2" data-number="14.4">
-<h2 data-number="14.4" class="anchored" data-anchor-id="select-statement"><span class="header-section-number">14.4</span> SELECT Statement</h2>
+<section id="select-statement" class="level2" data-number="15.4">
+<h2 data-number="15.4" class="anchored" data-anchor-id="select-statement"><span class="header-section-number">15.4</span> SELECT Statement</h2>
 <p>The SELECT statement is the workhorse for querying, analyzing, combining, and ordering data in database tables. The more important basic syntax elements of SELECT are</p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>SELECT select_list</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>   FROM tables</span>
@@ -690,8 +696,8 @@ Note
 <span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>│   618 │   200 │    20 │    98 │   110 │    62 │      8 │</span>
 <span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>└───────┴───────┴───────┴───────┴───────┴───────┴────────┘ </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="subqueries" class="level2" data-number="14.5">
-<h2 data-number="14.5" class="anchored" data-anchor-id="subqueries"><span class="header-section-number">14.5</span> Subqueries</h2>
+<section id="subqueries" class="level2" data-number="15.5">
+<h2 data-number="15.5" class="anchored" data-anchor-id="subqueries"><span class="header-section-number">15.5</span> Subqueries</h2>
 <p>A subquery is a query inside another query. The subquery is also called the inner query and the query containing it is referred to as the outer query. Subqueries are said to be <strong>uncorrelated</strong> if they are self-contained and can be run without the outer query. For example, the following SQL statement contains an uncorrelated subquery, <code>select min(weight) from auto</code>, which you can run as a stand-alone query</p>
 <div class="sourceCode" id="cb32"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>select name from auto where weight = (select min(weight) from auto);</span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -760,8 +766,8 @@ Note
 <span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>└─────────────────────────┘ </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The difference is that the correlated subquery returns actual records from the table whereas the SELECT with GROUP BY clause returns the result of aggregation. Put it another way: do you want to see the min reaction time for each subject or do you want to see the records that match the min reaction time for each subject?</p>
 </section>
-<section id="combining-tables-with-sql" class="level2" data-number="14.6">
-<h2 data-number="14.6" class="anchored" data-anchor-id="combining-tables-with-sql"><span class="header-section-number">14.6</span> Combining Tables with SQL</h2>
+<section id="combining-tables-with-sql" class="level2" data-number="15.6">
+<h2 data-number="15.6" class="anchored" data-anchor-id="combining-tables-with-sql"><span class="header-section-number">15.6</span> Combining Tables with SQL</h2>
 <p>The process of combining tables is based on set operations or joins. A join uses the values in specific columns of the tables to match records. A set operation is a merging of columns without considering the values in the columns. Appending the rows of one table to another table is a set operation. What happens to columns that exist in one table but not in the other during the append depends on the implementation. Similarly, what happens to columns that share the same name when tables are merged horizontally depends on the implementation.</p>
 <section id="set-operations" class="level3">
 <h3 class="anchored" data-anchor-id="set-operations">Set Operations</h3>
@@ -1536,7 +1542,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./latex_basics.html" class="pagination-link" aria-label="$\LaTeX$ Basics">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title"><span class="math inline">\(\LaTeX\)</span> Basics</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title"><span class="math inline">\(\LaTeX\)</span> Basics</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

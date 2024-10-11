@@ -53,7 +53,17 @@ complex systems. For example, a common method of evaluating the value at risk
 in a financial portfolio is to compute the distribution of portfolio values 
 from simulated future market states.
 
+- **Permutation-based analysis**. A whole series of analytic methods rely on 
+calculating metrics on randomly permuted observations. For example, the importance
+of a variable in a model can be ascertained by permuting the values of the variable
+and measuring how a model performance metric such as the mean-squared error 
+changes. If the metric does not change much when the variable's values are 
+permuted, then it is not an important driver of the model.
 
+- **Jittering**. To avoid overlaying symbols on graphics, their location is 
+sometimes slightly perturbed, a process called jittering. Some local methods
+for model explainability perturb the values of the predictor variables in a
+small neighborhood to examine how the model predictions react.
 
 
 ## Pseudo Random Number Generation
@@ -233,7 +243,7 @@ Because the quantile function is the inverse c.d.f., this method of generating
 random numbers is also known as the **inversion** method.
 
 Now that we have seen that it works, here is a simple proof of why this works. 
-We formally define the quantile function as $Q(p) = F^{-1}(p) = \inf\{y | f(y) \ge p\}$, $0 < p < 1$.
+We formally define the quantile function as $Q(p) = F^{-1}(p) = \inf\{y | F(y) \ge p\}$, $0 < p < 1$.
 
 $$
 \Pr(Q(U) \le y) = \Pr(U \le F(y)) = F(y)

@@ -28,6 +28,7 @@ book:
     - matrices.qmd
     - random.qmd
     - debugging.qmd 
+    - parallel.qmd
     - reproducibility.qmd
     - irls_literate.qmd
     - latex_basics.qmd

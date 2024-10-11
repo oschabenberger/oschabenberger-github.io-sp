@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Statistical Programming - 13&nbsp; \(\LaTeX\) Basics</title>
+<title>Statistical Programming - 14&nbsp; \(\LaTeX\) Basics</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -147,7 +147,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./latex_basics.html"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title"><span class="math inline">\(\LaTeX\)</span> Basics</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./latex_basics.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title"><span class="math inline">\(\LaTeX\)</span> Basics</span></a></li></ol></nav>
         <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -248,26 +248,32 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./parallel.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Parallel Computing in <code>R</code></span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./reproducibility.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Reproducible Research and Data Analysis</span></span></a>
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Reproducible Research and Data Analysis</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./irls_literate.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Iteratively Reweighted Least Squares</span></span></a>
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Iteratively Reweighted Least Squares</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./latex_basics.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title"><span class="math inline">\(\LaTeX\)</span> Basics</span></span></a>
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title"><span class="math inline">\(\LaTeX\)</span> Basics</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sql_basics.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">SQL Basics</span></span></a>
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">SQL Basics</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -286,10 +292,10 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#a-bit-of-history" id="toc-a-bit-of-history" class="nav-link active" data-scroll-target="#a-bit-of-history"><span class="header-section-number">13.1</span> A Bit of History</a></li>
-  <li><a href="#the-document-structure" id="toc-the-document-structure" class="nav-link" data-scroll-target="#the-document-structure"><span class="header-section-number">13.2</span> The Document Structure</a></li>
-  <li><a href="#basic-formatting" id="toc-basic-formatting" class="nav-link" data-scroll-target="#basic-formatting"><span class="header-section-number">13.3</span> Basic Formatting</a></li>
-  <li><a href="#inline-math-and-display-math" id="toc-inline-math-and-display-math" class="nav-link" data-scroll-target="#inline-math-and-display-math"><span class="header-section-number">13.4</span> Inline Math and Display Math</a>
+  <li><a href="#a-bit-of-history" id="toc-a-bit-of-history" class="nav-link active" data-scroll-target="#a-bit-of-history"><span class="header-section-number">14.1</span> A Bit of History</a></li>
+  <li><a href="#the-document-structure" id="toc-the-document-structure" class="nav-link" data-scroll-target="#the-document-structure"><span class="header-section-number">14.2</span> The Document Structure</a></li>
+  <li><a href="#basic-formatting" id="toc-basic-formatting" class="nav-link" data-scroll-target="#basic-formatting"><span class="header-section-number">14.3</span> Basic Formatting</a></li>
+  <li><a href="#inline-math-and-display-math" id="toc-inline-math-and-display-math" class="nav-link" data-scroll-target="#inline-math-and-display-math"><span class="header-section-number">14.4</span> Inline Math and Display Math</a>
   <ul>
   <li><a href="#math-expressions" id="toc-math-expressions" class="nav-link" data-scroll-target="#math-expressions">Math Expressions</a>
   <ul class="collapse">
@@ -301,8 +307,8 @@ window.Quarto = {
   <li><a href="#aligning-equations" id="toc-aligning-equations" class="nav-link" data-scroll-target="#aligning-equations">Aligning Equations</a></li>
   <li><a href="#arrays-and-matrices" id="toc-arrays-and-matrices" class="nav-link" data-scroll-target="#arrays-and-matrices">Arrays and Matrices</a></li>
   </ul></li>
-  <li><a href="#tables" id="toc-tables" class="nav-link" data-scroll-target="#tables"><span class="header-section-number">13.5</span> Tables</a></li>
-  <li><a href="#extending-latex" id="toc-extending-latex" class="nav-link" data-scroll-target="#extending-latex"><span class="header-section-number">13.6</span> Extending <span class="math inline">\(\LaTeX\)</span></a>
+  <li><a href="#tables" id="toc-tables" class="nav-link" data-scroll-target="#tables"><span class="header-section-number">14.5</span> Tables</a></li>
+  <li><a href="#extending-latex" id="toc-extending-latex" class="nav-link" data-scroll-target="#extending-latex"><span class="header-section-number">14.6</span> Extending <span class="math inline">\(\LaTeX\)</span></a>
   <ul>
   <li><a href="#packages" id="toc-packages" class="nav-link" data-scroll-target="#packages">Packages</a></li>
   <li><a href="#defining-your-own-commands-macros" id="toc-defining-your-own-commands-macros" class="nav-link" data-scroll-target="#defining-your-own-commands-macros">Defining Your Own Commands (Macros)</a></li>
@@ -315,7 +321,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span id="sec-latex" class="quarto-section-identifier"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title"><span class="math inline">\(\LaTeX\)</span> Basics</span></span></h1>
+<h1 class="title"><span id="sec-latex" class="quarto-section-identifier"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title"><span class="math inline">\(\LaTeX\)</span> Basics</span></span></h1>
 </div>
 
 
@@ -341,16 +347,16 @@ window.Quarto = {
 <p>The formulas you see throughout this material are an example of the second kind. RMarkdown and Quarto support <span class="math inline">\(\LaTeX\)</span> through Pandoc, on which these authoring tools are based. This enables you to include formulas in your .Rmd (.qmd) files but you cannot lean on the full capabilities of <span class="math inline">\(\LaTeX\)</span>.</p>
 <p>Writing a full <span class="math inline">\(\LaTeX\)</span> document (the first bullet above) simply requires a text editor to author the document. You can also use <span class="math inline">\(\LaTeX\)</span> authoring tools like <a href="https://pages.uoregon.edu/koch/texshop/">TeXShop</a> on the Mac, a GUI front end for <span class="math inline">\(\TeX\)</span>.</p>
 <p>One of the beautiful features of <span class="math inline">\(\TeX\)</span> and <span class="math inline">\(\LaTeX\)</span> is the platform independence. You type simple instructions in a text file and the program converts it into a professional typeset document. The result of that conversion does not depend on whether you do it on Linux, MacOS, or Windows. However, while the <span class="math inline">\(\TeX\)</span> is platform independent, the editing tools are dependent on the operating system. For example, TeXShop is only available on MacOS.</p>
-<section id="a-bit-of-history" class="level2" data-number="13.1">
-<h2 data-number="13.1" class="anchored" data-anchor-id="a-bit-of-history"><span class="header-section-number">13.1</span> A Bit of History</h2>
+<section id="a-bit-of-history" class="level2" data-number="14.1">
+<h2 data-number="14.1" class="anchored" data-anchor-id="a-bit-of-history"><span class="header-section-number">14.1</span> A Bit of History</h2>
 <p><span class="math inline">\(\TeX\)</span> goes back to Donald Knuth, legendary professor of computer science at Stanford University. Knuth was not happy with a reprinting of one of his volumes on <em>The Art of Computer Programming</em>. The lead-based process of typesetting had been replaced with photo-offset printing and a different set of fonts. Knuth started to write a specification of <span class="math inline">\(\TeX\)</span> in 1977 and refined it over the next 12 years. He stopped developing <span class="math inline">\(\TeX\)</span> in 1989.</p>
 <p>Leslie Lamport, a computer scientist at Stanford Research Institute, DEC, Compaq, and later Microsoft, developed an extensive collection of macros based on the basic primitives in <span class="math inline">\(\TeX\)</span>. This version is called <span class="math inline">\(\LaTeX\)</span>. So, <span class="math inline">\(\TeX\)</span> is the typesetting program used with the original primitives and macros by Knuth. <span class="math inline">\(\LaTeX\)</span> is the typesetting program used with the LaTeX macro package by Leslie Lamport.</p>
 <p>The current version of <span class="math inline">\(\LaTeX\)</span> is based on LaTeX2e, which brought together the LaTeX series of macros with the AMS-TeX macros developed for mathematicians.</p>
 <hr>
 <p>There is a ton of reference material on <span class="math inline">\(\LaTeX\)</span> on the internet. Every issue you are running into has likely already been asked and solved. The <a href="https://www.overleaf.com/learn">Overleaf</a> documentation is a great resource as in Stack Exchange and stack overflow.</p>
 </section>
-<section id="the-document-structure" class="level2" data-number="13.2">
-<h2 data-number="13.2" class="anchored" data-anchor-id="the-document-structure"><span class="header-section-number">13.2</span> The Document Structure</h2>
+<section id="the-document-structure" class="level2" data-number="14.2">
+<h2 data-number="14.2" class="anchored" data-anchor-id="the-document-structure"><span class="header-section-number">14.2</span> The Document Structure</h2>
 <p>The basic structure of a <span class="math inline">\(\LaTeX\)</span> document consists of the <strong>preamble</strong> and the <strong>document body</strong>. The body is enclosed in a <code>\begin{document}</code> — <code>\end{document}</code> block. The preamble specifies the type of document and parameters such as fonts and paper size in the <code>\documentclass[]{}</code> command, which packages to load to help typesetting the document (<code>\usepackage</code>), and optionally the title, author, and date of the document.</p>
 <p>A basic article might look like this:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>\documentclass[11pt,oneside, letterpaper]{article}</span>
@@ -383,21 +389,21 @@ window.Quarto = {
 <span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>\end{document}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Typesetting the file produces <a href="#fig-latex-example" class="quarto-xref">Figure&nbsp;<span>13.1</span></a>.</p>
+<p>Typesetting the file produces <a href="#fig-latex-example" class="quarto-xref">Figure&nbsp;<span>14.1</span></a>.</p>
 <div id="fig-latex-example" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-latex-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="images/LatexExample.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-latex-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;13.1: Document produced from <span class="math inline">\(\LaTeX\)</span> code above.
+Figure&nbsp;14.1: Document produced from <span class="math inline">\(\LaTeX\)</span> code above.
 </figcaption>
 </figure>
 </div>
 <p>The <code>amsmath</code> package is pretty much table stakes for any document that has some serious math in it. That package also makes important definitions and redefinitions of <span class="math inline">\(\LaTeX\)</span> commands (see below). For example, it redefines the display math environment <code>\[ ... \]</code> as <code>\begin{equation*} ...</code>\end{equation*}`, an unnumbered equation.</p>
 </section>
-<section id="basic-formatting" class="level2" data-number="13.3">
-<h2 data-number="13.3" class="anchored" data-anchor-id="basic-formatting"><span class="header-section-number">13.3</span> Basic Formatting</h2>
+<section id="basic-formatting" class="level2" data-number="14.3">
+<h2 data-number="14.3" class="anchored" data-anchor-id="basic-formatting"><span class="header-section-number">14.3</span> Basic Formatting</h2>
 <ul>
 <li><p><code>\text{foo}</code>: to write foo in text mode while in math mode, for example, <span class="math inline">\(\alpha = \text{foo}/\beta\)</span></p></li>
 <li><p><code>\textbf{foo}</code>: <strong>bold</strong> formatting</p></li>
@@ -405,8 +411,8 @@ Figure&nbsp;13.1: Document produced from <span class="math inline">\(\LaTeX\)</s
 <li><p><code>\underline{foo}</code>: <u>underline</u> formatting</p></li>
 </ul>
 </section>
-<section id="inline-math-and-display-math" class="level2" data-number="13.4">
-<h2 data-number="13.4" class="anchored" data-anchor-id="inline-math-and-display-math"><span class="header-section-number">13.4</span> Inline Math and Display Math</h2>
+<section id="inline-math-and-display-math" class="level2" data-number="14.4">
+<h2 data-number="14.4" class="anchored" data-anchor-id="inline-math-and-display-math"><span class="header-section-number">14.4</span> Inline Math and Display Math</h2>
 <p><span class="math inline">\(\LaTeX\)</span> distinguishes two environments for mathematical expressions, <strong>inline math</strong> sets mathematical symbols (in math font) in the current paragraph. You enclose math in inline mode in <code>$  $</code> or with <code>\( ... \)</code> symbols or place it in a <code>\begin{math} ... \end{math}</code> block. The text <code>denoted $Y \sim \text{Beta}(\alpha,\beta)$</code> in the <span class="math inline">\(\LaTeX\)</span> document above uses inline math.</p>
 <p>In <strong>display math</strong> mode the content is typeset on a separate line, set apart from the rest of the paragraph. Display math mode is enclosed in <code>$$ ... $$</code> or <code>\[ .... \]</code> delimiters or in a <code>\begin{displaymath} ... \end{displaymath}</code> block or in a <code>\begin{equation} ... \end{equation}</code> block.</p>
 <p>Apparently, <code>\[ ... \]</code> or the <code>\begin{} ... \end{}</code> blocks are now the preferred way to write display math instead of the TeX primitive <code>$$</code>. You can see from my <span class="math inline">\(LaTeX\)</span> files that I did not get that memo. For a discussion of the pros and cons for using <code>\[ ... \]</code> instead of <code>$$ ... $$</code>, see <a href="https://tex.stackexchange.com/questions/503/why-is-preferable-to">here</a>.</p>
@@ -441,11 +447,11 @@ Y_{i_{jk}}  \qquad Y_{i_{j_k}}
 </section>
 <section id="parentheses-and-brackets" class="level4">
 <h4 class="anchored" data-anchor-id="parentheses-and-brackets">Parentheses and brackets</h4>
-<p><a href="#tbl-latex-paren" class="quarto-xref">Table&nbsp;<span>13.1</span></a> lists some of the common types of parentheses and brackets in <span class="math inline">\(\LaTeX\)</span>. Since <code>{ }</code> has special meaning as a grouping operator, you need to escape them with a slash if you mean to render curly braces. The same goes for rendering special characters such as <code>$</code> or <code>&amp;</code>, you escape them as <code>\$</code> and <code>\&amp;</code>.</p>
+<p><a href="#tbl-latex-paren" class="quarto-xref">Table&nbsp;<span>14.1</span></a> lists some of the common types of parentheses and brackets in <span class="math inline">\(\LaTeX\)</span>. Since <code>{ }</code> has special meaning as a grouping operator, you need to escape them with a slash if you mean to render curly braces. The same goes for rendering special characters such as <code>$</code> or <code>&amp;</code>, you escape them as <code>\$</code> and <code>\&amp;</code>.</p>
 <div id="tbl-latex-paren" class="striped quarto-float anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-latex-paren-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;13.1: Some bracket and parentheses types in <span class="math inline">\(\LaTeX\)</span>.
+Table&nbsp;14.1: Some bracket and parentheses types in <span class="math inline">\(\LaTeX\)</span>.
 </figcaption>
 <div aria-describedby="tbl-latex-paren-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="table-striped table">
@@ -673,8 +679,8 @@ g^{-1}(\eta) &amp;= \frac{1}{1+e^{-\eta}} = \mu
 <p>The <code>{ccc}</code> parameters of the <code>\begin{array}</code> command specify that the array has three columns and that their alignment is centered. Controlling alignment can be useful if a matrix contains a mix of integers and real numbers, or positive and negative numbers.</p>
 </section>
 </section>
-<section id="tables" class="level2" data-number="13.5">
-<h2 data-number="13.5" class="anchored" data-anchor-id="tables"><span class="header-section-number">13.5</span> Tables</h2>
+<section id="tables" class="level2" data-number="14.5">
+<h2 data-number="14.5" class="anchored" data-anchor-id="tables"><span class="header-section-number">14.5</span> Tables</h2>
 <p>Writing basic tables in <span class="math inline">\(\LaTeX\)</span> is easy, getting tables production ready for a paper can take a lot of time. Let’s start with the basics. The basic environment for creating tables is <code>tabular</code>. As with <code>array</code> you specify the number of columns of the tabular layout and their alignment. For example <code>\begin{tabular}{llcc}</code> starts a table with four columns, the first two are left-aligned, the last two columns are centered.</p>
 <p>You can also specify column separators (lines) by adding vertical bars between the columns where you want to draw vertical lines. For example, <code>\begin{tabular}{c | c c }</code> draws a vertical bar between the first and second column but not between the second and third.</p>
 <p>The rows of the table are written like the rows of an <code>array</code>: you separate entries with <code>&amp;</code> and indicate the end of the row with <code>\\</code>. If you want to draw a horizontal line, use the <code>\hline</code> command.</p>
@@ -695,8 +701,8 @@ g^{-1}(\eta) &amp;= \frac{1}{1+e^{-\eta}} = \mu
 </figure>
 </div>
 </section>
-<section id="extending-latex" class="level2" data-number="13.6">
-<h2 data-number="13.6" class="anchored" data-anchor-id="extending-latex"><span class="header-section-number">13.6</span> Extending <span class="math inline">\(\LaTeX\)</span></h2>
+<section id="extending-latex" class="level2" data-number="14.6">
+<h2 data-number="14.6" class="anchored" data-anchor-id="extending-latex"><span class="header-section-number">14.6</span> Extending <span class="math inline">\(\LaTeX\)</span></h2>
 <section id="packages" class="level3">
 <h3 class="anchored" data-anchor-id="packages">Packages</h3>
 <p>One of the powerful features of <span class="math inline">\(\LaTeX\)</span> is the ability to extend basic functionality. One method for adding new capabilities is to use the many packages that are written for <span class="math inline">\(\LaTeX\)</span> with the <code>\usepackage{}</code> command in the preamble. You can affect how <span class="math inline">\(\LaTeX\)</span> works by using a package and setting its parameters at the same time. The following preamble starts an article and uses the <code>geometry</code> package to set page margins to 1 inch.</p>
@@ -1307,12 +1313,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./irls_literate.html" class="pagination-link" aria-label="Iteratively Reweighted Least Squares">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Iteratively Reweighted Least Squares</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Iteratively Reweighted Least Squares</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="./sql_basics.html" class="pagination-link" aria-label="SQL Basics">
-        <span class="nav-page-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">SQL Basics</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">SQL Basics</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
