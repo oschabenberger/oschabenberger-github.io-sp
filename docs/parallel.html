@@ -345,19 +345,19 @@ https://www.john-ros.com/Rcourse/parallel.html
 <div id="fig-activity" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-activity-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/ActivityMonitor.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="images/ActivityMonitor.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+<a href="images/ActivityMonitor.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="images/ActivityMonitor.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-activity-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;11.1: Activity Monitor on MacBook Pro with M2 Max chip.
 </figcaption>
 </figure>
 </div>
-<p>It shows the <strong>processes</strong> running at the time in the first column and the number of <strong>threads</strong> associated with the processes in the fourth column. For example, the R Studio process is consuming only 3.7% of available CPU and is running 35 threads. The kernel_task is managing an impressive 1,045 threads.</p>
+<p>It shows the <strong>processes</strong> running at the time in the first column and the number of <strong>threads</strong> associated with the processes in the fourth column. For example, the (idle) R Studio process is consuming only 3.7% of available CPU and is running 35 threads. The kernel_task manages an impressive 1,045 threads.</p>
 <section id="sec-parallel-terminology" class="level3">
 <h3 class="anchored" data-anchor-id="sec-parallel-terminology">Terminology</h3>
 <p>In order to understand parallel programming, the simultaneous execution of multiple programming instructions, we need to cover some terminology first.</p>
 <ul>
-<li><p>A <strong>process</strong> is a running program that has its own memory space. A process can be an entire application such as R Studio, a part of an application, or a service in the operating system. Processes are isolated from each other, if they need to share data, a form of inter-process communication such as a socket must be established.</p></li>
+<li><p>A <strong>process</strong> is a running program that has its own memory space. A process can be an entire application such as R Studio, a part of an application, or a service in the operating system. Processes are isolated from each other, if they need to share data, a form of inter-process communication such as a network socket must be established.</p></li>
 <li><p>A <strong>thread</strong> is spawned by the process to perform a task and shares the memory space of the process. Threads that belong to the same process can directly communicate with each other and share data. Threads are used to execute a program asynchronously. For example, calculations can happen in one thread while another thread waits for user input.</p></li>
 <li><p>A <strong>processor</strong> is the hardware that provides the infrastructure for processes to run. A process is software, a processor is hardware. Modern computers can have multiple processors, each processor with multiple cores. A system with 16 cores could be made from a single processor with 16 cores or 4 sockets with 4 cores, and so on. Larger servers have multiple sockets and can have hundreds of cores. For example, <code>tinkercliffs1</code>, a server in the Advanced Research Computing (ARC) facility at Virginia Tech has 2 sockets with 128 cores each, for a total of 256 cores. In addition to central processing units (CPUs), systems can have other processing units such as graphical processing units (GPUs) or tensor processing units (TPUs). For example, the Apple M2 Pro chip on this MacBook houses the following processors:</p>
 <ul>
@@ -367,11 +367,21 @@ Figure&nbsp;11.1: Activity Monitor on MacBook Pro with M2 Max chip.
 </ul></li>
 <li><p>A <strong>cluster</strong> is a group of network-connected machines, either locally or remote. The machines in the cluster communicate via a network protocol and do not share memory resources. Compute clusters are common in high-performance computing (HPC) and in cloud computing. In HPC we often need to combine the massive compute powers across many large servers in order to solve difficult numerical problems. In cloud computing the large network of computers is used to solve many different but smaller problems simultaneously.</p></li>
 <li><p>A <strong>node</strong> is a single machine in a cluster.</p></li>
-<li><p>A <strong>forking</strong> operation clones a process along with its instructions and data. All forked processes see the same data if they read the data only. A copy of the data is made when the data are changed in some way. Forking is unique to POSIX operating systems (MacOS, Linux, Unix). An alternative to forking processes is starting a second, standalone process of the same kind. In this case, the two processes do not share the same data and instructions. On Windows system, creating separate processes that communicate over sockets is the only way in which processes can be duplicated.</p></li>
+<li><p>A <strong>forking</strong> operation clones a process along with its instructions and data. All forked processes see the same data if they read the data only. A copy of the data is made when the data are changed in some way. Forking is unique to POSIX operating systems (MacOS, Linux, Unix). An alternative to forking processes is starting a second, standalone process of the same kind. In this case, the two processes do not share the same data and instructions. On Windows system, creating separate processes that communicate over some protocol is the only way in which processes can be duplicated.</p></li>
 </ul>
-<p>In summary, we can organize a high-performance computing environment as follows: a cluster of machines are connected via network; a node of the cluster has one or more processors, each with one or more cores. Processes are started on the processors to run programs, each process can spawn multiple threads and on some operating systems processes can be cloned by a process called forking.</p>
+<p>In summary, we can organize a high-performance computing environment as follows (<a href="#fig-parallel-cluster" class="quarto-xref">Figure&nbsp;<span>11.2</span></a>): a cluster of machines are connected via network; a node of the cluster has one or more processors, each with one or more cores. Processes are started on the processors to run programs, each process can spawn multiple threads and on some operating systems processes can be cloned by a process called forking.</p>
+<div id="fig-parallel-cluster" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-parallel-cluster-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/CLusterBreakdown.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2"><img src="images/CLusterBreakdown.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-parallel-cluster-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.2: Schema of a compute cluster with four nodes. A node has two processors, each with four cores. Four processes are shown on one processor. A process running 8 threads and a process that forks two clones.
+</figcaption>
+</figure>
+</div>
 <hr>
-<p>Processes have multiple threads because they do lots of different things at the same time, such as performing calculations while processing user input. Without such asynchronous execution of tasks the user experience would be horrific. All tasks would be serialized and we would have to wait for one task to be completed before another can start. Or, we would have to stop a task after some processing, switch context to another task, complete a bit of that one, and switch back to the first.</p>
+<p>Processes have multiple threads because they do lots of different things at the same time, such as performing calculations while processing user input or allowing you to scroll through an email while the Inbox updates. Without such asynchronous execution of tasks the user experience would be miserable. Tasks would be serialized and we would have to wait for one task to be completed before another can start. Or, we would have to stop a task after some processing, switch context to another task, complete a bit of that one, and switch back to the first.</p>
 </section>
 <section id="a-statistical-example" class="level3">
 <h3 class="anchored" data-anchor-id="a-statistical-example">A Statistical Example</h3>
@@ -379,15 +389,15 @@ Figure&nbsp;11.1: Activity Monitor on MacBook Pro with M2 Max chip.
 <p>Suppose you want to accumulate the <span class="math inline">\(\textbf{X}^\prime\textbf{X}\)</span> matrix in a model where <span class="math inline">\(\textbf{X}\)</span> is of size <span class="math inline">\((n \times p)\)</span>. In a serial execution model one thread would read each row of the data and accumulate the <span class="math inline">\(i=1,\cdots,n\)</span> products <span class="math inline">\(\textbf{x}_i\textbf{x}_i^\prime\)</span> and accumulate them: <span class="math display">\[
 \textbf{X}^\prime\textbf{X} = \sum_{i=1}^n \textbf{x}_i\textbf{x}_i^\prime
 \]</span></p>
-<p>In a parallel execution model using multiple threads we can partition the data into <span class="math inline">\(k\)</span> subsets of sizes <span class="math inline">\(n_1, \cdots, n_k\)</span> such that <span class="math inline">\(\sum_{j=1}^k n_j = n\)</span>. We would probably make the <span class="math inline">\(n_j\)</span> as similar to each other as possible to give each thread the same amount of work. <span class="math inline">\(k\)</span> threads would then accumulate a partial cross-product matrix based on the <span class="math inline">\(n_j\)</span> observations that the <span class="math inline">\(j\)</span><sup>th</sup> thread sees: <span class="math display">\[
+<p>(Here, <span class="math inline">\(\textbf{x}_i\)</span> is a <span class="math inline">\((p \times 1)\)</span> column vector and <span class="math inline">\(\textbf{x}^\prime_i\)</span> is a <span class="math inline">\((1 \times p)\)</span> row vector.) In a parallel execution model using multiple threads we can partition the data into <span class="math inline">\(k\)</span> subsets of sizes <span class="math inline">\(n_1, \cdots, n_k\)</span> such that <span class="math inline">\(\sum_{j=1}^k n_j = n\)</span>. We would probably make the <span class="math inline">\(n_j\)</span> as similar to each other as possible to give each thread the same amount of work. <span class="math inline">\(k\)</span> threads would then accumulate a partial cross-product matrix based on the <span class="math inline">\(n_j\)</span> observations that the <span class="math inline">\(j\)</span><sup>th</sup> thread sees: <span class="math display">\[
 \textbf{X}^\prime\textbf{X}^{(j)} = \sum_{i=1}^{n_j} \textbf{x}_{i}^{(j)} \textbf{x}_i ^{(j)\prime}
 \]</span> The notation <span class="math inline">\(\textbf{x}_{i}^{(j)}\)</span> depicts the <span class="math inline">\(i\)</span><sup>th</sup> observation in the batch for the <span class="math inline">\(j\)</span><sup>th</sup> thread and <span class="math inline">\(\textbf{X}^\prime\textbf{X}^{(j)}\)</span> is the partial cross-product matrix formed by the <span class="math inline">\(j\)</span><sup>th</sup> thread.</p>
 <p>At the end of the multithreaded execution we have <span class="math inline">\(k\)</span> partial cross-product matrices and their sum yields the desired result: <span class="math display">\[
 \textbf{X}^\prime\textbf{X} = \sum_{j=1}^k \textbf{X}^\prime\textbf{X}^{(j)}
 \]</span></p>
 <p>Which execution model is preferred? Single-threaded (serial) accumulation of a single cross-product matrix or multithreaded accumulation of <span class="math inline">\(k\)</span> partial cross-product matrices that are then added up?</p>
-<p>As always, the answer is “it depends”. Normally one would expect the threaded execution to perform faster than serially running through all observations, but multithreading is not without overhead. Creating threads requires computing resources. Each thread is provided with memory. If the number of columns <span class="math inline">\(p\)</span> is large, then single-threaded execution allocates one cross-product matrix versus <span class="math inline">\(k\)</span> matrices for threaded execution. One could allow the <span class="math inline">\(k\)</span> threads to all write to the same memory, but that would require to lock threads, otherwise two threads might write simultaneously to the same memory location, trashing each other’s contributions. When the number of observations is small, the benefits of forming the partial cross-product matrices in parallel might be outweighed by the time and resources required to create, manage, and destroy the threads themselves.</p>
-<p>If one uses a parallel execution model with forks, or a socket-based execution model on a single machine, or a clustered execution model with multiple machines, the overhead is even greater than for the multithreaded model.</p>
+<p>As always, the answer is “it depends”. Normally one would expect the threaded execution to perform faster than serially running through all observations, but multithreading is not without overhead. Creating threads requires computing resources. Each thread is provided with memory. If the number of columns <span class="math inline">\(p\)</span> is large, then single-threaded execution allocates one cross-product matrix versus <span class="math inline">\(k\)</span> matrices for threaded execution. One could allow the <span class="math inline">\(k\)</span> threads to all write to the same memory, but that would require to lock threads, otherwise two threads might write simultaneously to the same memory location, trashing each other’s contributions. Such locking would limit the potential speedup from parallel execution. When the number of observations is small, the benefits of forming the partial cross-product matrices in parallel might be outweighed by the time and resources required to create, manage, and destroy the threads themselves.</p>
+<p>If one uses a parallel execution model with forks rather than threads, or a socket-based execution model on a single machine, or a clustered execution model with multiple machines, the overhead is even greater than for the multithreaded model.</p>
 <p>In short, parallel execution is typically advantageous and improves the performance of programs. However, it is not without overhead. And there are other issues to consider. For example, parallel execution does not guarantee that the operations occur in the same order. While mathematically equivalent, the sums</p>
 <p><span class="math display">\[
 \textbf{X}^\prime\textbf{X} = \sum_{i=1}^n \textbf{x}_i\textbf{x}_i^\prime
@@ -405,15 +415,15 @@ Figure&nbsp;11.1: Activity Monitor on MacBook Pro with M2 Max chip.
 <blockquote class="blockquote">
 <p><em>the overall performance improvement gained by optimizing a single part of a system is limited by the fraction of time that the improved part is actually used</em></p>
 </blockquote>
-<p>Suppose you are parallelizing a task that consist of two sub-tasks. Task A is inherently serial and cannot be parallelized. Task B can be parallelized. The overall speedup gained by parallelization depends on the fraction of the time spent with task A. If the non-parallelizable part of a program takes 80 % of the runtime and you speed up the parallelizable part by 10x, the new program exeutes in 82% of the time of the original program. You did not gain much.</p>
+<p>Suppose you are parallelizing a task that consist of two sub-tasks. Task A is inherently serial and cannot be parallelized. Task B can be parallelized. The overall speedup gained by parallelization depends on the fraction of the time spent with task A. If the non-parallelizable part of a program takes 80% of the runtime and you speed up the parallelizable part by 10x, the new program exeutes in 82% of the time of the original program. You did not gain much.</p>
 <p>Amdah’s law is quite obvious. If there is a fixed cost for the non-modifiable part of a project you cannot get it any cheaper. The fixed cost sets a lower bound. Yet, in computer programming we often forget Amdahl’s law when efforts to optimize code (by parallelization or otherwise) focus on parts of the code that are really not a bottleneck. In the <span class="math inline">\(\textbf{X}^\prime\textbf{X}\)</span> example, suppose that processing the vector multiplication <span class="math inline">\(\textbf{x}_i\textbf{x}_i^\prime\)</span> is many times faster than retrieving a row of data from the storage device. The thread(s) computing the overall or the partial cross-product matrices would starve for data and sit idle until the next row arrives. The speed of data retrieval determines the performance of the algorithm.</p>
 </section>
 <section id="opportunities-to-parallelize-in-r" class="level3">
 <h3 class="anchored" data-anchor-id="opportunities-to-parallelize-in-r">Opportunities to Parallelize in <code>R</code></h3>
 <p><code>R</code> is an interpreted language and as an <code>R</code> programmer you do not directly create, manage, and terminate threads within the <code>R</code> process. Parallelization through multithreading is done by the underlying code written in C or C++.</p>
-<p>As <code>R</code> programmer, you mostly concentrate efforts to parallelize on what are called “embarrassingly parallel” problems, units of computations that you control that can be executed completely independently. A great example is the bootstrap. <span class="math inline">\(B\)</span> samples are drawn with replacement from a data frame of size <span class="math inline">\(n\)</span>, a statistical method is applied to each bootstrap sample, and the <span class="math inline">\(B\)</span> results are somehow aggregated. This process is “embarrassingly parallel” because you can draw and process the <span class="math inline">\(i\)</span><sup>th</sup> bootstrap sample independently of the <span class="math inline">\(j\)</span><sup>th</sup> sample. If overhead is low and processes can run at full blast, embarrassingly parallel problems exhibit as close to linear speedup as possible.</p>
-<p>Because you cannot directly manage thread from the <code>R</code> session, parallel programming in <code>R</code> relies on forking or separate processes. On operating systems that support forking of processes (MacOS, Linux, Unix), copies of the current process are spawned via a system <code>fork</code> call. You can think of the forked processes as somewhat akin to the threads a low-level systems programmer would create in C or C++. However, the forked processes are separate processes while threads run within a given process. The fork has in common with threads that data and instructions are shared between the forked processes. Libraries you loaded prior to forking will also be loaded in the forked processes.</p>
-<p>The basic packages in <code>R</code> for parallel program execution are <code>parallel</code>, <code>foreach</code>, and <code>doParallel</code>. The <code>parallel</code> package is part of basic <code>R</code> and combines functionality found earlier in the <code>snow</code> and <code>multicore</code> packages. ‘multicore’ relies on forking processes, ‘snow’ starts completely separate processes and and uses sockets, parallel virtual machines (PVM), message passing interface (MPI), or NetworkSpaces (NWS) for parallelization. By combining ‘snow’ and ‘multicore’, the <code>parallel</code> library supports parallel execution on POSIX and non-POSIX (Windows) operating systems. The flip side of this flexibility is that you need to let the library know how which parallelization protocol to follow.</p>
+<p>As <code>R</code> programmer, you mostly concentrate efforts to parallelize on what are called “embarrassingly parallel” problems, units of computations that you control that can be executed completely independently. A great example is the bootstrap. <span class="math inline">\(B\)</span> samples are drawn with replacement from a data frame of size <span class="math inline">\(n\)</span>, a statistical method is applied to each bootstrap sample, and the <span class="math inline">\(B\)</span> results are somehow aggregated. This process is “embarrassingly parallel” because you can draw and process the <span class="math inline">\(i\)</span><sup>th</sup> bootstrap sample independently of the <span class="math inline">\(j\)</span><sup>th</sup> sample. If overhead is low and processes can run at full blast, embarrassingly parallel problems can exhibit close to linear speedup compared to serial execution.</p>
+<p>Because you cannot directly manage threads from the <code>R</code> session, parallel programming in <code>R</code> relies on forking or separate processes. On operating systems that support forking of processes (MacOS, Linux, Unix), copies of the current process are spawned via a system <code>fork</code> call. You can think of the forked processes as somewhat akin to the threads a low-level systems programmer would create in C or C++. However, the forked processes are separate processes while threads run within a given process. The fork has in common with threads that data and instructions are shared between the forked processes. Libraries you loaded prior to forking will also be available in the forked processes.</p>
+<p>The basic packages in <code>R</code> for parallel program execution are <code>parallel</code>, <code>foreach</code>, and <code>doParallel</code>. The <code>parallel</code> package is part of basic <code>R</code> and combines functionality found earlier in the <code>snow</code> and <code>multicore</code> packages. <code>multicore</code> relies on forking processes, <code>snow</code> starts completely separate processes and and uses sockets, parallel virtual machines (PVM), message passing interface (MPI), or NetworkSpaces (NWS) for parallelization. By combining <code>snow</code> and <code>multicore</code>, the <code>parallel</code> library supports parallel execution on POSIX and non-POSIX (Windows) operating systems. The flip side of this flexibility is that you need to let the library know which parallelization protocol to follow.</p>
 <p>Packages like <code>caret</code> take advantage of parallel execution if the appropriate backend parallelization mechanism is in effect—more on that below.</p>
 <p><code>multidplyr</code> is a backend for <code>dplyr</code> that partitions a data frame across multiple cores.</p>
 </section>
@@ -423,7 +433,7 @@ Figure&nbsp;11.1: Activity Monitor on MacBook Pro with M2 Max chip.
 <p>A great way of getting started with parallelizing <code>R</code> code is the <code>foreach</code> package in combination with the <code>doParallel</code> package.</p>
 <section id="foreach" class="level3">
 <h3 class="anchored" data-anchor-id="foreach"><code>foreach</code></h3>
-<p><code>foreach</code> provides a new looping construct that supports parallel execution of the loop body. You combine a call to <code>foreach</code> with the binary <code>%do%</code> operator to run the loop. Unlike the <code>for</code> loop, <code>foreach</code> acts like a function in that it returns a result.</p>
+<p><code>foreach</code> provides a new looping construct that supports parallel execution of the loop body. You combine a call to <code>foreach</code> with the binary <code>%do%</code> operator to run the loop. Unlike the <code>for</code> loop, <code>foreach</code> acts like a function that returns a result.</p>
 <p>Consider the following example:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(foreach)</span>
@@ -440,7 +450,7 @@ Figure&nbsp;11.1: Activity Monitor on MacBook Pro with M2 Max chip.
 [1] 13 14 15</code></pre>
 </div>
 </div>
-<p><code>foreach</code> iterates over the variable a and adds its value to the vector b = [10, 10, 10]. The result is returned in the form of a list, which is efficient but might not be the most convenient form to work with. Using the <code>.combine</code> option of <code>foreach</code>, you can control the format of the result.</p>
+<p><code>foreach</code> iterates over the variable <code>a</code> and adds its value to the vector <code>b</code> = [10, 11, 12]. The result is returned in the form of a list, which is efficient but might not be the most convenient form to work with. Using the <code>.combine</code> option of <code>foreach</code>, you can control the format of the result.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">foreach</span>(<span class="at">a=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">combine=</span><span class="st">'c'</span>) <span class="sc">%do%</span> (a<span class="sc">+</span>b)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -448,7 +458,7 @@ Figure&nbsp;11.1: Activity Monitor on MacBook Pro with M2 Max chip.
 [1] 11 12 13</code></pre>
 </div>
 </div>
-<p><code>.combine='c'</code> instructs <code>foreach</code> to use the standard <code>c()</code> function in <code>R</code> to concatenate the results. You could also use <code>.combine='cbind'</code> or <code>.combine='rbind'</code>, even operators such as <code>+</code> or <code>*</code> to combine results. If</p>
+<p><code>.combine='c'</code> instructs <code>foreach</code> to use the standard <code>c()</code> function in <code>R</code> to concatenate the results. You could also use <code>.combine='cbind'</code> or <code>.combine='rbind'</code>, even operators such as <code>+</code> or <code>*</code> to combine results.</p>
 <p>Notice in the results above that <code>b</code> is not being iterated over, it is a global variable outside of the loop. Each iterate, <code>a=1</code>, <code>a=2</code>, <code>a=3</code> is applied to the entire vector <code>b</code>. If you place <code>b</code> inside the <code>foreach</code> operator, then it is also iterated over, returning a scalar result for each iterate</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">foreach</span>(<span class="at">a=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">b=</span><span class="fu">seq</span>(<span class="dv">10</span>,<span class="dv">12</span>), <span class="at">.combine=</span><span class="st">'c'</span>) <span class="sc">%do%</span> (a<span class="sc">+</span>b)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -477,7 +487,7 @@ Figure&nbsp;11.1: Activity Monitor on MacBook Pro with M2 Max chip.
 </div>
 </div>
 <p>Nice, that is a lot of cores, let’s use 4 of them.</p>
-<p>The following statements load the <code>doParallel</code> library and registers a parallel backend with the <code>registerDoParallel</code> function. The first argument to <code>registerDoParallel</code> is a cluster object, the second argument is the number of cores to use. In this example, the first argument is omitted. On a POSIX machine (like this MacBook) this results in multicore execution on a single node, forking four processes. On a Windows machine this results in a three-node cluster unless you provide the number of machines in `makeCluster’.</p>
+<p>The following statements load the <code>doParallel</code> library and register a parallel backend with the <code>registerDoParallel</code> function. The first argument to <code>registerDoParallel</code> is a cluster object, the second argument is the number of cores to use. In this example, the first argument is omitted. On a POSIX machine (like this MacBook) this results in multicore execution on a single node, forking four processes. On a Windows machine this results in a three-node cluster unless you provide the number of machines in <code>makeCluster</code> (see below).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(doParallel)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">registerDoParallel</span>(<span class="at">cores=</span><span class="dv">4</span>)</span>
@@ -513,11 +523,11 @@ Figure&nbsp;11.1: Activity Monitor on MacBook Pro with M2 Max chip.
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   user  system elapsed 
-  0.672   0.050   0.667 </code></pre>
+  0.652   0.054   0.650 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] -68.75223  71.42882  60.25213  38.71754 134.50528</code></pre>
+<pre><code>[1]   45.478001 -113.780947  -78.198042  102.269779   -7.955077</code></pre>
 </div>
 </div>
 <p>Let’s run this again:</p>
@@ -528,11 +538,11 @@ Figure&nbsp;11.1: Activity Monitor on MacBook Pro with M2 Max chip.
 <span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   user  system elapsed 
-  0.653   0.075   0.654 </code></pre>
+  0.640   0.079   0.635 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] -102.00416   30.69921  114.75147   68.83982   55.86810</code></pre>
+<pre><code>[1] -164.00413  -31.45283 -152.97782   23.41141   23.05335</code></pre>
 </div>
 </div>
 <p>Whoa!</p>
@@ -541,24 +551,24 @@ Figure&nbsp;11.1: Activity Monitor on MacBook Pro with M2 Max chip.
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">654</span>)</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">foreach</span>(<span class="at">i=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="at">.combine=</span><span class="st">"rbind"</span>) <span class="sc">%dopar%</span> <span class="fu">rnorm</span>(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>                 [,1]       [,2]       [,3]         [,4]       [,5]
-result.1 -0.673584017 -0.6570576 -0.1250013 -1.097931366 -0.3510111
-result.2  0.160366283  0.7183745 -0.8428280 -0.370472038  0.6940202
-result.3 -0.245620842 -1.9512412 -0.3253326 -1.141735318 -0.9600194
-result.4 -1.370405129 -0.2796389  1.6593228  1.021638607 -0.6261515
-result.5 -0.946201092  0.5475960 -0.3500551  0.009551111 -0.3978333
-result.6  0.005360676  0.4333607 -1.2957271 -0.789468331 -0.6201592</code></pre>
+<pre><code>               [,1]       [,2]       [,3]       [,4]       [,5]
+result.1  0.3135255  0.6779987 -1.4611582 -2.3196622 -1.1527701
+result.2  1.2200883 -0.2287139  1.2629225 -1.9175458  0.7701820
+result.3 -0.5817353  1.3309031  1.1762185  1.1903353 -0.7459022
+result.4  1.8383267 -0.7653300  1.5102523  0.3400128 -0.3085988
+result.5  1.4546025 -0.7323020 -0.2878853  0.6472429 -0.1136878
+result.6 -0.7531001  0.2450567 -1.0101547 -1.7188432  0.3431616</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">654</span>)</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">foreach</span>(<span class="at">i=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="at">.combine=</span><span class="st">"rbind"</span>) <span class="sc">%dopar%</span> <span class="fu">rnorm</span>(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>               [,1]       [,2]       [,3]        [,4]        [,5]
-result.1 -1.5435246 -0.4232310 -1.4741557  0.74570443 -0.58581707
-result.2 -1.3615898  0.5099239 -0.4707656 -2.43424628  0.32978385
-result.3  1.3383928  0.2392624 -1.4509763 -0.05869409 -0.18144318
-result.4 -0.8010253  0.4100598 -2.3339890 -1.06956353  0.89444183
-result.5 -1.8177959  0.4715101  0.7513181  0.66660074 -0.03742454
-result.6  0.3102960  0.8389981 -0.7425358  0.27914762 -0.12930459</code></pre>
+<pre><code>               [,1]       [,2]       [,3]       [,4]       [,5]
+result.1 -0.7123589  0.7690196 -0.3462231  0.1955580  2.5947182
+result.2  0.1349692 -1.4934702 -1.3761912 -1.3336574 -1.3513438
+result.3 -0.9779457 -0.4654097  0.1580169  0.4002832  0.3480941
+result.4 -1.3331453 -1.4607946  1.3630800 -1.5116723 -0.2852162
+result.5  1.0461026 -0.9019502  0.6621673 -0.2745293  0.3403628
+result.6  0.9101086 -0.2777616 -1.2075581 -0.3079693 -0.7604840</code></pre>
 </div>
 </div>
 <p>If we use <code>%do%</code> and resort to serial execution instead, the random number streams are identical, as expected.</p>
@@ -620,7 +630,7 @@ result.6 -1.3398361 -1.4437327  0.35197447  0.116163784</code></pre>
 <span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   user  system elapsed 
-  0.695   0.000   0.703 </code></pre>
+  0.712   0.000   0.718 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -632,7 +642,7 @@ result.6 -1.3398361 -1.4437327  0.35197447  0.116163784</code></pre>
 <section id="bootstrapping-logistic-regression-estimates" class="level3">
 <h3 class="anchored" data-anchor-id="bootstrapping-logistic-regression-estimates">Bootstrapping Logistic Regression Estimates</h3>
 <p>Here is a more substantial example of parallel execution. We are interested in the distribution of the intercept and slope of a logistic regression where the target variable is the iris species in the <code>iris</code> data set and the predictor variable is sepal length. Observations for <em>Iris setosa</em> are removed from the data set to reduce the number of levels in <code>Species</code> to two.</p>
-<p>The following code computes 10,000 bootstrap estimates using <code>foreach</code> and multicore parallelization. You should try this on your machine, but on this MacBook the bootstrap loop executes 3 times faster (with 4 worker processes) compared to serial execution. This is not bad! A 4x speedup would mean linear scaling and typically cannot be expected from forked processes, even for embarrassingly parallel problems.</p>
+<p>The following code computes 10,000 bootstrap estimates using <code>foreach</code> and multicore parallelization. You should try this on your machine, but on this MacBook the bootstrap loop executes 3 times faster (with 4 worker processes) compared to serial execution. That is not bad! A 4x speedup would mean linear scaling and typically cannot be expected from forked processes, even for embarrassingly parallel problems.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(iris)</span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> iris[<span class="fu">which</span>(iris[,<span class="dv">5</span>] <span class="sc">!=</span> <span class="st">"setosa"</span>), <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">5</span>)]</span>
@@ -650,10 +660,10 @@ result.6 -1.3398361 -1.4437327  0.35197447  0.116163784</code></pre>
 <span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   user  system elapsed 
-  6.432   0.259   1.975 </code></pre>
+  6.449   0.272   1.968 </code></pre>
 </div>
 </div>
-<p><a href="#fig-boot-parallel" class="quarto-xref">Figure&nbsp;<span>11.2</span></a> displays the bootstrap distributions of the logistic parameter estimates.</p>
+<p><a href="#fig-boot-parallel" class="quarto-xref">Figure&nbsp;<span>11.3</span></a> displays the bootstrap distributions of the logistic parameter estimates.</p>
 <div class="cell" data-layout-align="center" width="80">
 <div class="cell-output-display">
 <div id="fig-boot-parallel" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
@@ -662,7 +672,7 @@ result.6 -1.3398361 -1.4437327  0.35197447  0.116163784</code></pre>
 <img src="parallel_files/figure-html/fig-boot-parallel-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-boot-parallel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;11.2: Bootstrap distribution of intercept and slopes, <span class="math inline">\(B\)</span>=10,000.
+Figure&nbsp;11.3: Bootstrap distribution of intercept and slopes, <span class="math inline">\(B\)</span>=10,000.
 </figcaption>
 </figure>
 </div>
@@ -719,7 +729,7 @@ y = \beta_0 + \beta_1 x_1 + \epsilon
 <p><span class="math display">\[
 y = \beta_0 + \beta_1 x_1 + \cdots + \beta_{100}x_{100} + \epsilon
 \]</span> For each of those regression models we compute the prediction error sum of squares by 10-fold cross-validation. That means we partition the data into 10 groups (called folds), fit the model 10 times, each time leaving out one of the folds and computing the prediction sum of squares for the observations left out. After the last fold has been processed, the 10 prediction sum of squares for the folds are summed or averaged to get the estimate for the entire data set.</p>
-<p>This can be organized into two nested loops, one loop over the regression models and one loop over the folds. This results in 100 cross-validated prediction sum of squares values. The model that has the smallest value is the one that generalizes best to new observations (<a href="#fig-cross-parallel" class="quarto-xref">Figure&nbsp;<span>11.3</span></a>).</p>
+<p>This can be organized into two nested loops, one loop over the regression models and one loop over the folds. This results in 100 cross-validated prediction sum of squares values. The model that has the smallest value is the one that generalizes best to new observations (<a href="#fig-cross-parallel" class="quarto-xref">Figure&nbsp;<span>11.4</span></a>).</p>
 <div class="cell" data-layout-align="center" width="90%">
 <div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>n_rows <span class="ot">&lt;-</span> <span class="dv">500</span></span>
 <span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>n_cols <span class="ot">&lt;-</span> <span class="dv">100</span></span>
@@ -746,7 +756,7 @@ y = \beta_0 + \beta_1 x_1 + \cdots + \beta_{100}x_{100} + \epsilon
 <span id="cb46-23"><a href="#cb46-23" aria-hidden="true" tabindex="-1"></a>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   user  system elapsed 
-  6.401   0.207   1.761 </code></pre>
+  6.385   0.217   1.744 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(prss,</span>
 <span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">las=</span><span class="dv">1</span>,</span>
@@ -763,7 +773,7 @@ y = \beta_0 + \beta_1 x_1 + \cdots + \beta_{100}x_{100} + \epsilon
 <img src="parallel_files/figure-html/fig-cross-parallel-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cross-parallel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;11.3: Cross-validated prediction sum of squares for 100 regression models.
+Figure&nbsp;11.4: Cross-validated prediction sum of squares for 100 regression models.
 </figcaption>
 </figure>
 </div>
@@ -773,6 +783,7 @@ Figure&nbsp;11.3: Cross-validated prediction sum of squares for 100 regression m
 
 <div class="hidden" aria-hidden="true">
 <span class="glightbox-desc lightbox-desc-1">Figure&nbsp;11.1: Activity Monitor on MacBook Pro with M2 Max chip.</span>
+<span class="glightbox-desc lightbox-desc-2">Figure&nbsp;11.2: Schema of a compute cluster with four nodes. A node has two processors, each with four cores. Four processes are shown on one processor. A process running 8 threads and a process that forks two clones.</span>
 </div>
 </section>
 </section>
@@ -1357,7 +1368,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","closeEffect":"zoom","loop":false,"selector":".lightbox","descPosition":"bottom"});
+<script>var lightboxQuarto = GLightbox({"loop":false,"closeEffect":"zoom","openEffect":"zoom","descPosition":"bottom","selector":".lightbox"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

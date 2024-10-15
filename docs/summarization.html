@@ -1145,11 +1145,11 @@ RunTime -0.8623353</code></pre>
 <div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ducksummary</span>(<span class="st">"banana_train"</span>,<span class="st">"Ripeness"</span>,<span class="at">groupBy=</span><span class="st">"Quality"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  Quality    N       Min         Q1       Mean    Median       Q3      Max
-1     Bad 2000 -7.423155 -1.6555529 0.06011369 0.1125737 1.734655 5.911077
-2    Good 2000 -4.239602  0.4206124 1.52396766 1.4982581 2.641176 7.249034
+1    Good 2000 -4.239602  0.4206124 1.52396766 1.4982581 2.641176 7.249034
+2     Bad 2000 -7.423155 -1.6555529 0.06011369 0.1125737 1.734655 5.911077
     StdDev
-1 2.276053
-2 1.644378</code></pre>
+1 1.644378
+2 2.276053</code></pre>
 </div>
 </div>
 <p>Note that the only data frames created in this approach are the data frames to hold the analysis results. The data remains where it is at—in the database.</p>
